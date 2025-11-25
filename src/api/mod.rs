@@ -1,9 +1,13 @@
 mod images;
 mod models;
+mod tags;
+mod download;
 
 use serde::Deserialize;
 pub use images::ImagesOptions;
 pub use models::ModelsOptions;
+pub use tags::TagsOptions;
+pub use download::DownloadOptions;
 
 pub struct Civit {
     api_key: String,

@@ -323,10 +323,13 @@ struct Creator {
 #[derive(Deserialize, Debug)]
 struct ModelVersionStats {
     #[serde(rename = "downloadCount")]
+    #[serde(default)]
     downloads: usize,
     #[serde(rename = "thumbsUpCount")]
+    #[serde(default)]
     thumbs_up: usize,
     #[serde(rename = "thumbsDownCount")]
+    #[serde(default)]
     thumbs_down: usize
 }
 
@@ -354,7 +357,7 @@ struct ModelVersionFiles {
     #[serde(rename = "virusScanMessage")]
     virus_scan_message: Option<String>,
     #[serde(rename = "scannedAt")]
-    scanned_at: Option<DateTime<Utc>>,
+    scanned_at: Option<String>,//Option<DateTime<Utc>>,
     metadata: ModelVersionMetadata,
     hashes: HashMap<String, String>,
     #[serde(rename = "downloadUrl")]
@@ -383,21 +386,23 @@ struct ModelImage {
 }
 
 #[derive(Deserialize, Debug)]
-struct ModelVersion {
+pub struct ModelVersion {
     id: usize,
-    index: usize,
+    index: Option<usize>,
     name: String,
     baseModel: String,
     #[serde(rename = "baseModelType")]
     base_model_type: String,
     #[serde(rename = "publishedAt")]
     publishedAt: DateTime<Utc>,
+    #[serde(default)]
     availability: String,
     #[serde(rename = "nsfwLevel")]
     nsfw_level: usize,
     description: Option<String>,
     #[serde(rename = "trainedWords")]
-    trained_words: Vec<String>,
+    trained_words: Option<Vec<String>>,
+    
     stats: ModelVersionStats,
     #[serde(rename = "supportsGeneration")]
     #[serde(default)]
@@ -468,6 +473,19 @@ impl Civit {
                 .header(AUTHORIZATION, format!("Bearer {}", &self.api_key))
                 .send()
                 .await.unwrap().json::<Model>().await.unwrap();
+        
+        response
+    }
+    
+    pub async fn model_by_version(&self, model_version: usize) -> ModelVersion {
+        let client = &self.client;
+                    
+        let response = client
+                .get(format!("https://civitai.com/api/v1/model-versions/{model_version}"))
+                .header(CONTENT_TYPE, "application/json")
+                .header(AUTHORIZATION, format!("Bearer {}", &self.api_key))
+                .send()
+                .await.unwrap().json::<ModelVersion>().await.unwrap();
         
         response
     }
