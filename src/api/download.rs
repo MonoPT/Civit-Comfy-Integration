@@ -1,5 +1,5 @@
 use std::collections::HashMap;
-
+use std::time::Instant;
 use super::Civit;
 use reqwest::header::{AUTHORIZATION, CONTENT_TYPE};
 use tokio::io::AsyncWriteExt;
@@ -83,15 +83,25 @@ impl Civit {
         let mut downloaded: u64 = 0;
     
         let mut stream = response.bytes_stream();
+        let start_time = Instant::now();
     
         while let Some(chunk) = stream.next().await {
             let chunk = chunk.unwrap();
     
             file.write_all(&chunk).await.unwrap();
             downloaded += chunk.len() as u64;
-    
+            
+            let elapsed = start_time.elapsed().as_secs_f64(); // time in seconds
+            let speed = downloaded as f64 / elapsed; // bytes per second
             let percent = (downloaded as f64 / total_size as f64) * 100.0;
-            print!("\rProgresso: {:.2}%", percent);
+            //print!("\rProgresso: {:.2}%", percent);
+            
+            print!(
+                "\rProgresso: {:.2}% - Velocidade: {:.2} KB/s",
+                percent,
+                speed / 1024.0
+            );
+            
             std::io::stdout().flush().ok();
         }
     
