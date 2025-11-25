@@ -24,15 +24,15 @@ impl Civit {
 #[derive(Deserialize, Debug)]
 struct CivitResponseMetadata {
     #[serde(rename = "nextCursor")]
-    next_cursor: String,
+    next_cursor: Option<String>,
     #[serde(rename = "nextPage")]
-    next_page: String
+    next_page: Option<String>
 }
 
 #[derive(Deserialize, Debug)]
 pub struct CivitResponse<T> {
-    metadata: CivitResponseMetadata,
-    items: Vec<T>
+    pub metadata: CivitResponseMetadata,
+    pub items: Vec<T>
 }
 
 trait ParametersFromOptions {

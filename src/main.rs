@@ -9,10 +9,11 @@ use crate::api::{Civit, ImagesOptions, ModelsOptions};
 async fn main() {
     let civit = Civit::new("7577577650f1dfd4e270c231f7c105de"); 
     
-    let response = civit.models(
-        ModelsOptions::default()
-            .limit(1)
-    ).await;
+    
+    
+    
+    //let response = civit.models(ModelsOptions::default().limit(5)).await;
+    //let response = civit.model_by_id(1102).await;
         
     println!("{response:#?}");    
 }

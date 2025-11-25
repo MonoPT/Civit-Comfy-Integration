@@ -1,7 +1,7 @@
 use std::collections::HashMap;
 
 use super::{ParametersFromOptions, Civit, CivitResponse};
-use crate::filters::{NSFW, Sort, Period};
+use crate::filters::{Sort, Period};
 use reqwest::header::{AUTHORIZATION, CONTENT_TYPE};
 use serde::Deserialize;
 use chrono::{DateTime, Utc};
@@ -364,7 +364,7 @@ struct ModelVersionFiles {
 
 #[derive(Deserialize, Debug)]
 struct ModelImage {
-    id: usize,
+    id: Option<usize>,
     url: String,
     #[serde(rename = "nsfwLevel")]
     nsfw_level: usize,
@@ -383,7 +383,7 @@ struct ModelImage {
 }
 
 #[derive(Deserialize, Debug)]
-struct modelVersion {
+struct ModelVersion {
     id: usize,
     index: usize,
     name: String,
@@ -400,6 +400,7 @@ struct modelVersion {
     trained_words: Vec<String>,
     stats: ModelVersionStats,
     #[serde(rename = "supportsGeneration")]
+    #[serde(default)]
     supports_generation: bool,
     files: Vec<ModelVersionFiles>,
     images: Vec<ModelImage>,
@@ -408,7 +409,7 @@ struct modelVersion {
 }
 
 #[derive(Deserialize, Debug)]
-pub struct ModelsResponse {
+pub struct Model {
     id: usize,
     name: String,
     description: String,
@@ -439,11 +440,11 @@ pub struct ModelsResponse {
     creator: Creator,
     tags: Vec<String>,
     #[serde(rename = "modelVersions")]
-    model_versions: Vec<modelVersion>
+    model_versions: Vec<ModelVersion>
 }
 
 impl Civit {    
-    pub async fn models(&self, options: ModelsOptions) -> CivitResponse<ModelsResponse> {
+    pub async fn models(&self, options: ModelsOptions) -> CivitResponse<Model> {
         let client = &self.client;
         
         let parameters =  options.to_parameters();
@@ -453,7 +454,20 @@ impl Civit {
                 .header(CONTENT_TYPE, "application/json")
                 .header(AUTHORIZATION, format!("Bearer {}", &self.api_key))
                 .send()
-                .await.unwrap().json::<CivitResponse<ModelsResponse>>().await.unwrap();
+                .await.unwrap().json::<CivitResponse<Model>>().await.unwrap();
+        
+        response
+    }
+    
+    pub async fn model_by_id(&self, model_id: usize) -> Model {
+        let client = &self.client;
+                    
+        let response = client
+                .get(format!("https://civitai.com/api/v1/models/{model_id}"))
+                .header(CONTENT_TYPE, "application/json")
+                .header(AUTHORIZATION, format!("Bearer {}", &self.api_key))
+                .send()
+                .await.unwrap().json::<Model>().await.unwrap();
         
         response
     }
