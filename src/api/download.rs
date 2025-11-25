@@ -14,7 +14,31 @@ pub struct DownloadOptions {
     fp: String
 }
 
-
+impl DownloadOptions {
+    pub fn model_type(mut self, model_type: impl ToString) -> Self {
+        self.model_type = model_type.to_string();
+        
+        self
+    }
+    
+    pub fn format(mut self, format: impl ToString) -> Self {
+        self.format = format.to_string();
+        
+        self
+    }
+    
+    pub fn size(mut self, size: impl ToString) -> Self {
+        self.size = size.to_string();
+        
+        self
+    }
+    
+    pub fn fp(mut self, fp: impl ToString) -> Self {
+        self.fp = fp.to_string();
+        
+        self
+    }
+}
 
 impl Civit {
     pub async fn download(&self, model_id: usize, download_options: DownloadOptions) {
