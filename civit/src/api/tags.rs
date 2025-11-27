@@ -83,9 +83,7 @@ impl Civit {
         let client = &self.client;
         
         let parameters =  options.to_parameters();
-            
-        println!("{parameters}");
-        
+                    
         let response = client
                 .get(format!("https://civitai.com/api/v1/tags?{parameters}"))
                 .header(CONTENT_TYPE, "application/json")

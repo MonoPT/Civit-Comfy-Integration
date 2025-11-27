@@ -15,13 +15,19 @@ pub struct Civit {
 }
 
 impl Civit {
-    pub fn new(api_key: impl ToString) -> Self {
+    pub fn new() -> Self {
         let client = reqwest::Client::new();
         
         Civit {
-            api_key: api_key.to_string(),
+            api_key: "".to_string(),
             client
         }
+    }
+    
+    pub fn update_api_key(mut self, api_key: impl ToString) -> Self {
+        self.api_key = api_key.to_string();
+        
+        self
     }
 }
 

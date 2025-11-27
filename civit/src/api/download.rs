@@ -2,7 +2,6 @@ use std::collections::HashMap;
 use std::time::Instant;
 use super::Civit;
 use reqwest::header::{AUTHORIZATION, CONTENT_TYPE};
-use tokio::io::AsyncWriteExt;
 use futures_util::StreamExt;
 use std::io::Write;
 
@@ -79,7 +78,7 @@ impl Civit {
         
         println!("Tamanho total: {} bytes", total_size);
         
-        let mut file = tokio::fs::File::create("model.temp").await.unwrap();
+        let mut file = std::fs::File::create("model.temp").unwrap();
         let mut downloaded: u64 = 0;
     
         let mut stream = response.bytes_stream();
@@ -88,7 +87,7 @@ impl Civit {
         while let Some(chunk) = stream.next().await {
             let chunk = chunk.unwrap();
     
-            file.write_all(&chunk).await.unwrap();
+            file.write_all(&chunk).unwrap();
             downloaded += chunk.len() as u64;
             
             let elapsed = start_time.elapsed().as_secs_f64(); // time in seconds
