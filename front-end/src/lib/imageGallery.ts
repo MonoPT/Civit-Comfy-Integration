@@ -1,3 +1,6 @@
+import FilterManager from "./filterManager"
+import qs from "qs"
+
 export enum MediaType {
   Image,
   Video
@@ -31,14 +34,57 @@ export class ImageGallery {
   static images: Image[] = []
   private static counter = 0;
   
-  private static cursor: string = "https://civitai.com/api/v1/images?limit=20&sort=Most Reactions&period=Week&nsfw=false"
+  //private static cursor: string = "https://civitai.com/api/v1/images?limit=20&sort=Most Reactions&period=Week&nsfw=false"
+  
+  static cursor: string | null = null
   
   static async load_next_images() {
     window.dispatchEvent(new CustomEvent("StartedLoadingImages"))
     
-    const response = await fetch(ImageGallery.cursor)
+    let params = FilterManager.filters
+    
+    let period = params["period"] || "Day"
+    let sort = params["sort"] || "Most Reactions" 
+    let baseModel = Array.from((params['baseModel'] || "").split(",")).filter((i) => i.length > 0)
+    let types = Array.from((params['mediaType'] || "").split(",")).filter((i) => i.length > 0)
+    
+    let urlParams = {
+      "json": {
+        "period": "Year",
+        "periodMode": "published",
+        "sort": "Most Reactions",
+        "types": [],
+        "withMeta": false,
+        "fromPlatform": false,
+        "hideAutoResources": false,
+        "hideManualResources": false,
+        "notPublished": false,
+        "scheduled": false,
+        "hidden": false,
+        "remixesOnly": false,
+        "nonRemixesOnly": false,
+        "requiringMeta": false,
+        "useIndex": true,
+        "browsingLevel": 1,
+        "include": ["cosmetics"],
+        "excludedTagIds": [],
+        "disablePoi": true,
+        "disableMinor": false,
+        "cursor": null
+      },
+      "meta": { "values": { "cursor": ["undefined"] } }
+    }
+    
+    const stringParams = encodeURI(JSON.stringify(urlParams));;
+    
+    const response = await fetch(`https://civitai.com/api/trpc/image.getInfinite?input=${stringParams}`, {
+      method: "GET",
+      mode: "no-cors"
+    })
     const data = await response.json()
     
+    console.log(data)
+    /*
     for (let i in data.items) {
       const img = data.items[i]
       if (!ImageGallery.images.includes(img.url)) {
@@ -47,10 +93,11 @@ export class ImageGallery {
         ImageGallery.counter += 1
         ImageGallery.images.push(image)
       }
-    }
+      }*/
     
-    ImageGallery.cursor = data.metadata.nextPage
+    //ImageGallery.cursor = data.metadata.nextPage
     
-    window.dispatchEvent(new CustomEvent("UpdatedImagesList"))
+    //window.dispatchEvent(new CustomEvent("UpdatedImagesList"))
   }
 }
+

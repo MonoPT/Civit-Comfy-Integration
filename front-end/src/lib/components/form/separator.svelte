@@ -24,5 +24,6 @@
         font-weight: 500;
         width: max-content;
         color: var(--color);
+        font-size: 1.2em;
     }
 </style>

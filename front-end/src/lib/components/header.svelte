@@ -3,7 +3,38 @@
     let {current_route = ""} = $props()
     import Separator from "$lib/components/form/separator.svelte"
     import Pill from "$lib/components/form/pill.svelte"
+    import FilterManager from "$lib/filterManager"
+    import { onMount } from "svelte";
     
+    let openPopUp = $state(true)
+    let filtersForm: HTMLFormElement;
+        
+    onMount(() => {
+      FilterManager.filters = {} // Clear filters from other pages
+      
+      filtersForm.addEventListener('input', (event) => {
+          const input = event.target as HTMLInputElement;
+          
+          let inputs = filtersForm.querySelectorAll(`[name="${input.name}"]`)
+          
+          let values: string[] = []
+          
+          inputs.forEach((e) => {
+            let input = e as HTMLInputElement
+            
+            if (!input.checked) return
+            
+            values.push(input.value)
+          })
+          
+          FilterManager.update_filter(input.name, values)          
+      });
+      
+      filtersForm.querySelector(".clear-button > *")?.addEventListener("click", () => {
+        filtersForm.querySelectorAll(`input`).forEach((i) => i.checked = false)
+        FilterManager.filters = {}
+      })
+    })
 </script>
 
 <header>
@@ -17,8 +48,15 @@
            <li><Button icon={3} active_route="/downloads" current_route={current_route}>Downloads</Button></li>
         </ul>
         <div class="filters-wrapper">
-            <Button icon={4} active_route="_" current_route={current_route} no_bg={true} has_dropdown={true}>Filters</Button>
-            <div class="filters-popup">
+            <Button onclick={() => openPopUp = !openPopUp} icon={4} active_route="_" current_route={current_route} no_bg={true} has_dropdown={true} dropdown_is_open={openPopUp}>Filters</Button>
+            <form class="filters-popup" class:openPopUp bind:this={filtersForm}>
+                <Separator>Sort by</Separator>
+                <div class="group">
+                    <Pill label="Most Reactions" name="sort" />
+                    <Pill label="Most Comments" name="sort" />
+                    <Pill label="Newest" name="sort" />
+                </div>
+                
                 <Separator>Time period</Separator>
                 <div class="group">
                     <Pill label="Day" name="period" />
@@ -55,7 +93,11 @@
                     <Pill label="Originals Only" name="Modifiers" type="checkbox" />
                     <Pill label="Remixes Only" name="Modifiers" type="checkbox" />
                 </div>
-            </div>
+                
+                <div class="clear-button">
+                    <Button fullWidth icon={0} >Clear all filters</Button>
+                </div>
+            </form>
         </div>
     </nav>
 </header>
@@ -88,12 +130,25 @@
             z-index: 1;
             border: 1px solid rgba(255,255, 255, .2);
             border-radius: .4rem;
+            opacity: 0;
+            pointer-events: none;
+            scale: .4;
+            transform-origin: top right;
+            transition: .12s;
+            
+            max-height: 80vh;
+            overflow-y: auto;
+            
+            &.openPopUp {
+                opacity: 1;
+                pointer-events: all;
+                scale: 1;
+            }
             
             .group {
                 display: flex;
                 flex-wrap: wrap;
-                gap: .2rem;
-                row-gap: .7rem;
+                gap: .75rem;
                 padding-top: .85rem;
                 padding-bottom: 2rem;
             }

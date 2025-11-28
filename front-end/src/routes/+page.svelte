@@ -2,6 +2,7 @@
     import { onMount } from "svelte";
     import {ImageGallery, type Image, MediaType} from "$lib/imageGallery";
     import Spinner from "$lib/components/spinner.svelte";
+    import FilterManager from "$lib/filterManager"
     
     let column_width = $state(270);
     let columns = $state(4);
@@ -20,6 +21,11 @@
         }
       });
     };
+    
+    const handle_filter_updates = () => {
+      ImageGallery.cursor = null
+      ImageGallery.load_next_images()
+    }
     
     onMount(async () => {    
       const onResize = () => {
@@ -53,6 +59,7 @@
           }
         })          
       })
+      window.addEventListener("UpdatedFilters", handle_filter_updates)
       
       const options = {
         root: null, // Use the viewport as the root
@@ -74,7 +81,7 @@
                 {#if image.media_type === MediaType.Image}
                     <img src="{image.url}" alt="" loading="lazy">
                 {:else}
-                <video loop autoplay>
+                <video loop autoplay muted>
                   <source src="{image.url}" type="video/mp4">
                   <track src="{image.url}" kind="captions" srclang="en" label="English">
                 </video>

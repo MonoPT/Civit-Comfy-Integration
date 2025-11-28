@@ -1,10 +1,27 @@
-<script>
-    let {icon = 0, current_route, active_route = "", no_bg = false, has_dropdown = false} = $props()
+<script lang="ts">
+    import { onMount } from "svelte";
+
+    let {
+      icon = 0, 
+      current_route = "", 
+      active_route = "_", 
+      no_bg = false, 
+      has_dropdown = false,
+      dropdown_is_open = false,
+      fullWidth = undefined,
+      onclick = () => {}
+    } = $props()
     
     let is_active = $state(active_route === current_route)
+    
+    let buttonRef: HTMLElement;
+    
+    onMount(() => {
+      buttonRef.addEventListener("click", () => onclick())
+    })
 </script>
 
-<div class="button-wrapper" class:active={is_active} class:no_bg >
+<div class="button-wrapper" class:active={is_active} class:no_bg class:fullWidth bind:this={buttonRef} >
     {#if icon > 0}
         <div class="icon">
             {#if icon == 1}
@@ -30,9 +47,8 @@
     
     <slot></slot>
     
-    
       {#if has_dropdown}
-          <div class="icon small">
+          <div class="icon small dropdown" class:dropdown_is_open>
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
                 <path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
             </svg>
@@ -43,7 +59,7 @@
 
 <style>
     .button-wrapper {
-        
+        user-select: none;
         padding: 1rem;
         padding-block: .3rem;
         padding-left: .5rem;
@@ -52,6 +68,11 @@
         border-radius: .13rem;
         transition: .1s;
         width: max-content;
+        
+        &.fullWidth {
+            width: 100%;
+            padding-block: .6rem;
+        }
         
         &:not(.no_bg) {
             border: 1px solid rgba(255,255,255, .2);
@@ -65,14 +86,20 @@
         
         .icon {
             width: 20px;
+            transition: .12s;
+            transform-origin: center;
             
             &.small {
                 width: 18px;
             }
+            
+            &.dropdown.dropdown_is_open {
+                rotate: 180deg;
+            }
         }
         
         &.active {
-            background: #245292;
+            background: #1971C2;
         }
         
         &:not(.active, .no_bg):hover {

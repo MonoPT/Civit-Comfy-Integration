@@ -5,7 +5,7 @@
 	import { page } from '$app/stores';
 
     let currentRoute = $state( $page.url.pathname);
-    console.log(currentRoute)
+    console.log("Route: " + currentRoute)
 	
 	let { children } = $props();
 </script>

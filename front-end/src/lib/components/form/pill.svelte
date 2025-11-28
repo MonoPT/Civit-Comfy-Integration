@@ -16,14 +16,18 @@
         
         border-radius: 1000px;
         padding-inline: .8rem;
-        padding-block: .1rem;
+        padding-block: .3rem;
         background: rgba(255,255,255, .05);
         cursor: pointer;
         transition: .1s;
         
         &:has(:checked) {
-            background: #245292;
+            background: #1971C2;
             color: #fff;
+        }
+        
+        &:not(:has(:checked)):hover {
+            background: color-mix(in srgb, rgba(255,255,255, .05) 90%, #fff 10%);
         }
         
         input {
