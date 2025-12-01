@@ -9,7 +9,10 @@
       has_dropdown = false,
       dropdown_is_open = false,
       fullWidth = undefined,
-      onclick = () => {}
+      onclick = () => {},
+      hoverColor = "transparent",
+      bgHover = false,
+      extraPadding = false
     } = $props()
     
     let is_active = $state(active_route === current_route)
@@ -21,7 +24,7 @@
     })
 </script>
 
-<div class="button-wrapper" class:active={is_active} class:no_bg class:fullWidth bind:this={buttonRef} >
+<div class="button-wrapper" class:active={is_active} class:extraPadding class:bgHover class:no_bg class:fullWidth bind:this={buttonRef} style="--bgHover: {hoverColor}">
     {#if icon > 0}
         <div class="icon">
             {#if icon == 1}
@@ -81,13 +84,21 @@
         
         display: flex;
         align-items: center;
-        justify-content: center;
         gap: .5rem;
+        
+        &.extraPadding {
+            padding-block: calc(.25rem * 3);
+            padding-inline: calc(.25rem * 4);
+        }
         
         .icon {
             width: 20px;
             transition: .12s;
             transform-origin: center;
+            
+            display: flex;
+            align-items: center;
+            justify-content: center;
             
             &.small {
                 width: 18px;
@@ -105,6 +116,14 @@
         &:not(.active, .no_bg):hover {
             background: color-mix(in srgb, var(--bgLighter) 80%, black 20%);
             border-color: color-mix(in srgb, rgba(255,255,255, .2) 80%, black 20%);
+        }
+        
+        &.bgHover{
+            border-radius: .375rem;
+            
+            &:hover {
+                background: var(--bgHover);
+            }
         }
     }
 </style>

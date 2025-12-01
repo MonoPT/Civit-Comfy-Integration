@@ -6,7 +6,7 @@
     import FilterManager from "$lib/filterManager"
     import { onMount } from "svelte";
     
-    let openPopUp = $state(true)
+    let openPopUp = $state(false)
     let filtersForm: HTMLFormElement;
         
     onMount(() => {
