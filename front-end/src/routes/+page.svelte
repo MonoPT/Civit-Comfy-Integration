@@ -1,8 +1,9 @@
 <script lang="ts">
     import { onMount } from "svelte";
-    import {ImageGallery, type Image, MediaType} from "$lib/imageGallery";
+    import {ImageGallery, type Image, MediaType} from "$lib/api/imageGallery";
     import Spinner from "$lib/components/spinner.svelte";
-    import FilterManager from "$lib/filterManager"
+    import FilterManager from "$lib/api/filterManager"
+    import {user_token} from "$lib/state.svelte"
     
     let column_width = $state(270);
     let columns = $state(4);
@@ -11,20 +12,20 @@
     let imagesLoading = $state(false)
     let screenSize = $state(1500)
     let imageGallerySentinel: HTMLElement;
-    
+        
     const handleIntersection = (entries: IntersectionObserverEntry[], observer: IntersectionObserver) => {
       entries.forEach(async (entry) => {
         if (entry.isIntersecting) {
           if (imagesLoading) return;
           imagesLoading = true;
-          await ImageGallery.load_next_images()
+          await ImageGallery.load_next_images(user_token.token)
         }
       });
     };
     
     const handle_filter_updates = () => {
       ImageGallery.cursor = null
-      ImageGallery.load_next_images()
+      ImageGallery.load_next_images(user_token.token)
     }
     
     onMount(async () => {    

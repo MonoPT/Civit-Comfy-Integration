@@ -1,16 +1,16 @@
-mod images;
 mod models;
 mod tags;
 mod download;
 mod user;
+mod image_infinite;
 
 use serde::Deserialize;
-pub use images::ImagesOptions;
 pub use models::{ModelsOptions, Model};
 pub use tags::TagsOptions;
 pub use download::DownloadOptions;
+pub use image_infinite::ImagesInfiniteLoadOptions;
 
-use crate::api::user::UserData;
+pub use crate::api::user::UserData;
 
 pub struct Civit {
     api_key: String,
@@ -38,7 +38,7 @@ impl Civit {
     }
     
     pub fn set_auth_token(mut self, token: impl ToString) -> Self {
-        self.auth_token = token.to_string();
+        self.auth_token = token.to_string().trim().to_owned();
         
         self
     }

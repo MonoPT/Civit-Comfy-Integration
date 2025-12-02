@@ -3,7 +3,7 @@
     let {current_route = ""} = $props()
     import Separator from "$lib/components/form/separator.svelte"
     import Pill from "$lib/components/form/pill.svelte"
-    import FilterManager from "$lib/filterManager"
+    import FilterManager from "$lib/api/filterManager"
     import { onMount } from "svelte";
     
     let openPopUp = $state(false)

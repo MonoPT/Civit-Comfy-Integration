@@ -29,12 +29,15 @@
 					
 			:root {
 			    --bgColor: #18181b;
-				--bgLighter: oklch(37% .013 285.805);
+				--bgLighter: oklch(27.4% .006 286.033);
+				--bgButton: color-mix(in srgb, var(--bgLighter) 80%, #000 20%);
+				--spacing: .25rem;
 			}
 			
 			body {
 			    background: var(--bgColor);
 				color: #fff;
+				
 			}
 			
 			a {

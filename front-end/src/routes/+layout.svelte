@@ -1,16 +1,29 @@
 <script lang="ts">
-	import './layout.css';
 	import favicon from '$lib/assets/favicon.svg';
-	import Header from '$lib/components/header.svelte';
 	import { page } from '$app/stores';
+	import { goto } from '$app/navigation';
+	
+	import Login from "$lib/components/login.svelte"
+	import Header from '$lib/components/header.svelte';
 	import Button from '$lib/components/button.svelte';
 	
-	import { userState } from '../lib/state.svelte.ts';
+	import { userState, getCookie, loginUser, loading_user } from '../lib/state.svelte.ts';
+    import { onMount } from 'svelte';
 		
     let currentRoute = $state( $page.url.pathname);
     console.log("Route: " + currentRoute)
-	
+	    
+    onMount(() => {
+      if (Object.keys(userState).length === 0) {
+        let token = getCookie("user_token")
+        if (token) {
+          loginUser(token)
+        }
+      }
+    })
+    
 	let { children } = $props();
+    
 </script>
 
 <svelte:head>
@@ -18,12 +31,8 @@
 </svelte:head>
 
 
-{#if Object.keys(userState).length === 0}
-    <h2>You're Logged out.</h2>
-    <h3>Add your session token bellow to login.</h3>
-    <ol>
-        <li>Go to: <a href="https://civitai.com">https://civitai.com</a></li>
-    </ol>
+{#if Object.keys(userState).length === 0 || loading_user.loading}
+    <Login />
     {:else}
     <div id="Interface">
         <nav>
@@ -35,8 +44,8 @@
                 <li class="marginTop"><Button icon={3} no_bg={true} hoverColor="#3c3d42" bgHover={true} extraPadding={true}>Downloads <span style="font-size: .8em;opacity: .6">(0)</span></Button></li>
                 
                 <h2>Generation Type</h2>
-                <li><Button icon={1} no_bg={true} hoverColor="#3c3d42" bgHover={true} extraPadding={true}>Images</Button></li>
-                <li><Button icon={2} no_bg={true} hoverColor="#3c3d42" bgHover={true} extraPadding={true}>Images</Button></li>
+                <li><Button onclick={() => goto("/")} icon={1} no_bg={true} hoverColor="#3c3d42" bgHover={true} extraPadding={true}>Images</Button></li>
+                <li><Button onclick={() => goto("/models")} icon={2} no_bg={true} hoverColor="#3c3d42" bgHover={true} extraPadding={true}>Images</Button></li>
                 <li><Button icon={3} no_bg={true} hoverColor="#3c3d42" bgHover={true} extraPadding={true}>Images</Button></li>
                 
             </ul>
@@ -54,6 +63,12 @@
         display: grid;
         grid-template-columns: 1fr 5fr;
         gap: 1.2rem;
+        
+        nav {
+            position: sticky;
+            top: 0;
+            left: 0;
+        }
         
         > nav, > main {
             padding: 1rem;

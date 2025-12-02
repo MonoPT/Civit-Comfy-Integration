@@ -2,11 +2,12 @@ use crate::Civit;
 use reqwest::header::HeaderMap;
 use scraper::Html;
 use scraper::Selector;
+use serde::Serialize;
 use serde_json::Value;
 use serde::Deserialize;
 pub mod collections;
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Serialize)]
 pub struct UserData {
     pub default_locale: String,
     pub color_scheme: String,
@@ -23,7 +24,7 @@ pub struct UserData {
     pub region_code: usize
 }
 
-#[derive(Debug, Deserialize, Clone)]
+#[derive(Debug, Deserialize, Clone, Serialize)]
 pub struct Collection {
     pub id: usize,
     pub name: String,
@@ -71,7 +72,12 @@ impl Civit {
                     let json_str = element.text().collect::<String>();
                     let v: Value = serde_json::from_str(&json_str).unwrap();
                             
-                    let user_j = v.get("props").unwrap().get("pageProps").unwrap().get("session").unwrap().get("user").unwrap();
+                    let user_j = match v.get("props").unwrap().get("pageProps").unwrap().get("session").unwrap().get("user") {
+                        None => return None,
+                        Some(user_d) => user_d
+                    };
+                    
+                    //let user_j = v.get("props").unwrap().get("pageProps").unwrap().get("session").unwrap().get("user").unwrap();
                     
                     let collections = v.get("props").unwrap().get("pageProps").unwrap().get("trpcState").unwrap().get("json").unwrap()
                         .get("queries").unwrap().as_array().unwrap();
