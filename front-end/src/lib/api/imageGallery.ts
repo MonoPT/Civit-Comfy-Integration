@@ -38,7 +38,6 @@ export class ImageGallery {
   
   static async load_next_images(user_token: string) {
     window.dispatchEvent(new CustomEvent("StartedLoadingImages"))
-    console.log("Current cursor:", ImageGallery.cursor);
     let params = FilterManager.filters
     
     let period = params["period"] || "Day"
@@ -52,7 +51,6 @@ export class ImageGallery {
     const data = await response.json()
     
     ImageGallery.cursor = data[1].replaceAll('"', "");
-    console.log("new cursor:", ImageGallery.cursor);
     let image_data = data[0]
         
     for (let i in image_data) {

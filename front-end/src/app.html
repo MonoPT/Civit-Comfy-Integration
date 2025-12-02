@@ -40,6 +40,20 @@
 				
 			}
 			
+			@keyframes skeleton-loading {
+                to {
+                background-position: left;
+                }
+            }
+			
+			.skeleton-loading {
+			    --color_1: red;
+				--color_2: green;
+			
+                background: linear-gradient(-75deg, var(--color_1) 30%, var(--color_2), var(--color_1) 70%) right / 330% 100%;
+                animation: skeleton-loading 1.5s linear infinite;
+			}
+			
 			a {
 			    color: #709aff;
 			}

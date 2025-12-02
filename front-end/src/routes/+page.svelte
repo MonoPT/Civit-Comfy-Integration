@@ -5,8 +5,10 @@
     import FilterManager from "$lib/api/filterManager"
     import {user_token} from "$lib/state.svelte"
     
-    let column_width = $state(270);
+    let column_width = $state(370);
     let columns = $state(4);
+    
+    let last_n_columns = 4;
         
     let images: {[key: number]: Image[]} = $state({})
     let imagesLoading = $state(false)
@@ -31,7 +33,11 @@
     onMount(async () => {    
       const onResize = () => {
         screenSize = window.innerWidth
+        last_n_columns = columns
         columns = Math.floor(screenSize / column_width)
+        
+        if (columns === last_n_columns) return
+        
         window.dispatchEvent(new CustomEvent("UpdatedImagesList"))
       }
       onResize()
@@ -72,22 +78,50 @@
       
       observer.observe(imageGallerySentinel);
             
+      // Check for images to load and add tags
+      document.addEventListener(
+        "load",
+        (event) => {
+          const target = event.target as HTMLImageElement
+          if (target.tagName === "IMG" && target.classList.contains("listenLoadings")) {
+            (target.parentNode! as HTMLElement).classList.remove("skeleton-loading")
+          }
+        },
+        true // <-- muito importante! precisa de capturing
+      );
+      
+      document.addEventListener(
+        "error",
+        (event) => {
+          const target = event.target as HTMLImageElement
+          if (target.tagName === "IMG") {
+            (target.parentNode! as HTMLElement).classList.add("failedToLoad")
+          }
+        },
+        true // necessário para capturar eventos não-bubbling (como load e error)
+      );
     })
 </script>
 
 <main style="--screenWidth: {screenSize}; --columns: {columns}">
     {#each Array.from({ length: columns }, (_, index) => index) as number}
-        <div class="column">            
+        <div class="column">       
+            
             {#each images[number] as image}
-                {#if image.media_type === MediaType.Image}
-                    <img src="{image.url}" alt="" loading="lazy">
-                {:else}
-                <video loop autoplay muted>
-                  <source src="{image.url}" type="video/mp4">
-                  <track src="{image.url}" kind="captions" srclang="en" label="English">
-                </video>
-                {/if}
-                
+                <div class="image-wrapper skeleton-loading" style="--aspectRation: {image.width / image.height}">
+                    {#if image.media_type === MediaType.Image}
+                        <img class="listenLoadings" src="{image.url}" alt="" loading="lazy">
+                    {:else}
+                    <video loop autoplay muted>
+                        <source src="{image.url}" type="video/mp4">
+                        <track src="{image.url}" kind="captions" srclang="en" label="English">
+                    </video>
+                    {/if}
+                    <div class="errorMsg">
+                        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <path d="M4.02693 18.329C4.18385 19.277 5.0075 20 6 20H18C19.1046 20 20 19.1046 20 18V14.1901M4.02693 18.329C4.00922 18.222 4 18.1121 4 18V6C4 4.89543 4.89543 4 6 4H18C19.1046 4 20 4.89543 20 6V14.1901M4.02693 18.329L7.84762 14.5083C8.52765 13.9133 9.52219 13.8482 10.274 14.3494L10.7832 14.6888C11.5078 15.1719 12.4619 15.1305 13.142 14.5865L15.7901 12.4679C16.4651 11.9279 17.4053 11.8856 18.1228 12.3484C18.2023 12.3997 18.2731 12.4632 18.34 12.5302L20 14.1901M11 9C11 10.1046 10.1046 11 9 11C7.89543 11 7 10.1046 7 9C7 7.89543 7.89543 7 9 7C10.1046 7 11 7.89543 11 9Z" stroke="#ffffff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path> </g></svg>
+                        <h2>Failed to load image</h2>
+                    </div>
+                </div>
             {/each}
         </div>
     {/each}
@@ -116,15 +150,62 @@
         .column {
             display: flex;
             flex-direction: column;
+            
+            .image-wrapper {
+                --color_1: rgba(255,255,255, .03);
+				--color_2: rgba(255,255,255, .07);
+					
+				.errorMsg {
+				    display: none;
+					opacity: .45;
+								
+					svg {
+	                    display: block;
+						width: 30%;
+						margin-inline: auto;
+					}
+					
+					h2 {
+	                    font-size: 1.2rem;
+						font-weight: 350;
+						text-align: center;
+						margin-top: 1rem;
+						
+					}
+				}
+				
+				&:global(.failedToLoad) {
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    background: var(--color_1);
+                    
+				    img {
+						display: none;
+					}
+					
+					.errorMsg {
+	                    display: block;
+					}
+				}
+				
+				border-radius: .5rem;
+                min-height: 50px;
+                width: 100%;
+                margin-bottom: var(--gap);
+                position: relative;
+                aspect-ratio: var(--aspectRation);
+                
+                cursor: progress; 
+            }
         }
                 
         img, video {
             display: block;
             position: relative;
             max-width: 100%;
-            margin-bottom: var(--gap);
-            min-height: 50px;
             background: rgba(0,0,0, .07);
+            border-radius: inherit;
         }
     }
     
