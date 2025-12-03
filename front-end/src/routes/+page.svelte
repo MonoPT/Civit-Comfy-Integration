@@ -106,7 +106,6 @@
 <main style="--screenWidth: {screenSize}; --columns: {columns}">
     {#each Array.from({ length: columns }, (_, index) => index) as number}
         <div class="column">       
-            
             {#each images[number] as image}
                 <div class="image-wrapper skeleton-loading" style="--aspectRation: {image.width / image.height}">
                     {#if image.media_type === MediaType.Image}

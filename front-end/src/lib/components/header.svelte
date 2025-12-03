@@ -4,6 +4,8 @@
     import Separator from "$lib/components/form/separator.svelte"
     import Pill from "$lib/components/form/pill.svelte"
     import FilterManager from "$lib/api/filterManager"
+    import Select from "$lib/components/form/select.svelte";
+
     import { onMount } from "svelte";
     
     let openPopUp = $state(false)
@@ -39,7 +41,7 @@
 
 <header>
     <div class="search-wrapper">
-        Search area
+        <Select value="Model 1" icon={2} />
     </div>
     <nav>
         <ul class="typeSelector">
