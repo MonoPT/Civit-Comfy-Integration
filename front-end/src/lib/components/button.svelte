@@ -12,7 +12,7 @@
       onclick = () => {},
       hoverColor = "transparent",
       bgHover = false,
-      extraPadding = false
+      extraPadding = false,
     } = $props()
     
     let is_active = $state(active_route === current_route)

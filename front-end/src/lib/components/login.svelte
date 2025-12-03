@@ -27,7 +27,7 @@
                 <li>Copy value of the cookie "__Secure-civitai-token" and paste it bellow</li>
             </ol>
             
-            <Input btn_onclick={() => loginUserBtn}/>
+            <Input placeholder="Paste Cookie here" btn_onclick={() => loginUserBtn}/>
             
             {#if loading_user.error}
                 <h4 class="errorMsg">The provided token is not valid!</h4>

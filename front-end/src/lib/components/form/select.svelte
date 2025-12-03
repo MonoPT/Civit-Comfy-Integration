@@ -1,5 +1,7 @@
 <script lang="ts">
     import { onMount } from "svelte";
+    import Button from '$lib/components/button.svelte';
+    import Input from "$lib/components/form/input.svelte";
 
     type propList = {
       icon?: number,
@@ -45,17 +47,44 @@
         {/if}
         <input readonly type="text" placeholder="" value={value} bind:this={input}>
     </label>
-    
-    
+    <ul class="dropdown-container">
+        <div class="search-box">
+            <Input button_text="" placeholder="Search Something ..." icon={1} icon_pos="right" />
+        </div>
+        {#each [1,2,3,4,5,6,7,8] as i}
+            <li><Button onclick={() => {}} fullWidth icon={0} no_bg={true} hoverColor="#3c3d42" bgHover={true} extraPadding={true}>Option {i}</Button></li> 
+        {/each}
+    </ul>
 </div>
 
 <style>
+    .dropdown-container {
+        position: absolute;
+        min-height: 10px;
+        background: var(--bgButton);
+        border: 1px solid rgba(255,255,255, .1);
+        padding: 1rem;
+        width: 100%;
+        position: absolute;
+        top: calc(100% + var(--spacing) * 2);
+        z-index: 999;
+        border-radius: calc(var(--spacing) * 2);
+        list-style: none;
+        max-height: 500px;
+        overflow-y: scroll;
+        scrollbar-width: none;
+ 
+        .search-box {
+            margin-bottom: calc(var(--spacing) * 6);
+        }
+    }
+    
     .input-wrapper {
         background-color: var(--bgLighter);
         
         border-radius: .5rem;
         box-sizing: border-box;
-        
+        position: relative;
         display: flex;
         align-items: center;
              
