@@ -1,7 +1,7 @@
 import api from "./api";
 
 export const userState: any = $state({});
-export const loading_user = $state({loading: false, error: ""})
+export const loading_user = $state({loading: true, error: ""})
 export const user_token = $state({token: ""})
 
 

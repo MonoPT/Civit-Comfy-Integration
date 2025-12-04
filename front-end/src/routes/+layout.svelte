@@ -16,6 +16,11 @@
     onMount(() => {
       if (Object.keys(userState).length === 0) {
         let token = getCookie("user_token")
+        
+        if (!token || token.length < 1) {
+          loading_user.loading = false
+        }
+        
         if (token) {
           loginUser(token)
         }
