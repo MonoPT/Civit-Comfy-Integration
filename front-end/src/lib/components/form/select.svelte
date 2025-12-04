@@ -19,29 +19,36 @@
       singleOption?: boolean,
       options: OptionItem[],
       enable_search?: boolean,
-      default_selected?: string
+      default_selected?: string,
+      select_list_cards?: boolean
     }
     
-    let {icon = 1, icon_pos = "right", btn_onclick = (a: any) => {}, empty_name = "", name = "", selection_name = "", options = [], maxContent = undefined, singleOption = false, enable_search = true, default_selected = ""}: propList = $props()
+    let {icon = 1, icon_pos = "right", btn_onclick = (a: any) => {}, empty_name = "", name = "", selection_name = "", options = [], maxContent = undefined, singleOption = false, enable_search = true, default_selected = "", select_list_cards = false}: propList = $props()
     
     let btn: HTMLElement | undefined = $state();
     let input: HTMLInputElement
     let optionsContainer: HTMLElement
     let clearBTN: HTMLElement | null = $state(null)
+    let label: HTMLElement
+    
+    let minimMargin = 16
+    let absMaxPopupSelect = 500
+    let maxHeightSelectPopup = $state(500)
     
     let component_ref: HTMLElement
     let menu_is_open = $state(false)
     let selected_items = $state(0)
+    let selected_items_names: string[] = $state([])
     let selected_text = $derived(
       selected_items > 1 ? `${selected_items} ${selection_name}` : empty_name
     );
-    let filtered_models = $derived(options.map((o) => o.name))
+    let filtered_items = $derived(options.map((o) => o.name))
     
     let original_empty_name = empty_name
     
     const update_selection = () => {
-      console.log("update")
-      let checkbox = optionsContainer.querySelectorAll("input:checked")
+      let checkbox = Array.from(optionsContainer.querySelectorAll("input:checked")) as HTMLInputElement[]
+      selected_items_names  = checkbox.map((el) => el.value)
       selected_items = checkbox.length
                      
       if (singleOption || checkbox.length === 1) {
@@ -56,15 +63,27 @@
     }
     
     const update_filters = (val: string) => {
-      filtered_models = options.filter(option => option.name.toLowerCase().includes(val)).map((o) => o.name);
+      filtered_items = options.filter(option => option.name.toLowerCase().includes(val)).map((o) => o.name);
     }
     
-    
+    const fixContainerSize = () => {
+      if (!label) return
+      
+      const rect = label.getBoundingClientRect();
+      
+      maxHeightSelectPopup = absMaxPopupSelect
+      let val = window.innerHeight - (rect.top + rect.height) - minimMargin;
+      
+      if (val < absMaxPopupSelect) {
+        maxHeightSelectPopup = val
+      }
+    }
     
     onMount(() => {
-      console.log("Loaded select")
       if(btn) {
-        btn.addEventListener("click", () => btn_onclick()(input.value))
+        btn.addEventListener("click", (e) => {
+          btn_onclick()(input.value)
+        })
         
         input.addEventListener("keypress", (e) => {
           if (e.key == "Enter") {
@@ -81,6 +100,7 @@
         clearBTN.addEventListener("click", () => {
           optionsContainer.querySelectorAll("input[type='checkbox']").forEach((el: any) => el.checked = false)
           selected_items = 0
+          selected_items_names = []
         })
       }
       
@@ -90,11 +110,27 @@
         menu_is_open = false
       });
       
+      label.addEventListener("click", (e) => { // Prevents popup window overflow
+        const target = e.target as HTMLElement
+        
+        if (target.tagName !== "LABEL") return
+        fixContainerSize()
+      })
+      
+      const resizeObserver = new ResizeObserver(entries => {
+        for (let entry of entries) {
+          fixContainerSize()
+        }
+      });
+      
+      // Start observing the element
+      resizeObserver.observe(label);
+      
       update_selection()
     })
 </script>
-<div class:MaxContent={maxContent} class="input-wrapper mainContainer {icon > 0 ? 'icon' : ''} {icon_pos}" class:menuOpen={menu_is_open} bind:this={component_ref}>
-    <label class="wrap">
+<div style="--popupMaxH: {maxHeightSelectPopup}" class:MaxContent={maxContent} class="input-wrapper mainContainer {icon > 0 ? 'icon' : ''} {icon_pos}" class:menuOpen={menu_is_open} bind:this={component_ref}>
+    <label class="wrap" bind:this={label}>
         {#if icon > 0}
             <div class="icon">
                 {#if icon == 1}
@@ -108,7 +144,15 @@
                 {/if}
             </div>
         {/if}
-        <input readonly type="text" placeholder="" value={selected_text} bind:this={input} onclick={() => menu_is_open = !menu_is_open}>
+        {#if select_list_cards && selected_items_names.length < 14 && selected_items_names.length > 0}
+            <div class="selected-cards">
+                {#each selected_items_names as item}
+                    <span>{item}</span>
+                {/each}
+            </div>
+        {/if}
+        <!--selected_items_names.length > 1 /*(select_list_cards && selected_items_names.length < 14)*/-->
+        <input hidden={selected_items_names.length < 1 ? false : (select_list_cards && selected_items_names.length < 14) } readonly type="text" placeholder="" value={selected_text} bind:this={input} onclick={() => menu_is_open = !menu_is_open}>
     </label>
     <div class="dropdown-container" bind:this={optionsContainer}>
         {#if enable_search}
@@ -117,7 +161,7 @@
                     <div class="input-wrapper">
                         <Input on_change={() => update_filters} button_text="" placeholder="Search..." icon={1} icon_pos="left" />
                     </div>
-                    {#if !singleOption}
+                    {#if !singleOption && selected_items_names.length > 0}
                         <div class="wrap">
                             <span>{selected_items} items selected</span>
                             <span class="selectable" bind:this={clearBTN}>Clear all</span>
@@ -128,10 +172,10 @@
             </div>
         {/if}
         {#each options as option}
-            <li style={filtered_models.includes(option.name) ? '' : 'display: none'}><Button checked={default_selected.toLowerCase() === option.name.toLowerCase()} name={name} value={option.value.length > 0 ? option.value : option.name} type={singleOption ? 'radio' : 'checkbox'} onclick={() => {}} fullWidth icon={0} no_bg={true} hoverColor="#3c3d42" bgHover={true} extraPadding={true}>{option.name}</Button></li> 
+            <li style={filtered_items.includes(option.name) ? '' : 'display: none'}><Button checked={default_selected.toLowerCase() === option.name.toLowerCase()} name={name} value={option.value.length > 0 ? option.value : option.name} type={singleOption ? 'radio' : 'checkbox'} onclick={() => {}} fullWidth icon={0} no_bg={true} hoverColor="#3c3d42" bgHover={true} extraPadding={true}>{option.name}</Button></li> 
         {/each}
         
-        {#if filtered_models.length < 1}
+        {#if filtered_items.length < 1}
             <h2 class="noResults">No results found.</h2>
         {/if}
     </div>
@@ -146,6 +190,22 @@
         }
     }
     
+    .selected-cards {
+        padding-block: .8rem;
+        display: flex;
+        flex-wrap: wrap;
+        gap: .2rem;
+        
+        span {
+            background: var(--navBG);
+            padding-inline: .6rem;
+            padding-block: .2rem;
+            border-radius: .2rem;
+            color: rgba(255,255,255, .7);
+            font-weight: 300;
+            font-size: .78em;
+        }
+    }
     
     .search-container {
         position: relative;
@@ -176,11 +236,22 @@
         }
     }
     
-    .mainContainer.MaxContent {
-        min-width: 320px;
-        width: max-content;
+    label {
+        * {
+            pointer-events: none;
+        }
+        cursor: pointer;         
     }
     
+    .mainContainer {
+        width: 100%;
+        
+        &.MaxContent {
+            min-width: 320px;
+            width: max-content;
+        }   
+    }
+        
     .input-wrapper {
         .dropdown-container {
             opacity: 1;
@@ -212,7 +283,7 @@
         z-index: 999;
         border-radius: calc(var(--spacing) * 2);
         list-style: none;
-        max-height: 500px;
+        max-height: calc(var(--popupMaxH) * 1px);
         overflow-y: scroll;
         scrollbar-width: none;
         transform-origin: top center;

@@ -16,19 +16,26 @@
       name = "",
       value = "",
       type = "text",
-      checked = false
+      checked = false,
+      pill = false
     } = $props()
     
     let is_active = $state(active_route === current_route)
+    
+    let initial_type = type
     
     let buttonRef: HTMLElement;
     
     onMount(() => {
       buttonRef.addEventListener("click", () => onclick())
+      
+      if(type === "radioCheckbox") {
+        type = "checkbox"
+      }
     })
 </script>
 
-<label class="button-wrapper" class:active={is_active} class:extraPadding class:bgHover class:no_bg class:fullWidth bind:this={buttonRef} style="--bgHover: {hoverColor}">
+<label class="button-wrapper  {initial_type === "radioCheckbox" ? 'radio' : ''}" class:pill class:active={is_active} class:extraPadding class:bgHover class:no_bg class:fullWidth bind:this={buttonRef} style="--bgHover: {hoverColor}">
     <input checked={checked} type="{type}" name="{name}" value="{value}" hidden style="position: absolute; top: 0; margin: 0; pointer-events: none;" >
     {#if icon > 0}
         <div class="icon">
@@ -53,11 +60,11 @@
         </div>
     {/if}
     
-    {#if type == "checkbox"}
+    {#if type == "checkbox" && initial_type !== "radioCheckbox"}
         <div class="checkboxMarker"></div>
     {/if}
     <slot></slot>
-    {#if type == "radio"}
+    {#if type == "radio" || initial_type === "radioCheckbox"}
         <div class="checkboxMarker radio"></div>
     {/if}
     
@@ -83,6 +90,26 @@
         transition: .1s;
         width: max-content;
         
+        &.pill {
+            border-radius: 10000px !important;
+            font-size: .9em;
+            
+            padding-inline: 1rem !important;
+            padding-block: .45rem !important;
+            
+            &:not(:has(input:checked)) {
+                .checkboxMarker {
+                    position: absolute;
+                    transform: scaleX(0);
+                    --h: 0;
+                }
+            }
+            
+            &:has(input:checked) {
+                background: #1971C2;
+            }
+        }
+        
         .checkboxMarker {
             --h: 1rem;
             width: var(--h);
@@ -91,6 +118,7 @@
             border-radius: .2rem;
             margin-right: calc(var(--spacing) * 1);
             position: relative;
+            transition: .12s;
             
             &.radio {
                 margin-right: 0;
@@ -119,7 +147,6 @@
         }
         
         &:not(.no_bg) {
-            border: 1px solid rgba(255,255,255, .2);
             background: var(--bgLighter);
         }
         
@@ -174,7 +201,7 @@
             }
         }
         
-        &:has(input[type="radio"]:checked) {
+        &:has(input[type="radio"]:checked), &.radioCheckbox {
             background: color-mix(in srgb, var(--navBG) 94%, #fff 6%);
         }
     }

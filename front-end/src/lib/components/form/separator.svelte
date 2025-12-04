@@ -15,15 +15,15 @@
         display: block;
         width: 100%;
         height: 1px;
-        background: var(--color);
+        background: rgba(255,255,255, .7);
         border-radius: 10000px;
         opacity: .3;
     }
     
     h2 {
-        font-weight: 500;
+        font-weight: 350;
         width: max-content;
-        color: var(--color);
-        font-size: 1.2em;
+        color: rgba(255,255,255, .7);
+        font-size: 1em;
     }
 </style>

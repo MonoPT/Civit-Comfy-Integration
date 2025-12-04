@@ -10,8 +10,8 @@
     
     import { onMount } from "svelte";
     
-    let openPopUp = $state(false)
-    let filtersForm: HTMLFormElement;
+    let openPopUp = $state(true)
+    let filtersForm: HTMLElement;
         
     let formWrapper: HTMLFormElement
     
@@ -25,6 +25,12 @@
       {name: "Month", value: ""},
       {name: "Year", value: ""},
       {name: "All Time", value: ""},
+    ]
+    
+    const sort_by = [
+      {name: "Most Reactions", value: ""},
+      {name: "Most Comments", value: ""},
+      {name: "Newest", value: ""},
     ]
     
     onMount(() => {
@@ -41,48 +47,54 @@
       formWrapper.addEventListener('input', (event) => {
         
       })
-      /* 
+      
       filtersForm.addEventListener('input', (event) => {
-          const input = event.target as HTMLInputElement;
-          
-          let inputs = filtersForm.querySelectorAll(`[name="${input.name}"]`)
-          
-          let values: string[] = []
-          
-          inputs.forEach((e) => {
-            let input = e as HTMLInputElement
-            
-            if (!input.checked) return
-            
-            values.push(input.value)
-          })
-          
-          FilterManager.update_filter(input.name, values)          
+                    
       });
       
       filtersForm.querySelector(".clear-button > *")?.addEventListener("click", () => {
         filtersForm.querySelectorAll(`input`).forEach((i) => i.checked = false)
         FilterManager.filters = {}
-        })*/
+      })
     })
 </script>
-
 <form class="header" bind:this={formWrapper}>
-    <Select default_selected="All Time" singleOption maxContent empty_name="Time Period" icon={2} name="timePeriod" selection_name="Period" 
+    <Select  enable_search={false} default_selected="All Time" singleOption maxContent empty_name="Time Period" icon={2} name="timePeriod" selection_name="Period" 
         options={time_period_options}/>
     
     <span></span>
     
     <div class="wrap">
-        <Select maxContent empty_name="Base Model" icon={2} name="baseModel" selection_name="Base Models" 
-            options={base_models}/>
+        <Select  enable_search={false} default_selected="Most Reactions" maxContent singleOption empty_name="Sort by" icon={2} name="sort" selection_name="sort" 
+            options={sort_by}/>
         
-        <Select enable_search={false} maxContent empty_name="Media Type" default_selected={media_type} icon={2} name="mediaType" selection_name="media" 
+        <Select enable_search={false} maxContent empty_name="Media Type" default_selected={media_type} icon={2} name="mediaType" selection_name="Media" 
             options={[{name: "Image", value: "Image"}, {name: "Video", value: "Video"}]}/>
     </div>
     
     <div class="alignLeft">
-        
+        <div class="filters-wrapper">
+            <Button onclick={() => openPopUp = !openPopUp} icon={4} active_route="_" current_route={current_route} no_bg={true} has_dropdown={true} dropdown_is_open={openPopUp}>Filters</Button>
+            <div class="formContainer filters-popup" class:openPopUp bind:this={filtersForm}>                               
+                <Separator>Base model</Separator>
+                <div class="group">
+                    <Select select_list_cards empty_name="Show all" icon={2} name="baseModel" selection_name="Base Models" 
+                        options={base_models}/>
+                </div>
+                                
+                <Separator>Modifiers</Separator>
+                <div class="group">
+                    <Button pill name="Metadata only" value="Metadata only" type="radioCheckbox" onclick={() => {}}  icon={0}  hoverColor="#3c3d42" bgHover={true} extraPadding={true}>Metadata only</Button>
+                    <Button pill name="Made On-site" value="Made On-site" type="radioCheckbox" onclick={() => {}}  icon={0} hoverColor="#3c3d42" bgHover={true} extraPadding={true}>Made On-site</Button>
+                    <Button pill name="Originals Only" value="Originals Only" type="radioCheckbox" onclick={() => {}}  icon={0} hoverColor="#3c3d42" bgHover={true} extraPadding={true}>Originals Only</Button>
+                    <Button pill name="Remixes Only" value="Remixes Only" type="radioCheckbox" onclick={() => {}}  icon={0} hoverColor="#3c3d42" bgHover={true} extraPadding={true}>Remixes Only</Button>
+                </div>
+                
+                <div class="clear-button">
+                    <Button fullWidth icon={0} >Clear all filters</Button>
+                </div>
+            </div>
+        </div>
     </div>
 </form>
 
@@ -94,6 +106,11 @@
         grid-template-columns: 1fr 1fr;
         gap: var(--gap);
         padding-bottom: calc(var(--spacing) * 6);
+        position: sticky;
+        top: 0;
+        padding-top: 1rem;
+        z-index: 99999;
+        background: var(--bgColor);
         
         .wrap {
             display: grid;
@@ -116,84 +133,7 @@
             }
         }
     }
-</style>
-
-<!-- 
-<header>
-    <div class="search-wrapper">
-        <Select empty_name="Model Filter" icon={2} name="modelFilter" selection_name="Models" 
-            options={[{name: "Model x", value: "x"}, {name: "Model y", value: "x"} ,{name: "Model z", value: "x"}]}/>
-    </div>
-    <nav>
-        <ul class="typeSelector">
-           <li><Button icon={1} active_route="/" current_route={current_route}>Images</Button></li>
-           <li><Button icon={2} active_route="/models" current_route={current_route}>Models</Button></li>
-           <li><Button icon={3} active_route="/downloads" current_route={current_route}>Downloads</Button></li>
-        </ul>
-        <div class="filters-wrapper">
-            <Button onclick={() => openPopUp = !openPopUp} icon={4} active_route="_" current_route={current_route} no_bg={true} has_dropdown={true} dropdown_is_open={openPopUp}>Filters</Button>
-            <form class="filters-popup" class:openPopUp bind:this={filtersForm}>
-                <Separator>Sort by</Separator>
-                <div class="group">
-                    <Pill label="Most Reactions" name="sort" />
-                    <Pill label="Most Comments" name="sort" />
-                    <Pill label="Newest" name="sort" />
-                </div>
-                
-                <Separator>Time period</Separator>
-                <div class="group">
-                    <Pill label="Day" name="period" />
-                    <Pill label="Week" name="period" />
-                    <Pill label="Month" name="period" />
-                    <Pill label="Year" name="period" />
-                    <Pill label="All Time" name="period" />
-                </div>
-                
-                <Separator>Base model</Separator>
-                <div class="group">
-                    <Pill label="AuraFlow" name="baseModel" type="checkbox" />
-                    <Pill label="Chroma" name="baseModel" type="checkbox" />
-                    <Pill label="CogVideoX" name="baseModel" type="checkbox" />
-                    <Pill label="Flux.1 S" name="baseModel" type="checkbox" />
-                    <Pill label="Flux.1 D" name="baseModel" type="checkbox" />
-                    <Pill label="Flux.1 Krea" name="baseModel" type="checkbox" />
-                    <Pill label="Flux.1 Kontext" name="baseModel" type="checkbox" />
-                    <Pill label="Flux.2 D" name="baseModel" type="checkbox" />
-                    <Pill label="Hi Dream" name="baseModel" type="checkbox" />
-                    <Pill label="LTXV" name="baseModel" type="checkbox" />
-                </div>
-                
-                <Separator>Media type</Separator>
-                <div class="group">
-                    <Pill label="Image" name="mediaType" type="checkbox" />
-                    <Pill label="Video" name="mediaType" type="checkbox" />
-                </div>
-                
-                <Separator>Modifiers</Separator>
-                <div class="group">
-                    <Pill label="Metadata only" name="Modifiers" type="checkbox" />
-                    <Pill label="Made On-site" name="Modifiers" type="checkbox" />
-                    <Pill label="Originals Only" name="Modifiers" type="checkbox" />
-                    <Pill label="Remixes Only" name="Modifiers" type="checkbox" />
-                </div>
-                
-                <div class="clear-button">
-                    <Button fullWidth icon={0} >Clear all filters</Button>
-                </div>
-            </form>
-        </div>
-    </nav>
-</header>
-
-<hr>
-
-<style>
-    header {
-        min-height: 50px;
-        display: flex;
-        flex-direction: column;
-        padding-block: .5rem;
-    }
+    
     
     .filters-wrapper {
         position: relative;
@@ -219,8 +159,8 @@
             transform-origin: top right;
             transition: .12s;
             
-            max-height: 80vh;
-            overflow-y: auto;
+            /*max-height: 80vh;
+            overflow-y: auto;*/
             
             &.openPopUp {
                 opacity: 1;
@@ -238,6 +178,35 @@
             
         }
     }
+</style>
+
+<!-- 
+<header>
+    <div class="search-wrapper">
+        <Select empty_name="Model Filter" icon={2} name="modelFilter" selection_name="Models" 
+            options={[{name: "Model x", value: "x"}, {name: "Model y", value: "x"} ,{name: "Model z", value: "x"}]}/>
+    </div>
+    <nav>
+        <ul class="typeSelector">
+           <li><Button icon={1} active_route="/" current_route={current_route}>Images</Button></li>
+           <li><Button icon={2} active_route="/models" current_route={current_route}>Models</Button></li>
+           <li><Button icon={3} active_route="/downloads" current_route={current_route}>Downloads</Button></li>
+        </ul>
+        
+    </nav>
+</header>
+
+<hr>
+
+<style>
+    header {
+        min-height: 50px;
+        display: flex;
+        flex-direction: column;
+        padding-block: .5rem;
+    }
+    
+    
     
     nav {
         display: flex;
