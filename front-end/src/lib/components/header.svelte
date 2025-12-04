@@ -11,9 +11,23 @@
     let openPopUp = $state(false)
     let filtersForm: HTMLFormElement;
         
+    let formWrapper: HTMLFormElement
+    
+    const time_period_options = [
+      {name: "Day", value: ""},
+      {name: "Week", value: ""},
+      {name: "Month", value: ""},
+      {name: "Year", value: ""},
+      {name: "All Time", value: ""},
+    ]
+    
     onMount(() => {
       FilterManager.filters = {} // Clear filters from other pages
       
+      formWrapper.addEventListener('input', (event) => {
+        console.log("update")
+      })
+      /* 
       filtersForm.addEventListener('input', (event) => {
           const input = event.target as HTMLInputElement;
           
@@ -35,10 +49,52 @@
       filtersForm.querySelector(".clear-button > *")?.addEventListener("click", () => {
         filtersForm.querySelectorAll(`input`).forEach((i) => i.checked = false)
         FilterManager.filters = {}
-      })
+        })*/
     })
 </script>
 
+<form class="header" bind:this={formWrapper}>
+    <Select default_selected="All Time" singleOption maxContent empty_name="Time Period" icon={2} name="timePeriod" selection_name="Period" 
+        options={time_period_options}/>
+    
+    <span></span>
+    
+    <div class="wrap">
+        <Select maxContent empty_name="Base Model" icon={2} name="baseModel" selection_name="Base Models" 
+            options={[{name: "Model x", value: "Modelo x"}, {name: "Model y", value: "Modelo y"} ,{name: "Model z", value: "Modelo Z"}]}/>
+        
+        <Select enable_search={false} maxContent empty_name="Media Type" default_selected="Image" icon={2} name="mediaType" selection_name="media" 
+            options={[{name: "Image", value: "Image"}, {name: "Video", value: "Video"}]}/>
+    </div>
+    
+    <div class="alignLeft">
+        
+    </div>
+</form>
+
+<style>
+    .header {
+        --gap: calc(var(--spacing) * 2);
+        
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: var(--gap);
+        padding-bottom: calc(var(--spacing) * 6);
+        
+        .wrap {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: var(--gap);
+        }
+        
+        .alignLeft {
+            display: flex;
+            justify-content: flex-end;
+        }
+    }
+</style>
+
+<!-- 
 <header>
     <div class="search-wrapper">
         <Select empty_name="Model Filter" icon={2} name="modelFilter" selection_name="Models" 
@@ -183,3 +239,4 @@
         margin-top: .2rem;
     }
 </style>
+-->

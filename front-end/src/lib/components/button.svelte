@@ -15,7 +15,8 @@
       extraPadding = false,
       name = "",
       value = "",
-      type = "text"
+      type = "text",
+      checked = false
     } = $props()
     
     let is_active = $state(active_route === current_route)
@@ -28,7 +29,7 @@
 </script>
 
 <label class="button-wrapper" class:active={is_active} class:extraPadding class:bgHover class:no_bg class:fullWidth bind:this={buttonRef} style="--bgHover: {hoverColor}">
-    <input type="{type}" name="{name}" value="{value}" hidden style="position: absolute; top: 0; margin: 0; pointer-events: none;" >
+    <input checked={checked} type="{type}" name="{name}" value="{value}" hidden style="position: absolute; top: 0; margin: 0; pointer-events: none;" >
     {#if icon > 0}
         <div class="icon">
             {#if icon == 1}
@@ -56,6 +57,9 @@
         <div class="checkboxMarker"></div>
     {/if}
     <slot></slot>
+    {#if type == "radio"}
+        <div class="checkboxMarker radio"></div>
+    {/if}
     
     {#if has_dropdown}
         <div class="icon small dropdown" class:dropdown_is_open>
@@ -87,6 +91,12 @@
             border-radius: .2rem;
             margin-right: calc(var(--spacing) * 1);
             position: relative;
+            
+            &.radio {
+                margin-right: 0;
+                margin-left: auto;
+                background: transparent;
+            }
             
             &::after {
                 content: '';
@@ -162,6 +172,10 @@
                 content: '✔';
                 scale: 1;
             }
+        }
+        
+        &:has(input[type="radio"]:checked) {
+            background: color-mix(in srgb, var(--navBG) 94%, #fff 6%);
         }
     }
 </style>

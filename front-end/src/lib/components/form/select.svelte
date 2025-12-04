@@ -15,21 +15,29 @@
       empty_name?: string,
       name: string,
       selection_name: string,
-      options: OptionItem[]
+      maxContent?: boolean,
+      singleOption?: boolean,
+      options: OptionItem[],
+      enable_search?: boolean,
+      default_selected?: string
     }
     
-    let {icon = 1, icon_pos = "right", btn_onclick = (a: any) => {}, empty_name = "", name = "", selection_name = "", options = []}: propList = $props()
+    let {icon = 1, icon_pos = "right", btn_onclick = (a: any) => {}, empty_name = "", name = "", selection_name = "", options = [], maxContent = undefined, singleOption = false, enable_search = true, default_selected = ""}: propList = $props()
     
     let btn: HTMLElement | undefined = $state();
     let input: HTMLInputElement
-    let optionsContainer: HTMLFormElement
-    let clearBTN: HTMLElement
+    let optionsContainer: HTMLElement
+    let clearBTN: HTMLElement | null = $state(null)
     
     let component_ref: HTMLElement
     let menu_is_open = $state(false)
     let selected_items = $state(0)
-    let selected_text = $derived(selected_items > 0 ? `${selected_items} ${selection_name}` : empty_name);
+    let selected_text = $derived(
+      selected_items > 1 ? `${selected_items} ${selection_name}` : empty_name
+    );
     let filtered_models = $derived(options.map((o) => o.name))
+    
+    let original_empty_name = empty_name
     
     onMount(() => {
       if(btn) {
@@ -42,15 +50,34 @@
         })
       }  
                   
-      optionsContainer.addEventListener("change", () => {
-        let checkbox = optionsContainer.querySelectorAll("input[type='checkbox']:checked")
+      const update_selection = () => {
+        let checkbox = optionsContainer.querySelectorAll("input:checked")
         selected_items = checkbox.length
+        
+        if (singleOption || checkbox.length === 1) {
+          if (checkbox.length > 0) {
+            empty_name = (checkbox[0] as HTMLInputElement).value
+          } else {
+            empty_name = original_empty_name
+          }
+        } else {
+          empty_name = original_empty_name
+        }
+      }
+      
+      update_selection()
+      
+      optionsContainer.querySelectorAll("input").forEach((el) => {
+        el.addEventListener("change", update_selection)
       })
       
-      clearBTN.addEventListener("click", () => {
-        optionsContainer.querySelectorAll("input[type='checkbox']").forEach((el: any) => el.checked = false)
-        selected_items = 0
-      })
+      if (clearBTN) {
+        clearBTN.addEventListener("click", () => {
+          optionsContainer.querySelectorAll("input[type='checkbox']").forEach((el: any) => el.checked = false)
+          selected_items = 0
+        })
+      }
+      
       
       window.addEventListener("click", (e: any) => {
         if (component_ref && component_ref.contains(e.target)) return
@@ -63,8 +90,7 @@
       filtered_models = options.filter(option => option.name.toLowerCase().includes(val)).map((o) => o.name);
     }
 </script>
-
-<div class="input-wrapper {icon > 0 ? 'icon' : ''} {icon_pos}" class:menuOpen={menu_is_open} bind:this={component_ref}>
+<div class:MaxContent={maxContent} class="input-wrapper mainContainer {icon > 0 ? 'icon' : ''} {icon_pos}" class:menuOpen={menu_is_open} bind:this={component_ref}>
     <label class="wrap">
         {#if icon > 0}
             <div class="icon">
@@ -81,25 +107,29 @@
         {/if}
         <input readonly type="text" placeholder="" value={selected_text} bind:this={input} onclick={() => menu_is_open = !menu_is_open}>
     </label>
-    <form class="dropdown-container" bind:this={optionsContainer}>
-        <div class="search-box">
-            <div class="input-wrapper">
-                <Input on_change={() => update_filters} button_text="" placeholder="Search..." icon={1} icon_pos="left" />
+    <div class="dropdown-container" bind:this={optionsContainer}>
+        {#if enable_search}
+            <div class="search-box">
+                <div class="input-wrapper">
+                    <Input on_change={() => update_filters} button_text="" placeholder="Search..." icon={1} icon_pos="left" />
+                </div>
+                {#if !singleOption}
+                    <div class="wrap">
+                        <span>{selected_items} items selected</span>
+                        <span class="selectable" bind:this={clearBTN}>Clear all</span>
+                    </div>
+                {/if}
             </div>
-            <div class="wrap">
-                <span>{selected_items} items selected</span>
-                <span class="selectable" bind:this={clearBTN}>Clear all</span>
-            </div>
-        </div>
-        <div class="hr"></div>
+            <div class="hr"></div>
+        {/if}
         {#each options as option}
-            <li style={filtered_models.includes(option.name) ? '' : 'display: none'}><Button name={name} value={option.value} type="checkbox" onclick={() => {}} fullWidth icon={0} no_bg={true} hoverColor="#3c3d42" bgHover={true} extraPadding={true}>{option.name}</Button></li> 
+            <li style={filtered_models.includes(option.name) ? '' : 'display: none'}><Button checked={default_selected.toLowerCase() === option.name.toLowerCase()} name={name} value={option.value.length > 0 ? option.value : option.name} type={singleOption ? 'radio' : 'checkbox'} onclick={() => {}} fullWidth icon={0} no_bg={true} hoverColor="#3c3d42" bgHover={true} extraPadding={true}>{option.name}</Button></li> 
         {/each}
         
         {#if filtered_models.length < 1}
             <h2 class="noResults">No results found.</h2>
         {/if}
-    </form>
+    </div>
 </div>
 
 <style>
@@ -115,6 +145,11 @@
         font-weight: 300;
         padding-block: 1.1rem;
         opacity: .6;
+    }
+    
+    .mainContainer.MaxContent {
+        min-width: 320px;
+        width: max-content;
     }
     
     .input-wrapper {
@@ -144,7 +179,7 @@
         padding: 1rem;
         width: 100%;
         position: absolute;
-        top: calc(100% + var(--spacing) * 2);
+        top: calc(100% + 2px);
         z-index: 999;
         border-radius: calc(var(--spacing) * 2);
         list-style: none;
