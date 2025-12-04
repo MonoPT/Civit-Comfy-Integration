@@ -39,7 +39,30 @@
     
     let original_empty_name = empty_name
     
+    const update_selection = () => {
+      console.log("update")
+      let checkbox = optionsContainer.querySelectorAll("input:checked")
+      selected_items = checkbox.length
+                     
+      if (singleOption || checkbox.length === 1) {
+        if (checkbox.length > 0) {
+          empty_name = (checkbox[0] as HTMLInputElement).value
+        } else {
+          empty_name = original_empty_name
+        }
+      } else {
+        empty_name = original_empty_name
+      }
+    }
+    
+    const update_filters = (val: string) => {
+      filtered_models = options.filter(option => option.name.toLowerCase().includes(val)).map((o) => o.name);
+    }
+    
+    
+    
     onMount(() => {
+      console.log("Loaded select")
       if(btn) {
         btn.addEventListener("click", () => btn_onclick()(input.value))
         
@@ -49,26 +72,9 @@
           }
         })
       }  
-                  
-      const update_selection = () => {
-        let checkbox = optionsContainer.querySelectorAll("input:checked")
-        selected_items = checkbox.length
-        
-        if (singleOption || checkbox.length === 1) {
-          if (checkbox.length > 0) {
-            empty_name = (checkbox[0] as HTMLInputElement).value
-          } else {
-            empty_name = original_empty_name
-          }
-        } else {
-          empty_name = original_empty_name
-        }
-      }
-      
-      update_selection()
-      
-      optionsContainer.querySelectorAll("input").forEach((el) => {
-        el.addEventListener("change", update_selection)
+              
+      optionsContainer.addEventListener("change", () => {
+        update_selection()
       })
       
       if (clearBTN) {
@@ -78,17 +84,14 @@
         })
       }
       
-      
       window.addEventListener("click", (e: any) => {
         if (component_ref && component_ref.contains(e.target)) return
         
         menu_is_open = false
-      })
+      });
+      
+      update_selection()
     })
-    
-    const update_filters = (val: string) => {
-      filtered_models = options.filter(option => option.name.toLowerCase().includes(val)).map((o) => o.name);
-    }
 </script>
 <div class:MaxContent={maxContent} class="input-wrapper mainContainer {icon > 0 ? 'icon' : ''} {icon_pos}" class:menuOpen={menu_is_open} bind:this={component_ref}>
     <label class="wrap">

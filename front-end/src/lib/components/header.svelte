@@ -5,13 +5,19 @@
     import Pill from "$lib/components/form/pill.svelte"
     import FilterManager from "$lib/api/filterManager"
     import Select from "$lib/components/form/select.svelte";
-
+    
+    import baseModels from "$lib/data/base_models"
+    
     import { onMount } from "svelte";
     
     let openPopUp = $state(false)
     let filtersForm: HTMLFormElement;
         
     let formWrapper: HTMLFormElement
+    
+    let media_type = "Image"
+    
+    let base_models: {name: string, value: string}[] = $state([])
     
     const time_period_options = [
       {name: "Day", value: ""},
@@ -22,10 +28,18 @@
     ]
     
     onMount(() => {
+      base_models = baseModels.filter((m) => m.type.toLowerCase() === media_type.toLowerCase()).sort((a,b) => a.name.localeCompare(b.name)).map((m) => {
+        return {
+          name: m.name,
+          value: m.name
+        }
+      })
+      
+      
       FilterManager.filters = {} // Clear filters from other pages
       
       formWrapper.addEventListener('input', (event) => {
-        console.log("update")
+        
       })
       /* 
       filtersForm.addEventListener('input', (event) => {
@@ -61,9 +75,9 @@
     
     <div class="wrap">
         <Select maxContent empty_name="Base Model" icon={2} name="baseModel" selection_name="Base Models" 
-            options={[{name: "Model x", value: "Modelo x"}, {name: "Model y", value: "Modelo y"} ,{name: "Model z", value: "Modelo Z"}]}/>
+            options={base_models}/>
         
-        <Select enable_search={false} maxContent empty_name="Media Type" default_selected="Image" icon={2} name="mediaType" selection_name="media" 
+        <Select enable_search={false} maxContent empty_name="Media Type" default_selected={media_type} icon={2} name="mediaType" selection_name="media" 
             options={[{name: "Image", value: "Image"}, {name: "Video", value: "Video"}]}/>
     </div>
     
@@ -90,6 +104,16 @@
         .alignLeft {
             display: flex;
             justify-content: flex-end;
+        }
+        
+        @media (max-width: 950px) {
+            &, .wrap {
+               grid-template-columns: 1fr; 
+            }
+            
+            & > span {
+                display: none;
+            }
         }
     }
 </style>
