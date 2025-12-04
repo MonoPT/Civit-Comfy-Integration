@@ -2,18 +2,34 @@
     import { onMount } from "svelte";
     import Button from '$lib/components/button.svelte';
     import Input from "$lib/components/form/input.svelte";
-
+    
+    type OptionItem = {
+      name: string,
+      value: string
+    }
+    
     type propList = {
       icon?: number,
       icon_pos?: "left" | "right",
       btn_onclick?: Function,
-      value?: string
+      empty_name?: string,
+      name: string,
+      selection_name: string,
+      options: OptionItem[]
     }
     
-    let {icon = 1, icon_pos = "right", btn_onclick = (a: any) => {}, value = ""}: propList = $props()
+    let {icon = 1, icon_pos = "right", btn_onclick = (a: any) => {}, empty_name = "", name = "", selection_name = "", options = []}: propList = $props()
     
     let btn: HTMLElement | undefined = $state();
     let input: HTMLInputElement
+    let optionsContainer: HTMLFormElement
+    let clearBTN: HTMLElement
+    
+    let component_ref: HTMLElement
+    let menu_is_open = $state(false)
+    let selected_items = $state(0)
+    let selected_text = $derived(selected_items > 0 ? `${selected_items} ${selection_name}` : empty_name);
+    let filtered_models = $derived(options.map((o) => o.name))
     
     onMount(() => {
       if(btn) {
@@ -24,13 +40,31 @@
             btn?.click()
           }
         })
-      }
+      }  
+                  
+      optionsContainer.addEventListener("change", () => {
+        let checkbox = optionsContainer.querySelectorAll("input[type='checkbox']:checked")
+        selected_items = checkbox.length
+      })
       
+      clearBTN.addEventListener("click", () => {
+        optionsContainer.querySelectorAll("input[type='checkbox']").forEach((el: any) => el.checked = false)
+        selected_items = 0
+      })
       
+      window.addEventListener("click", (e: any) => {
+        if (component_ref.contains(e.target)) return
+        
+        menu_is_open = false
+      })
     })
+    
+    const update_filters = (val: string) => {
+      filtered_models = options.filter(option => option.name.toLowerCase().includes(val)).map((o) => o.name);
+    }
 </script>
 
-<div class="input-wrapper {icon > 0 ? 'icon' : ''} {icon_pos}">
+<div class="input-wrapper {icon > 0 ? 'icon' : ''} {icon_pos}" class:menuOpen={menu_is_open} bind:this={component_ref}>
     <label class="wrap">
         {#if icon > 0}
             <div class="icon">
@@ -45,23 +79,67 @@
                 {/if}
             </div>
         {/if}
-        <input readonly type="text" placeholder="" value={value} bind:this={input}>
+        <input readonly type="text" placeholder="" value={selected_text} bind:this={input} onclick={() => menu_is_open = !menu_is_open}>
     </label>
-    <ul class="dropdown-container">
+    <form class="dropdown-container" bind:this={optionsContainer}>
         <div class="search-box">
-            <Input button_text="" placeholder="Search Something ..." icon={1} icon_pos="right" />
+            <div class="input-wrapper">
+                <Input on_change={() => update_filters} button_text="" placeholder="Search..." icon={1} icon_pos="left" />
+            </div>
+            <div class="wrap">
+                <span>{selected_items} items selected</span>
+                <span class="selectable" bind:this={clearBTN}>Clear all</span>
+            </div>
         </div>
-        {#each [1,2,3,4,5,6,7,8] as i}
-            <li><Button onclick={() => {}} fullWidth icon={0} no_bg={true} hoverColor="#3c3d42" bgHover={true} extraPadding={true}>Option {i}</Button></li> 
+        <div class="hr"></div>
+        {#each options as option}
+            <li style={filtered_models.includes(option.name) ? '' : 'display: none'}><Button name={name} value={option.value} type="checkbox" onclick={() => {}} fullWidth icon={0} no_bg={true} hoverColor="#3c3d42" bgHover={true} extraPadding={true}>{option.name}</Button></li> 
         {/each}
-    </ul>
+        
+        {#if filtered_models.length < 1}
+            <h2 class="noResults">No results found.</h2>
+        {/if}
+    </form>
 </div>
 
 <style>
+    .hr {
+        height: 1px;
+        background-color: #494a50;
+        margin-block: calc(var(--spacing)* 4);
+    }
+    
+    .noResults {
+        text-align: center;
+        font-size: 1rem;
+        font-weight: 300;
+        padding-block: 1.1rem;
+        opacity: .6;
+    }
+    
+    .input-wrapper {
+        .dropdown-container {
+            opacity: 1;
+            transform: scaleY(0);
+            transition: .12s;
+        }
+        
+        &.menuOpen {
+            .dropdown-container {
+                opacity: 1;
+                transform: scaleY(1);
+            }
+            
+            .wrap .icon {
+                rotate: 90deg;
+            }
+        }
+    }
+    
     .dropdown-container {
         position: absolute;
         min-height: 10px;
-        background: var(--bgButton);
+        background: var(--navBG);
         border: 1px solid rgba(255,255,255, .1);
         padding: 1rem;
         width: 100%;
@@ -73,9 +151,31 @@
         max-height: 500px;
         overflow-y: scroll;
         scrollbar-width: none;
+        transform-origin: top center;
  
         .search-box {
-            margin-bottom: calc(var(--spacing) * 6);
+            .input-wrapper {
+                border: 1px solid #494a50;
+                border-radius: .5rem;
+            }
+            
+            .wrap {
+                margin-top: calc(var(--spacing)* 2);
+                
+                span {
+                    font-size: .875rem;
+                    line-height: calc(1.25/.875);
+                    
+                    &.selectable {
+                        cursor: pointer;
+                        transition: .1s;
+                        
+                        &:hover {
+                            text-decoration: underline;
+                        }
+                    }
+                }
+            }
         }
     }
     
@@ -90,6 +190,14 @@
              
         input {
             grid-area: a;
+            
+            &[readonly] {
+                user-select: none;
+                
+                &::selection {
+                    background: rgba(255,255,255, .1);
+                }
+            }
         }
         
         .wrap {
@@ -112,6 +220,7 @@
             opacity: .7;
             grid-area: b;
             transform-origin: center;
+            transition: .1s;
             
             &.small {
                 width: 1.4rem;

@@ -6,10 +6,11 @@
       icon_pos?: "left" | "right",
       button_text?: string,
       btn_onclick?: Function,
-      placeholder?: string
+      placeholder?: string,
+      on_change?: Function
     }
     
-    let {icon = 0, icon_pos = "left", button_text = "Login", btn_onclick = (a: any) => {}, placeholder = ""}: propList = $props()
+    let {icon = 0, icon_pos = "left", button_text = "Login", on_change = (a: any) => {}, btn_onclick = (a: any) => {}, placeholder = ""}: propList = $props()
     
     let btn: HTMLElement | undefined = $state();
     let input: HTMLInputElement
@@ -25,7 +26,11 @@
         })
       }
       
-      
+      input.addEventListener("input", () => {
+        if (typeof on_change() == "function") {
+          on_change()(input.value)
+        }
+      })
     })
 </script>
 
@@ -53,6 +58,7 @@
         
         display: flex;
         align-items: center;
+        width: 100%;
         
         &:has(button) {
             display: grid;

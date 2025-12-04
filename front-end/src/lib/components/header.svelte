@@ -41,7 +41,8 @@
 
 <header>
     <div class="search-wrapper">
-        <Select value="Model 1" icon={2} />
+        <Select empty_name="Model Filter" icon={2} name="modelFilter" selection_name="Models" 
+            options={[{name: "Model x", value: "x"}, {name: "Model y", value: "x"} ,{name: "Model z", value: "x"}]}/>
     </div>
     <nav>
         <ul class="typeSelector">

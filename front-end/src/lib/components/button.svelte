@@ -13,6 +13,9 @@
       hoverColor = "transparent",
       bgHover = false,
       extraPadding = false,
+      name = "",
+      value = "",
+      type = "text"
     } = $props()
     
     let is_active = $state(active_route === current_route)
@@ -24,7 +27,8 @@
     })
 </script>
 
-<div class="button-wrapper" class:active={is_active} class:extraPadding class:bgHover class:no_bg class:fullWidth bind:this={buttonRef} style="--bgHover: {hoverColor}">
+<label class="button-wrapper" class:active={is_active} class:extraPadding class:bgHover class:no_bg class:fullWidth bind:this={buttonRef} style="--bgHover: {hoverColor}">
+    <input type="{type}" name="{name}" value="{value}" hidden style="position: absolute; top: 0; margin: 0; pointer-events: none;" >
     {#if icon > 0}
         <div class="icon">
             {#if icon == 1}
@@ -48,17 +52,20 @@
         </div>
     {/if}
     
+    {#if type == "checkbox"}
+        <div class="checkboxMarker"></div>
+    {/if}
     <slot></slot>
     
-      {#if has_dropdown}
-          <div class="icon small dropdown" class:dropdown_is_open>
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
-                <path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
-            </svg>
-          </div>
-      {/if}
+    {#if has_dropdown}
+        <div class="icon small dropdown" class:dropdown_is_open>
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+            <path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
+        </svg>
+        </div>
+    {/if}
     
-</div>
+</label>
 
 <style>
     .button-wrapper {
@@ -71,6 +78,30 @@
         border-radius: .13rem;
         transition: .1s;
         width: max-content;
+        
+        .checkboxMarker {
+            --h: 1rem;
+            width: var(--h);
+            aspect-ratio: 1 / 1;
+            background: var(--bgLighter);
+            border-radius: .2rem;
+            margin-right: calc(var(--spacing) * 1);
+            position: relative;
+            
+            &::after {
+                content: '';
+                line-height: var(--h);
+                text-align: center;
+                display: block;
+                position: absolute;
+                width: 100%;
+                height: 100%;
+                background: transparent;
+                font-size: .8em;
+                scale: 0;
+                transition: .05s;
+            }
+        }
         
         &.fullWidth {
             width: 100%;
@@ -123,6 +154,13 @@
             
             &:hover {
                 background: var(--bgHover);
+            }
+        }
+        
+        &:has(input:checked) {
+            .checkboxMarker::after {
+                content: '✔';
+                scale: 1;
             }
         }
     }
