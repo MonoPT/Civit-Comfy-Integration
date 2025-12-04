@@ -112,18 +112,20 @@
     </label>
     <div class="dropdown-container" bind:this={optionsContainer}>
         {#if enable_search}
-            <div class="search-box">
-                <div class="input-wrapper">
-                    <Input on_change={() => update_filters} button_text="" placeholder="Search..." icon={1} icon_pos="left" />
-                </div>
-                {#if !singleOption}
-                    <div class="wrap">
-                        <span>{selected_items} items selected</span>
-                        <span class="selectable" bind:this={clearBTN}>Clear all</span>
+            <div class="search-container">
+                <div class="search-box">
+                    <div class="input-wrapper">
+                        <Input on_change={() => update_filters} button_text="" placeholder="Search..." icon={1} icon_pos="left" />
                     </div>
-                {/if}
+                    {#if !singleOption}
+                        <div class="wrap">
+                            <span>{selected_items} items selected</span>
+                            <span class="selectable" bind:this={clearBTN}>Clear all</span>
+                        </div>
+                    {/if}
+                </div>
+                <div class="hr-container"><div class="hr"></div></div>
             </div>
-            <div class="hr"></div>
         {/if}
         {#each options as option}
             <li style={filtered_models.includes(option.name) ? '' : 'display: none'}><Button checked={default_selected.toLowerCase() === option.name.toLowerCase()} name={name} value={option.value.length > 0 ? option.value : option.name} type={singleOption ? 'radio' : 'checkbox'} onclick={() => {}} fullWidth icon={0} no_bg={true} hoverColor="#3c3d42" bgHover={true} extraPadding={true}>{option.name}</Button></li> 
@@ -136,10 +138,22 @@
 </div>
 
 <style>
-    .hr {
-        height: 1px;
-        background-color: #494a50;
-        margin-block: calc(var(--spacing)* 4);
+    .hr-container {
+        padding-block: calc(var(--spacing)* 4);
+        .hr {
+            height: 1px;
+            background-color: #494a50;  
+        }
+    }
+    
+    
+    .search-container {
+        position: relative;
+        position: sticky;
+        top: 0;
+        margin: 0;
+        background: var(--navBG);
+        z-index: 2;
     }
     
     .noResults {
@@ -148,6 +162,18 @@
         font-weight: 300;
         padding-block: 1.1rem;
         opacity: .6;
+    }
+    
+    .mainContainer {
+        position: relative;
+        
+        &:has(.search-container) .dropdown-container {
+            padding-top: 0 !important;
+            
+            .search-container {
+                padding-top: 1rem;
+            }
+        }
     }
     
     .mainContainer.MaxContent {
