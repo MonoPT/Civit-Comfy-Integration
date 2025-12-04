@@ -53,7 +53,7 @@
       })
       
       window.addEventListener("click", (e: any) => {
-        if (component_ref.contains(e.target)) return
+        if (component_ref && component_ref.contains(e.target)) return
         
         menu_is_open = false
       })
