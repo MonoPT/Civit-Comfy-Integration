@@ -241,6 +241,9 @@
             .image-wrapper {
                 --color_1: rgba(255,255,255, .03);
 				--color_2: rgba(255,255,255, .07);
+				contain: content;
+				will-change: transform, opacity, display;
+				transform: translate3d(0,0,0);
 					
 				&.skeleton-loading {
 				    img, video {

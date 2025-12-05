@@ -27,7 +27,7 @@ async fn main() {
     let resp = civit.load_infinite(civit::ImagesInfiniteLoadOptions::default()).await;*/
     
     let static_files = format!("{}/front-end/build", std::env::current_dir().unwrap().to_string_lossy());
-    
+    println!("Static folder: {static_files}");
     let cors_layer = CorsLayer::new()
         .allow_origin(Any)  // Open access to selected route
         .allow_methods(vec![Method::GET, Method::POST]);
@@ -35,7 +35,8 @@ async fn main() {
     let app = Router::new()
         .route("/user_data", get(get_user))
         .route("/infinite_images", get(infinite_images))
-        //.fallback_service(ServeDir::new(static_files))
+        
+        .fallback_service(ServeDir::new(static_files))
         .layer(ServiceBuilder::new().layer(cors_layer));
     
     
