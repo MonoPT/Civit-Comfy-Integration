@@ -12,6 +12,7 @@ pub struct ImagesInfiniteLoadOptions {
     pub period: String,
     pub base_models: Vec<String>,
     periodMode: String,
+    pub techniques: Vec<usize>,
     pub sort: String,
     pub types: Vec<String>,
     withMeta: bool,
@@ -56,7 +57,8 @@ impl Default for ImagesInfiniteLoadOptions {
         excludedTagIds: vec![],
         disablePoi: true,
         disableMinor: false,
-        cursor: None
+        cursor: None,
+        techniques: vec![]
         }
     }
 }
@@ -79,7 +81,7 @@ impl Civit {
             "types": options.types,
             "withMeta": false,
             "baseModels": options.base_models,
-            "techniques": [],
+            "techniques": options.techniques,
             "fromPlatform": false,
             "hideAutoResources": false,
             "hideManualResources": false,

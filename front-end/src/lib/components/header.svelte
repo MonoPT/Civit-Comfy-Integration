@@ -105,8 +105,10 @@
         <Select  enable_search={false} selected={["Week"]} singleOption maxContent empty_name="Time Period" icon={2} name="timePeriod" selection_name="Period" 
             data_options={time_period_options}/>
         
-        <!--<Select enable_search={false} maxContent empty_name="Media Type" selected={media_type} icon={2} name="mediaType" selection_name="Media" 
-            data_options={[{name: "Image", value: "Image"}, {name: "Video", value: "Video"}]}/>-->
+        <div class="hidden" style="display: none;">
+            <Select enable_search={false} maxContent empty_name="Media Type" selected={media_type} icon={2} name="mediaType" selection_name="Media" 
+                data_options={[{name: "Image", value: "Image"}, {name: "Video", value: "Video"}]}/>
+        </div>
 
         <div class="alignLeft">
             <div class="filters-wrapper">
@@ -120,7 +122,7 @@
                     
                     <Separator>Techniques</Separator>
                     <div class="group">
-                        <Select select_list_cards empty_name="Show all" icon={2} name="Techniques" selection_name="Techniques" 
+                        <Select select_list_cards empty_name="Show all" icon={2} name="techniques" selection_name="Techniques" 
                             data_options={techniques}/>
                     </div>
                                     

@@ -29,8 +29,9 @@ export class ImageGallery {
     let baseModel = Array.from((params['baseModel'] || "").split(",")).filter((i) => i.length > 0)
     let type = Array.from((params['mediaType'] || "").split(",")).filter((i) => i.length > 0)
     let browsingLevel = params["Show NSFW"] ? 31 : 1       
-      
-    let param_string = `period=${period}&sort=${sort}&baseModel=${baseModel}&mediaType=${type}&cursor=${ImageGallery.cursor}&browsingLevel=${browsingLevel}`;
+    let techniques = Array.from((params['techniques'] || "").split(",")).filter((i) => i.length > 0).map((i) => parseInt(i)).join(",")
+        
+    let param_string = `period=${period}&sort=${sort}&baseModel=${baseModel}&mediaType=${type}&cursor=${ImageGallery.cursor}&browsingLevel=${browsingLevel}&techniques=${techniques}`;
     
     const response = await fetch(`${api.infinite_images(user_token, param_string)}`)
     ImageGallery.isFetching = false
