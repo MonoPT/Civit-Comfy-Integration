@@ -43,21 +43,15 @@ export class ImageGallery {
     for (let i in image_data) {
       const img = image_data[i]
       if (!ImageGallery.images.includes(img.img_url)) {
+              
+        const image: Image = {url: img.img_url, index: ImageGallery.counter, width: img.width, height: img.height, media_type: img.type}
         
-        let media_type = "image"
-        
-        let p = img.img_url.split(".")
-        
-        if (p[p.length - 1] === "mp4") {
-          media_type = "video"
-        }
-        
-        const image: Image = {url: img.img_url, index: ImageGallery.counter, width: img.width, height: img.height, media_type: media_type}
-
         ImageGallery.counter += 1
         ImageGallery.images.push(image)
       }
     }
+    
+    
     
     window.dispatchEvent(new CustomEvent("UpdatedImagesList"))
   }

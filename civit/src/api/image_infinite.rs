@@ -130,17 +130,7 @@ impl Civit {
         let mut items: Vec<ImageResponse> = serde_json::from_value(json_val.get("items").unwrap_or(&Value::Null).clone()).unwrap_or_default();
         
         items.iter_mut().for_each(|i| {
-            let m_type = match &i.item_type {
-                None => "jpg",
-                Some(m) => {
-                    match m.as_str() {
-                        "video" => "mp4",
-                        _ => "jpg"
-                    }
-                }
-            };
-            
-            i.img_url = Some(format!("https://image.civitai.com/xG1nkqKTMzGDvpLrqFT7WA/{}/anim=false,width=450,optimized=true.{m_type}", i.url.clone().unwrap_or_default()));
+            i.img_url = Some(format!("https://image.civitai.com/xG1nkqKTMzGDvpLrqFT7WA/{}/transcode=true,original=true,quality=90/3cde953f-b339-426a-97fa-9b47071c1df6", i.url.clone().unwrap_or_default()));
         });
         
         Some((items, next_cursor))

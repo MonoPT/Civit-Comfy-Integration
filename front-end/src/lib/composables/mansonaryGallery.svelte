@@ -78,117 +78,97 @@
         })          
       })
       
-      const options = {
-        root: null, // Use the viewport as the root
-        rootMargin: '0px',
-        threshold: 0 // Trigger when the sentinel is fully visible
-      };
       
-      const observer = new IntersectionObserver(handleIntersection, options);
+      const observer = new IntersectionObserver(handleIntersection, {root: null, rootMargin: '0px', threshold: 0});
       
       observer.observe(imageGallerySentinel);
-            
-      // Check for images to load and add tags
-      document.addEventListener(
-        "load",
-        (event) => {
-          const target = event.target as HTMLImageElement
-          if (target.tagName === "IMG" && target.classList.contains("listenLoadings")) {
-            (target.parentNode! as HTMLElement).classList.remove("skeleton-loading")
-          }
-        },
-        true // <-- muito importante! precisa de capturing
-      );
-      
-      document.addEventListener(
-        "error",
-        (event) => {
-          const target = event.target as HTMLImageElement
-          if (target.tagName === "IMG") {
-            (target.parentNode! as HTMLElement).classList.add("failedToLoad")
-          }
-        },
-        true // necessário para capturar eventos não-bubbling (como load e error)
-      );
     })
     
     let MediaContainer: HTMLElement
     
-    onMount(() => { // Lazy load videos
-      const options = {
-        root: null,
-        rootMargin: "0px",
-        scrollMargin: "0px",
-        threshold: 0.01,
-      };
+    onMount(() => { // Infinite scroller loader and observers
       
-      const observer = new IntersectionObserver((entries, observer) => {
-        entries.forEach((entry) => {
-          if(!entry.isIntersecting) return
-          
-          const target = entry.target as HTMLDivElement 
-
-          console.log(target)
-          return
-          const src = target.querySelector("track")!.src
-          
-          let source = document.createElement("source")
-          source.src = src
-          source.type = "video/mp4"
-            
-          target.appendChild(source)
-          target.closest(".image-wrapper")?.classList.remove("skeleton-loading")     
-          observer.unobserve(target)
-        })
-      }, options);
+      const errorEl = document.createElement("div")
+      errorEl.classList.add("errorMsg")
       
+      errorEl.innerHTML = `
+        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <path d="M4.02693 18.329C4.18385 19.277 5.0075 20 6 20H18C19.1046 20 20 19.1046 20 18V14.1901M4.02693 18.329C4.00922 18.222 4 18.1121 4 18V6C4 4.89543 4.89543 4 6 4H18C19.1046 4 20 4.89543 20 6V14.1901M4.02693 18.329L7.84762 14.5083C8.52765 13.9133 9.52219 13.8482 10.274 14.3494L10.7832 14.6888C11.5078 15.1719 12.4619 15.1305 13.142 14.5865L15.7901 12.4679C16.4651 11.9279 17.4053 11.8856 18.1228 12.3484C18.2023 12.3997 18.2731 12.4632 18.34 12.5302L20 14.1901M11 9C11 10.1046 10.1046 11 9 11C7.89543 11 7 10.1046 7 9C7 7.89543 7.89543 7 9 7C10.1046 7 11 7.89543 11 9Z" stroke="#ffffff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path> </g></svg>
+        <h2>Failed to load image</h2>
+      `
+    
       const observerPerfOt = new IntersectionObserver((entries, observer) => {
         entries.forEach((entry) => {
-          entry.target.classList.add("outOfFrame")
-          if(!entry.isIntersecting) return
-          entry.target.classList.remove("outOfFrame")
+          const target = entry.target
+          
+          if(!entry.isIntersecting) {
+            target.innerHTML = ""
+            return
+          }
+          
+          const errorHandler = (type: "video" | "image") => {
+            target.classList.remove("skeleton-loading")
+            target.classList.add("failedToLoad")
+            target.innerHTML = ""
+            
+            let el = errorEl.cloneNode(true) as HTMLElement
+            el.querySelector("h2")!.textContent = `Failed to load ${type}`
+            
+            target.appendChild(el)
+          }
+          
+          const src = target.getAttribute("data-url")!
+          const mediaType = target.getAttribute("data-media")! as "image" | "video"
+                    
+          let media: HTMLImageElement | HTMLVideoElement
+          
+          if (mediaType == "image") {
+            media = document.createElement("img")
+            media.src = src
+            media.loading = "lazy"
+
+          } else {
+            media = document.createElement("video")
+            media.loop = true
+            media.muted = true
+            media.autoplay = true
+            
+            let source = document.createElement("source")
+            source.src = src
+            source.type = "video/webm"
+            
+            media.appendChild(source)
+                        
+          }
+          
+          media.addEventListener("loadeddata", () => target.classList.remove("skeleton-loading"))
+          media.addEventListener("load", () => target.classList.remove("skeleton-loading"))
+          media.addEventListener("error", () => errorHandler(mediaType))
+          media.querySelector("source")?.addEventListener("error", () => errorHandler(mediaType))
+          
+          target.appendChild(media)
         })
-      }, options);
+      },  {
+        root: null,
+        rootMargin: "0px",
+        threshold: 0.0,
+      });
       
-      //
       
       const mutationObserver = new MutationObserver((mutations) => {
-          let videos: HTMLVideoElement[] = []
-          let media: HTMLVideoElement[] = []
-          
           mutations.forEach(mutation => {
             mutation.addedNodes.forEach((node) => {
               if (node.nodeName !== "#text") {
-               //@ts-ignore
-                const vid = node.querySelectorAll("video")
-                //@ts-ignore
-                 const images = node.querySelectorAll("img")
-                //@ts-ignore
-                vid.forEach((v) => videos.push(v))
-                //@ts-ignore
-                images.forEach((v) => media.push(v))
-                //@ts-ignore
-                vid.forEach((v) => media.push(v))
+                if (!(node as HTMLElement).classList.contains("image-wrapper")) return
+                
+                observerPerfOt.observe(node as HTMLElement)
               }
             })
           });
-          
-          Array.from(new Set(media)).forEach((m) => {
-            observerPerfOt.observe(m.closest(".image-wrapper")!)
-          })
-          
-          Array.from(new Set(videos)).forEach((v) => {
-            const t = v.closest(".image-wrapper")!
-            observer.observe(t)
-            window.addEventListener("UpdatedImagesList", () => {
-              observer.unobserve(t)
-            })
-          })
       });
       
       mutationObserver.observe(MediaContainer, {
-          childList: true,  // Observe direct children (like added <video> tags)
-          subtree: true,    // Observe the entire subtree (including children of children)
+          childList: true, 
+          subtree: true,   
       });
     })
 </script>
@@ -199,7 +179,8 @@
     {#each Array.from({ length: columns }, (_, index) => index) as number}
         <div class="column">       
             {#each images[number] as image}
-                <div class="image-wrapper skeleton-loading" data-url={image.url} style="--aspectRation: {image.width / image.height}">
+                <div class="image-wrapper skeleton-loading" data-media={image.media_type} data-url={image.url} style="--aspectRation: {image.width / image.height}">
+                    <!-- 
                     {#if image.media_type === "image"}
                         <img class="listenLoadings" src="{image.url}" alt="" loading="lazy">
                     {:else}
@@ -210,7 +191,7 @@
                     <div class="errorMsg">
                         <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <path d="M4.02693 18.329C4.18385 19.277 5.0075 20 6 20H18C19.1046 20 20 19.1046 20 18V14.1901M4.02693 18.329C4.00922 18.222 4 18.1121 4 18V6C4 4.89543 4.89543 4 6 4H18C19.1046 4 20 4.89543 20 6V14.1901M4.02693 18.329L7.84762 14.5083C8.52765 13.9133 9.52219 13.8482 10.274 14.3494L10.7832 14.6888C11.5078 15.1719 12.4619 15.1305 13.142 14.5865L15.7901 12.4679C16.4651 11.9279 17.4053 11.8856 18.1228 12.3484C18.2023 12.3997 18.2731 12.4632 18.34 12.5302L20 14.1901M11 9C11 10.1046 10.1046 11 9 11C7.89543 11 7 10.1046 7 9C7 7.89543 7.89543 7 9 7C10.1046 7 11 7.89543 11 9Z" stroke="#ffffff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path> </g></svg>
                         <h2>Failed to load image</h2>
-                    </div>
+                    </div>-->
                 </div>
             {/each}
         </div>
@@ -247,24 +228,22 @@
 				contain: content;
 				will-change: transform, opacity, display;
 				transform: translate3d(0,0,0);
-					
-				&.skeleton-loading {
-				    img, video {
-						opacity: 0 !important;
-					}
-				}
 								
-				.errorMsg {
-				    display: none;
+				&.skeleton-loading > :global(*) {
+                    opacity: 0;
+				}
+				
+				:global(.errorMsg) {
+				    display: block;
 					opacity: .45;
 								
-					svg {
+					:global(svg) {
 	                    display: block;
 						width: 30%;
 						margin-inline: auto;
 					}
 					
-					h2 {
+					:global(h2) {
 	                    font-size: 1.2rem;
 						font-weight: 350;
 						text-align: center;
@@ -278,14 +257,6 @@
                     justify-content: center;
                     align-items: center;
                     background: var(--color_1);
-                    
-				    img {
-						display: none;
-					}
-					
-					.errorMsg {
-	                    display: block;
-					}
 				}
 				
 				border-radius: .5rem;
@@ -299,19 +270,13 @@
             }
         }
                 
-        img, video {
+        :global(img, video) {
             display: block;
             position: relative;
             max-width: 100%;
             height: 100%;
             background: rgba(0,0,0, .07);
             border-radius: inherit;
-        }
-        
-        :global(.image-wrapper.outOfFrame) {
-            img, video {
-                display: none !important;
-            }
         }
     }
     
