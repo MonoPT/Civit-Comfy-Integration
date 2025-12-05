@@ -2,4 +2,4 @@
     import Mansonary from "$lib/composables/mansonaryGallery.svelte"        
 </script>
 
-<Mansonary media="video" />
+<Mansonary media="video" page_title="Videos" />

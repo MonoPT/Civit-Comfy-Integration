@@ -79,6 +79,7 @@ impl Civit {
             "types": options.types,
             "withMeta": false,
             "baseModels": options.base_models,
+            "techniques": [],
             "fromPlatform": false,
             "hideAutoResources": false,
             "hideManualResources": false,

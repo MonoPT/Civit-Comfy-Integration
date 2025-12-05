@@ -7,7 +7,7 @@
     
     import {page} from "$app/state"
     
-    let {media} = $props()
+    let {media, page_title} = $props()
     
     let column_width = $state(370);
     let columns = $state(4);
@@ -168,7 +168,7 @@
     })
 </script>
 
-<Header current_route={currentRoute} media={media}/>
+<Header current_route={currentRoute} media={media} page_title={page_title}/>
 
 <main style="--screenWidth: {screenSize}; --columns: {columns}" bind:this={MediaContainer}>
     {#each Array.from({ length: columns }, (_, index) => index) as number}

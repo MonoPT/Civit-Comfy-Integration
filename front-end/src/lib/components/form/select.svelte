@@ -48,11 +48,12 @@
     let original_empty_name = empty_name
     
     let default_selected = (selected as string[]).map((i) => i.toLowerCase())
-    let default_options_reactive = $state((selected as string[]).map((i) => i.toLowerCase()))
     
     const update_selection = () => {
       let checkbox = Array.from(optionsContainer.querySelectorAll("input:checked")) as HTMLInputElement[]
-      selected_items_names  = checkbox.map((el) => el.value)
+      selected_items_names  = checkbox.map((el) => {
+        return el.closest("li")?.getAttribute("data-itemname") || el.value
+      })
       selected_items = checkbox.length
                      
       if (singleOption || checkbox.length === 1) {
@@ -175,7 +176,7 @@
             </div>
         {/if}
         {#each options as option}
-            <li style={filtered_items.includes(option.name) ? '' : 'display: none'}><Button checked={default_selected.includes(option.name.toLowerCase())} name={name} value={option.value.length > 0 ? option.value : option.name} type={singleOption ? 'radio' : 'checkbox'} onclick={() => {}} fullWidth icon={0} no_bg={true} hoverColor="#3c3d42" bgHover={true} extraPadding={true}>{option.name}</Button></li> 
+            <li style={filtered_items.includes(option.name) ? '' : 'display: none'} data-itemName={option.name}><Button checked={default_selected.includes(option.name.toLowerCase())} name={name} value={option.value.length > 0 ? option.value : option.name} type={singleOption ? 'radio' : 'checkbox'} onclick={() => {}} fullWidth icon={0} no_bg={true} hoverColor="#3c3d42" bgHover={true} extraPadding={true}>{option.name}</Button></li> 
         {/each}
         
         {#if filtered_items.length < 1}
@@ -250,7 +251,7 @@
         width: 100%;
         
         &.MaxContent {
-            min-width: 320px;
+            
             width: max-content;
         }   
     }

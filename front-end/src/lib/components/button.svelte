@@ -17,7 +17,8 @@
       value = "",
       type = "text",
       checked = false,
-      pill = false
+      pill = false,
+      hideMarker = false
     } = $props()
     
     let is_active = $state(active_route === current_route)
@@ -64,11 +65,11 @@
     {/if}
     
     {#if type == "checkbox" && initial_type !== "radioCheckbox"}
-        <div class="checkboxMarker"></div>
+        <div class="checkboxMarker" class:hideMarker></div>
     {/if}
     <slot></slot>
     {#if type == "radio" || initial_type === "radioCheckbox"}
-        <div class="checkboxMarker radio"></div>
+        <div class="checkboxMarker radio" class:hideMarker></div>
     {/if}
     
     {#if has_dropdown}
@@ -206,6 +207,10 @@
         
         &:has(input[type="radio"]:checked), &.radioCheckbox {
             background: color-mix(in srgb, var(--navBG) 94%, #fff 6%);
+        }
+        
+        .checkboxMarker.hideMarker {
+            display: none;
         }
     }
 </style>
