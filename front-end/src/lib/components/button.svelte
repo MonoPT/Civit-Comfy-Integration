@@ -20,9 +20,7 @@
       pill = false,
       hideMarker = false
     } = $props()
-    
-    let is_active = $state(active_route === current_route)
-    
+        
     let initial_type = type
     
     let buttonRef: HTMLElement;
@@ -36,7 +34,7 @@
     })
 </script>
 
-<label class="button-wrapper  {initial_type === "radioCheckbox" ? 'radio' : ''}" class:pill class:active={is_active} class:extraPadding class:bgHover class:no_bg class:fullWidth bind:this={buttonRef} style="--bgHover: {hoverColor}">
+<label class="button-wrapper  {initial_type === "radioCheckbox" ? 'radio' : ''}" class:pill class:active={active_route === current_route} class:extraPadding class:bgHover class:no_bg class:fullWidth bind:this={buttonRef} style="--bgHover: {hoverColor}">
     <input checked={checked} type="{type}" name="{name}" value="{value}" hidden style="position: absolute; top: 0; margin: 0; pointer-events: none;" >
     {#if icon > 0}
         <div class="icon">
@@ -193,7 +191,7 @@
         &.bgHover{
             border-radius: .375rem;
             
-            &:hover {
+            &:not(.active):hover {
                 background: var(--bgHover);
             }
         }

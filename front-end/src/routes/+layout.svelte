@@ -3,12 +3,14 @@
 	import { goto } from '$app/navigation';
 		
 	import Login from "$lib/components/login.svelte"
-	import Header from '$lib/components/header.svelte';
 	import Button from '$lib/components/button.svelte';
 	
 	import { userState, getCookie, loginUser, loading_user } from '../lib/state.svelte.ts';
     import { onMount } from 'svelte';
+    import {page} from "$app/state"
 			    
+    let current_path = $state(page)
+    
     onMount(() => {      
       if (Object.keys(userState).length === 0) {
         let token = getCookie("user_token")
@@ -31,7 +33,6 @@
 	<link rel="icon" href={favicon} />
 </svelte:head>
 
-
 {#if Object.keys(userState).length === 0 || loading_user.loading}
     <Login />
     {:else}
@@ -44,10 +45,10 @@
             <ul>
                 <li class="marginTop"><Button icon={3} no_bg={true} hoverColor="#3c3d42" bgHover={true} extraPadding={true}>Downloads <span style="font-size: .8em;opacity: .6">(0)</span></Button></li>
                 <h2>Explore</h2>
-                <li><Button onclick={() => {goto("/popular")}} icon={6} no_bg={true} hoverColor="#3c3d42" bgHover={true} extraPadding={true}>Popular</Button></li>
-                <li><Button onclick={() => {goto("/image")}} icon={1} no_bg={true} hoverColor="#3c3d42" bgHover={true} extraPadding={true}>Images</Button></li>
-                <li><Button onclick={() => {goto("/video")}} icon={5} no_bg={true} hoverColor="#3c3d42" bgHover={true} extraPadding={true}>Videos</Button></li>
-                <li><Button onclick={() => {goto("/models")}} icon={2} no_bg={true} hoverColor="#3c3d42" bgHover={true} extraPadding={true}>Models</Button></li>            
+                <li><Button active_route="/popular" current_route={current_path.url.pathname} onclick={() => {goto("/popular")}} icon={6} no_bg={true} hoverColor="#3c3d42" bgHover={true} extraPadding={true}>Popular</Button></li>
+                <li><Button active_route="/image" current_route={current_path.url.pathname} onclick={() => {goto("/image")}} icon={1} no_bg={true} hoverColor="#3c3d42" bgHover={true} extraPadding={true}>Images</Button></li>
+                <li><Button active_route="/video" current_route={current_path.url.pathname} onclick={() => {goto("/video")}} icon={5} no_bg={true} hoverColor="#3c3d42" bgHover={true} extraPadding={true}>Videos</Button></li>
+                <li><Button active_route="/models" current_route={current_path.url.pathname} onclick={() => {goto("/models")}} icon={2} no_bg={true} hoverColor="#3c3d42" bgHover={true} extraPadding={true}>Models</Button></li>            
             </ul>
         </nav>
         <main>

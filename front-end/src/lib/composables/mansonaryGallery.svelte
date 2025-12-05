@@ -20,12 +20,21 @@
     let imagesLoading = $state(false)
     let screenSize = $state(1500)
     let imageGallerySentinel: HTMLElement;
+    
+    let is_first_intersection = true
         
     const handleIntersection = (entries: IntersectionObserverEntry[], observer: IntersectionObserver) => {
       entries.forEach(async (entry) => {
         if (entry.isIntersecting) {
           if (imagesLoading) return;
           imagesLoading = true;
+                    
+          if (is_first_intersection) { // Prevents dual loading on page load
+            is_first_intersection = false
+            imagesLoading = false;
+            return
+          }
+          
           await ImageGallery.load_next_images(user_token.token)
         }
       });
@@ -35,6 +44,7 @@
       ImageGallery.cursor = null
       ImageGallery.images = []
       images = []
+      
       ImageGallery.load_next_images(user_token.token)
     }
     
