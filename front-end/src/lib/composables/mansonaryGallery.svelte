@@ -198,7 +198,7 @@
 {#if imagesLoading}
     <div class="Images-Loading-Wrapper">
         <Spinner size={35} tickness={3} />
-        <p>Loading images</p>
+        <p>Loading data</p>
     </div>
 {/if}
 
