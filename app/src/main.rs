@@ -73,9 +73,9 @@ struct InfiniteImagesDataReq {
     sort: String,
     #[serde(rename = "baseModel")]
     base_model: String,
-    #[serde(rename = "type")]
-    search_type: String,
-    cursor: String
+    #[serde(rename = "mediaType")]
+    media_type: String,
+    cursor: String,
 }
 
 async fn infinite_images(data: Query<InfiniteImagesDataReq>) -> Response {
@@ -90,10 +90,13 @@ async fn infinite_images(data: Query<InfiniteImagesDataReq>) -> Response {
         _ => Some(data.cursor.clone())
     };
     
+    let medias = data.media_type.split(",").collect::<Vec<&str>>().iter().filter(|s| s.trim().len() > 0).map(|f| f.to_lowercase().to_string()).collect::<Vec<String>>();
+    
     // Options
     let mut options = ImagesInfiniteLoadOptions::default();
-    
     options.cursor = cursor;
+    options.period = data.period.clone();
+    options.types = medias;
     
     //
     let data = civit.load_infinite(options).await;

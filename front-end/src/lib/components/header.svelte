@@ -33,7 +33,22 @@
       {name: "Newest", value: ""},
     ]
     
+    const update_filters_data = () => {
+      FilterManager.filters = {}
+      const input = Array.from(formWrapper.querySelectorAll("input"))
+    
+      let keys = new Set(input.filter((i) => i.checked).map((i) => i.name).filter((i) => i.length > 0))
+      
+      keys.forEach((k) => {
+        const values = Array.from(formWrapper.querySelectorAll(`input[name="${k}"]:checked`)).map((i: any) => i.value)
+        
+        FilterManager.update_filter(k, values)
+      }) 
+    }
+    
     onMount(() => {
+      update_filters_data()
+      
       base_models = baseModels.filter((m) => m.type.toLowerCase() === media_type.toLowerCase()).sort((a,b) => a.name.localeCompare(b.name)).map((m) => {
         return {
           name: m.name,
@@ -41,17 +56,8 @@
         }
       })
       
-      
-      FilterManager.filters = {} // Clear filters from other pages
-      
-      formWrapper.addEventListener('input', (event) => {
-        
-      })
-      
-      filtersForm.addEventListener('input', (event) => {
-                    
-      });
-      
+      formWrapper.addEventListener('input', update_filters_data)
+            
       filtersForm.querySelector(".clear-button > *")?.addEventListener("click", () => {
         filtersForm.querySelectorAll(`input`).forEach((i) => i.checked = false)
         FilterManager.filters = {}
@@ -59,7 +65,7 @@
     })
 </script>
 <form class="header" bind:this={formWrapper}>
-    <Select  enable_search={false} default_selected="All Time" singleOption maxContent empty_name="Time Period" icon={2} name="timePeriod" selection_name="Period" 
+    <Select  enable_search={false} default_selected="Day" singleOption maxContent empty_name="Time Period" icon={2} name="timePeriod" selection_name="Period" 
         options={time_period_options}/>
     
     <span></span>

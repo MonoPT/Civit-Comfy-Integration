@@ -12,7 +12,7 @@ pub struct ImagesInfiniteLoadOptions {
     pub period: String,
     periodMode: String,
     sort: String,
-    types: Vec<String>,
+    pub types: Vec<String>,
     withMeta: bool,
     fromPlatform: bool,
     hideAutoResources: bool,
@@ -69,14 +69,12 @@ impl Civit {
         let mut headers = HeaderMap::new();
         headers.append(reqwest::header::COOKIE, reqwest::header::HeaderValue::from_str(&cookie_header).unwrap());
         
-        //let cursor_or_undefined = options.cursor.clone().unwrap_or(String::from("undefined"));
-        
         let mut params = json!({
           "json": {
-            "period": "Year",
+            "period": options.period,
             "periodMode": "published",
             "sort": "Most Reactions",
-            "types": [],
+            "types": options.types,
             "withMeta": false,
             "fromPlatform": false,
             "hideAutoResources": false,
@@ -101,7 +99,7 @@ impl Civit {
         if options.cursor.is_none() {
             params["meta"] = serde_json::from_str(r#"{ "values": { "cursor": ["undefined"] } }"#).unwrap();
         }
-                
+                        
         let response = &self.client.get(format!("https://civitai.com/api/trpc/image.getInfinite?input={}", params.to_string()))
             .headers(headers)
             .send().await.unwrap().text().await.unwrap_or_default();
@@ -124,7 +122,17 @@ impl Civit {
         let mut items: Vec<ImageResponse> = serde_json::from_value(json_val.get("items").unwrap().clone()).unwrap();
         
         items.iter_mut().for_each(|i| {
-           i.img_url = Some(format!("https://image.civitai.com/0000000000000000000000/{}/anim=false,width=450,optimized=true.jpeg", i.url.clone().unwrap_or_default()));
+            let m_type = match &i.item_type {
+                None => "jpg",
+                Some(m) => {
+                    match m.as_str() {
+                        "video" => "mp4",
+                        _ => "jpg"
+                    }
+                }
+            };
+            
+            i.img_url = Some(format!("https://image.civitai.com/0000000000000000000000/{}/anim=false,width=450,optimized=true.{m_type}", i.url.clone().unwrap_or_default()));
         });
         
         Some((items, next_cursor))

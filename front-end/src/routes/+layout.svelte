@@ -3,6 +3,8 @@
 	import { page } from '$app/stores';
 	import { goto } from '$app/navigation';
 	
+	import filterManager from "$lib/api/filterManager"
+	
 	import Login from "$lib/components/login.svelte"
 	import Header from '$lib/components/header.svelte';
 	import Button from '$lib/components/button.svelte';
@@ -14,6 +16,8 @@
     console.log("Route: " + currentRoute)
 	    
     onMount(() => {
+      filterManager.event = document.createElement("div")
+      
       if (Object.keys(userState).length === 0) {
         let token = getCookie("user_token")
         
