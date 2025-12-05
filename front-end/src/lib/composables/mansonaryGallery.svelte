@@ -127,7 +127,9 @@
           if(!entry.isIntersecting) return
           
           const target = entry.target as HTMLDivElement 
-         
+
+          console.log(target)
+          return
           const src = target.querySelector("track")!.src
           
           let source = document.createElement("source")
@@ -176,9 +178,10 @@
           })
           
           Array.from(new Set(videos)).forEach((v) => {
-            observer.observe(v)
+            const t = v.closest(".image-wrapper")!
+            observer.observe(t)
             window.addEventListener("UpdatedImagesList", () => {
-              observer.unobserve(v)
+              observer.unobserve(t)
             })
           })
       });
@@ -196,7 +199,7 @@
     {#each Array.from({ length: columns }, (_, index) => index) as number}
         <div class="column">       
             {#each images[number] as image}
-                <div class="image-wrapper skeleton-loading" style="--aspectRation: {image.width / image.height}">
+                <div class="image-wrapper skeleton-loading" data-url={image.url} style="--aspectRation: {image.width / image.height}">
                     {#if image.media_type === "image"}
                         <img class="listenLoadings" src="{image.url}" alt="" loading="lazy">
                     {:else}
