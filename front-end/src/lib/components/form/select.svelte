@@ -28,7 +28,6 @@
     let btn: HTMLElement | undefined = $state();
     let input: HTMLInputElement
     let optionsContainer: HTMLElement
-    let clearBTN: HTMLElement | null = $state(null)
     let label: HTMLElement
     
     let minimMargin = 16
@@ -96,15 +95,13 @@
         update_selection()
       })
       
-      if (clearBTN) {
-        clearBTN.addEventListener("click", () => {
-          optionsContainer.querySelectorAll("input[type='checkbox']").forEach((el: any) => el.checked = false)
-          selected_items = 0
-          selected_items_names = []
-        })
-      }
-      
       window.addEventListener("click", (e: any) => {
+        if(component_ref?.contains(e.target)) {
+          if((e.target as HTMLElement).getAttribute("data-clearbtn") !== null) {
+            optionsContainer.querySelectorAll("input[type='checkbox']:checked").forEach((el: any) => el.click())
+          }
+        }
+        
         if (component_ref && component_ref.contains(e.target)) return
         
         menu_is_open = false
@@ -164,7 +161,7 @@
                     {#if !singleOption && selected_items_names.length > 0}
                         <div class="wrap">
                             <span>{selected_items} items selected</span>
-                            <span class="selectable" bind:this={clearBTN}>Clear all</span>
+                            <span data-clearbtn class="selectable">Clear all</span>
                         </div>
                     {/if}
                 </div>

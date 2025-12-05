@@ -80,6 +80,8 @@ struct InfiniteImagesDataReq {
     browsing_level: usize
 }
 
+// TODO: bas request with models gives me the base models possible
+
 async fn infinite_images(data: Query<InfiniteImagesDataReq>) -> Response {
     let token = &data.token;
     
@@ -93,6 +95,8 @@ async fn infinite_images(data: Query<InfiniteImagesDataReq>) -> Response {
     };
     
     let medias = data.media_type.split(",").collect::<Vec<&str>>().iter().filter(|s| s.trim().len() > 0).map(|f| f.to_lowercase().to_string()).collect::<Vec<String>>();
+    let base_models = data.base_model.split(",").collect::<Vec<&str>>().iter().filter(|s| s.trim().len() > 0).map(|f| f.to_string()).collect::<Vec<String>>();
+
     
     // Options
     let mut options = ImagesInfiniteLoadOptions::default();
@@ -101,6 +105,7 @@ async fn infinite_images(data: Query<InfiniteImagesDataReq>) -> Response {
     options.types = medias;
     options.sort = data.sort.clone();
     options.browsingLevel = data.browsing_level;
+    options.base_models = base_models;
     
     //
     let data = civit.load_infinite(options).await;

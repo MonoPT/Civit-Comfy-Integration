@@ -64,7 +64,7 @@
         }
       })
       
-      formWrapper.addEventListener('input', update_filters_data)
+      formWrapper.addEventListener('change', update_filters_data)
             
       filtersForm.querySelector(".clear-button > *")?.addEventListener("click", () => {
         filtersForm.querySelectorAll(`input`).forEach((i) => i.checked = false)
@@ -73,7 +73,7 @@
     })
 </script>
 <form class="header" bind:this={formWrapper}>
-    <Select  enable_search={false} default_selected="Day" singleOption maxContent empty_name="Time Period" icon={2} name="timePeriod" selection_name="Period" 
+    <Select  enable_search={false} default_selected="Week" singleOption maxContent empty_name="Time Period" icon={2} name="timePeriod" selection_name="Period" 
         options={time_period_options}/>
     
     <span></span>

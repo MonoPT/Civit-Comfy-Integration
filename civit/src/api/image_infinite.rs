@@ -10,6 +10,7 @@ use serde_json::Value;
 pub struct ImagesInfiniteLoadOptions {
     pub cursor: Option<String>,
     pub period: String,
+    pub base_models: Vec<String>,
     periodMode: String,
     pub sort: String,
     pub types: Vec<String>,
@@ -35,6 +36,7 @@ impl Default for ImagesInfiniteLoadOptions {
     fn default() -> Self {
         ImagesInfiniteLoadOptions {
         period: "Year".to_string(),
+        base_models: vec![],
         periodMode: "published".to_string(),
         sort: "Most Reactions".to_string(),
         types: vec![],
@@ -76,6 +78,7 @@ impl Civit {
             "sort": options.sort,
             "types": options.types,
             "withMeta": false,
+            "baseModels": options.base_models,
             "fromPlatform": false,
             "hideAutoResources": false,
             "hideManualResources": false,
@@ -96,6 +99,8 @@ impl Civit {
           }
         });
            
+        println!("{}", params);
+        
         if options.cursor.is_none() {
             params["meta"] = serde_json::from_str(r#"{ "values": { "cursor": ["undefined"] } }"#).unwrap();
         }
