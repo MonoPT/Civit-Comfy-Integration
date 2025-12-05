@@ -1,22 +1,31 @@
 <script lang="ts">
     import Button from "./button.svelte"
-    let {current_route = ""} = $props()
     import Separator from "$lib/components/form/separator.svelte"
     import FilterManager from "$lib/api/filterManager"
     import Select from "$lib/components/form/select.svelte";
     
     import baseModels from "$lib/data/base_models"
-    
     import { onMount } from "svelte";
+    
+    let {media, current_route = ""} = $props()
     
     let openPopUp = $state(true)
     let filtersForm: HTMLElement;
         
     let formWrapper: HTMLFormElement
+        
+    let media_type = $state((media.split(",") as string[]).map((s) => s.toLowerCase()))
+       
+    const update_base_models = () => {
+      return baseModels.filter((m) => media_type.includes(m.type.toLowerCase())).sort((a,b) => a.name.localeCompare(b.name)).map((m) => {
+        return {
+          name: m.name,
+          value: m.name
+        }
+      })
+    }
     
-    let media_type = "Image"
-    
-    let base_models: {name: string, value: string}[] = $state([])
+    let base_models: {name: string, value: string}[] = $state(update_base_models())
     
     const time_period_options = [
       {name: "Day", value: ""},
@@ -35,6 +44,11 @@
     ]
     
     const update_filters_data = (e: Event | null) => {
+      media_type = (Array.from(formWrapper.querySelectorAll(`input[name="mediaType"]:checked`)) as HTMLInputElement[]).map((i) => i.value)
+      let models = update_base_models()
+            
+      base_models = models
+      
       if (e) { // if its searching field skip
         //@ts-ignore
         if (e.target.name.trim().length < 1) return // will skip fetch if input name is null
@@ -54,36 +68,30 @@
       }) 
     }
     
-    onMount(() => {      
+    onMount(() => {  
       update_filters_data(null)
-      
-      base_models = baseModels.filter((m) => m.type.toLowerCase() === media_type.toLowerCase()).sort((a,b) => a.name.localeCompare(b.name)).map((m) => {
-        return {
-          name: m.name,
-          value: m.name
-        }
-      })
-      
+            
       formWrapper.addEventListener('change', update_filters_data)
             
       filtersForm.querySelector(".clear-button > *")?.addEventListener("click", () => {
         filtersForm.querySelectorAll(`input`).forEach((i) => i.checked = false)
         FilterManager.filters = {}
-      })
+        })
     })
 </script>
+
 <form class="header" bind:this={formWrapper}>
-    <Select  enable_search={false} default_selected="Week" singleOption maxContent empty_name="Time Period" icon={2} name="timePeriod" selection_name="Period" 
-        options={time_period_options}/>
+    <Select  enable_search={false} selected={["Week"]} singleOption maxContent empty_name="Time Period" icon={2} name="timePeriod" selection_name="Period" 
+        data_options={time_period_options}/>
     
     <span></span>
     
     <div class="wrap">
-        <Select  enable_search={false} default_selected="Most Reactions" maxContent singleOption empty_name="Sort by" icon={2} name="sort" selection_name="sort" 
-            options={sort_by}/>
+        <Select  enable_search={false} selected={["Most Reactions"]} maxContent singleOption empty_name="Sort by" icon={2} name="sort" selection_name="sort" 
+            data_options={sort_by}/>
         
-        <Select enable_search={false} maxContent empty_name="Media Type" default_selected={media_type} icon={2} name="mediaType" selection_name="Media" 
-            options={[{name: "Image", value: "Image"}, {name: "Video", value: "Video"}]}/>
+        <Select enable_search={false} maxContent empty_name="Media Type" selected={media_type} icon={2} name="mediaType" selection_name="Media" 
+            data_options={[{name: "Image", value: "Image"}, {name: "Video", value: "Video"}]}/>
     </div>
     
     <div class="alignLeft">
@@ -93,7 +101,7 @@
                 <Separator>Base model</Separator>
                 <div class="group">
                     <Select select_list_cards empty_name="Show all" icon={2} name="baseModel" selection_name="Base Models" 
-                        options={base_models}/>
+                        data_options={base_models}/>
                 </div>
                                 
                 <Separator>Modifiers</Separator>

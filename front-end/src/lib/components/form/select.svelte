@@ -17,18 +17,20 @@
       selection_name: string,
       maxContent?: boolean,
       singleOption?: boolean,
-      options: OptionItem[],
+      data_options: OptionItem[],
       enable_search?: boolean,
-      default_selected?: string,
+      selected?: string[],
       select_list_cards?: boolean
     }
     
-    let {icon = 1, icon_pos = "right", btn_onclick = (a: any) => {}, empty_name = "", name = "", selection_name = "", options = [], maxContent = undefined, singleOption = false, enable_search = true, default_selected = "", select_list_cards = false}: propList = $props()
+    let {icon = 1, icon_pos = "right", btn_onclick = (a: any) => {}, empty_name = "", name = "", selection_name = "", data_options = [], maxContent = undefined, singleOption = false, enable_search = true, selected = [], select_list_cards = false}: propList = $props()
     
     let btn: HTMLElement | undefined = $state();
     let input: HTMLInputElement
     let optionsContainer: HTMLElement
     let label: HTMLElement
+    
+    const options = $state(data_options)
     
     let minimMargin = 16
     let absMaxPopupSelect = 500
@@ -44,6 +46,9 @@
     let filtered_items = $derived(options.map((o) => o.name))
     
     let original_empty_name = empty_name
+    
+    let default_selected = (selected as string[]).map((i) => i.toLowerCase())
+    let default_options_reactive = $state((selected as string[]).map((i) => i.toLowerCase()))
     
     const update_selection = () => {
       let checkbox = Array.from(optionsContainer.querySelectorAll("input:checked")) as HTMLInputElement[]
@@ -126,6 +131,7 @@
       update_selection()
     })
 </script>
+
 <div style="--popupMaxH: {maxHeightSelectPopup}" class:MaxContent={maxContent} class="input-wrapper mainContainer {icon > 0 ? 'icon' : ''} {icon_pos}" class:menuOpen={menu_is_open} bind:this={component_ref}>
     <label class="wrap" bind:this={label}>
         {#if icon > 0}
@@ -169,7 +175,7 @@
             </div>
         {/if}
         {#each options as option}
-            <li style={filtered_items.includes(option.name) ? '' : 'display: none'}><Button checked={default_selected.toLowerCase() === option.name.toLowerCase()} name={name} value={option.value.length > 0 ? option.value : option.name} type={singleOption ? 'radio' : 'checkbox'} onclick={() => {}} fullWidth icon={0} no_bg={true} hoverColor="#3c3d42" bgHover={true} extraPadding={true}>{option.name}</Button></li> 
+            <li style={filtered_items.includes(option.name) ? '' : 'display: none'}><Button checked={default_selected.includes(option.name.toLowerCase())} name={name} value={option.value.length > 0 ? option.value : option.name} type={singleOption ? 'radio' : 'checkbox'} onclick={() => {}} fullWidth icon={0} no_bg={true} hoverColor="#3c3d42" bgHover={true} extraPadding={true}>{option.name}</Button></li> 
         {/each}
         
         {#if filtered_items.length < 1}
