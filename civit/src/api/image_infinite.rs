@@ -11,7 +11,7 @@ pub struct ImagesInfiniteLoadOptions {
     pub cursor: Option<String>,
     pub period: String,
     periodMode: String,
-    sort: String,
+    pub sort: String,
     pub types: Vec<String>,
     withMeta: bool,
     fromPlatform: bool,
@@ -24,7 +24,7 @@ pub struct ImagesInfiniteLoadOptions {
     nonRemixesOnly: bool,
     requiringMeta: bool,
     useIndex: bool,
-    browsingLevel: usize,
+    pub browsingLevel: usize,
     include: Vec<String>,
     excludedTagIds: Vec<usize>,
     disablePoi: bool,
@@ -73,7 +73,7 @@ impl Civit {
           "json": {
             "period": options.period,
             "periodMode": "published",
-            "sort": "Most Reactions",
+            "sort": options.sort,
             "types": options.types,
             "withMeta": false,
             "fromPlatform": false,
@@ -86,11 +86,11 @@ impl Civit {
             "nonRemixesOnly": false,
             "requiringMeta": false,
             "useIndex": true,
-            "browsingLevel": 1,
-            "include": ["cosmetics"],
+            "browsingLevel": options.browsingLevel, // 31 - include nsfw ; 1 - exclude nsfw
+            "include": [],
             "excludedTagIds": [],
             "disablePoi": true,
-            "disableMinor": false,
+            "disableMinor": true,
             "cursor": options.cursor,
             "authed": true
           }
@@ -119,7 +119,7 @@ impl Civit {
         
         
         let next_cursor = json_val.get("nextCursor").unwrap_or_default().to_string();
-        let mut items: Vec<ImageResponse> = serde_json::from_value(json_val.get("items").unwrap().clone()).unwrap();
+        let mut items: Vec<ImageResponse> = serde_json::from_value(json_val.get("items").unwrap_or(&Value::Null).clone()).unwrap_or_default();
         
         items.iter_mut().for_each(|i| {
             let m_type = match &i.item_type {

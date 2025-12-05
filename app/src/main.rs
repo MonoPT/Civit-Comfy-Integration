@@ -76,6 +76,8 @@ struct InfiniteImagesDataReq {
     #[serde(rename = "mediaType")]
     media_type: String,
     cursor: String,
+    #[serde(rename = "browsingLevel")]
+    browsing_level: usize
 }
 
 async fn infinite_images(data: Query<InfiniteImagesDataReq>) -> Response {
@@ -97,6 +99,8 @@ async fn infinite_images(data: Query<InfiniteImagesDataReq>) -> Response {
     options.cursor = cursor;
     options.period = data.period.clone();
     options.types = medias;
+    options.sort = data.sort.clone();
+    options.browsingLevel = data.browsing_level;
     
     //
     let data = civit.load_infinite(options).await;

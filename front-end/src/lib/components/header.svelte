@@ -2,7 +2,6 @@
     import Button from "./button.svelte"
     let {current_route = ""} = $props()
     import Separator from "$lib/components/form/separator.svelte"
-    import Pill from "$lib/components/form/pill.svelte"
     import FilterManager from "$lib/api/filterManager"
     import Select from "$lib/components/form/select.svelte";
     
@@ -30,10 +29,19 @@
     const sort_by = [
       {name: "Most Reactions", value: ""},
       {name: "Most Comments", value: ""},
+      {name: "Most Collected", value: ""},
       {name: "Newest", value: ""},
+      {name: "Oldest", value: ""},
     ]
     
-    const update_filters_data = () => {
+    const update_filters_data = (e: Event | null) => {
+      if (e) { // if its searching field skip
+        //@ts-ignore
+        if (e.target.name.trim().length < 1) return // will skip fetch if input name is null
+        //@ts-ignore
+        if(e.target.closest(".search-container")) return
+      }
+      
       FilterManager.filters = {}
       const input = Array.from(formWrapper.querySelectorAll("input"))
     
@@ -46,8 +54,8 @@
       }) 
     }
     
-    onMount(() => {
-      update_filters_data()
+    onMount(() => {      
+      update_filters_data(null)
       
       base_models = baseModels.filter((m) => m.type.toLowerCase() === media_type.toLowerCase()).sort((a,b) => a.name.localeCompare(b.name)).map((m) => {
         return {
@@ -90,6 +98,7 @@
                                 
                 <Separator>Modifiers</Separator>
                 <div class="group">
+                    <Button pill name="Show NSFW" value="Show NSFW" type="radioCheckbox" onclick={() => {}}  icon={0}  hoverColor="#3c3d42" bgHover={true} extraPadding={true}>Show NSFW</Button>
                     <Button pill name="Metadata only" value="Metadata only" type="radioCheckbox" onclick={() => {}}  icon={0}  hoverColor="#3c3d42" bgHover={true} extraPadding={true}>Metadata only</Button>
                     <Button pill name="Made On-site" value="Made On-site" type="radioCheckbox" onclick={() => {}}  icon={0} hoverColor="#3c3d42" bgHover={true} extraPadding={true}>Made On-site</Button>
                     <Button pill name="Originals Only" value="Originals Only" type="radioCheckbox" onclick={() => {}}  icon={0} hoverColor="#3c3d42" bgHover={true} extraPadding={true}>Originals Only</Button>

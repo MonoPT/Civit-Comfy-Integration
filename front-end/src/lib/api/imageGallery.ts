@@ -28,10 +28,12 @@ export class ImageGallery {
     let sort = params["sort"] || "Most Reactions" 
     let baseModel = Array.from((params['baseModel'] || "").split(",")).filter((i) => i.length > 0)
     let type = Array.from((params['mediaType'] || "").split(",")).filter((i) => i.length > 0)
-            
-    let param_string = `period=${period}&sort=${sort}&baseModel=${baseModel}&mediaType=${type}&cursor=${ImageGallery.cursor}`;
+    let browsingLevel = params["Show NSFW"] ? 31 : 1       
+      
+    let param_string = `period=${period}&sort=${sort}&baseModel=${baseModel}&mediaType=${type}&cursor=${ImageGallery.cursor}&browsingLevel=${browsingLevel}`;
     
     const response = await fetch(`${api.infinite_images(user_token, param_string)}`)
+    ImageGallery.isFetching = false
     const data = await response.json()
     
     ImageGallery.cursor = data[1].replaceAll('"', "");
@@ -56,7 +58,6 @@ export class ImageGallery {
       }
     }
     
-    ImageGallery.isFetching = false
     window.dispatchEvent(new CustomEvent("UpdatedImagesList"))
   }
 }
