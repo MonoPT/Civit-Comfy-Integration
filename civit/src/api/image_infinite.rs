@@ -140,7 +140,7 @@ impl Civit {
                 }
             };
             
-            i.img_url = Some(format!("https://image.civitai.com/0000000000000000000000/{}/anim=false,width=450,optimized=true.{m_type}", i.url.clone().unwrap_or_default()));
+            i.img_url = Some(format!("https://image.civitai.com/xG1nkqKTMzGDvpLrqFT7WA/{}/anim=false,width=450,optimized=true.{m_type}", i.url.clone().unwrap_or_default()));
         });
         
         Some((items, next_cursor))

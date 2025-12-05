@@ -2,6 +2,9 @@ use axum::{
     Json, Router, extract::Query, http::{HeaderMap, Method, StatusCode, Uri, header}, response::{IntoResponse, Response}, routing::get
 };
 
+use tower_http::services::ServeDir;
+
+
 use serde::Deserialize;
 
 use civit::{
@@ -23,8 +26,7 @@ async fn main() {
 
     let resp = civit.load_infinite(civit::ImagesInfiniteLoadOptions::default()).await;*/
     
-    
-    
+    let static_files = format!("{}/front-end/build", std::env::current_dir().unwrap().to_string_lossy());
     
     let cors_layer = CorsLayer::new()
         .allow_origin(Any)  // Open access to selected route
@@ -33,6 +35,7 @@ async fn main() {
     let app = Router::new()
         .route("/user_data", get(get_user))
         .route("/infinite_images", get(infinite_images))
+        //.fallback_service(ServeDir::new(static_files))
         .layer(ServiceBuilder::new().layer(cors_layer));
     
     
