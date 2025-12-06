@@ -3,10 +3,11 @@ mod tags;
 mod download;
 mod user;
 mod image_infinite;
+mod tags_id;
 
 use serde::Deserialize;
 pub use models::{ModelsOptions, Model};
-pub use tags::TagsOptions;
+pub use tags_id::{TagsOptions, TagsSort, TagsResponse};
 pub use download::DownloadOptions;
 pub use image_infinite::ImagesInfiniteLoadOptions;
 

@@ -3,6 +3,7 @@
     import Separator from "$lib/components/form/separator.svelte"
     import FilterManager from "$lib/api/filterManager"
     import Select from "$lib/components/form/select.svelte";
+    import {userState} from "$lib/state.svelte"
     
     import baseModels from "$lib/data/base_models"
     import techniquesList from "$lib/data/techniques"
@@ -10,6 +11,10 @@
     import { onMount } from "svelte";
     
     let {media, current_route = "", page_title} = $props()
+    
+    let tags: {name: string, value: string}[] = $state(userState["tags"].map((tag: {id: number, name: string}) => {
+      return {"name": tag.name, "value": `${tag.id}`}
+    }).sort((a: any,b: any) => a.name.localeCompare(b.name)))
     
     let filtersForm: HTMLElement;
         
@@ -118,6 +123,12 @@
                     <div class="group">
                         <Select select_list_cards empty_name="Show all" icon={2} name="baseModel" selection_name="Base Models" 
                             data_options={base_models}/>
+                    </div>
+                    
+                    <Separator>Tags</Separator>
+                    <div class="group">
+                        <Select select_list_cards empty_name="Show all" icon={2} name="tags" selection_name="Tags" 
+                            data_options={tags}/>
                     </div>
                     
                     <Separator>Techniques</Separator>

@@ -8,4 +8,7 @@ export default class API {
   static infinite_images(token: string, params: string) {
     return `${this.endpoint}/infinite_images?${params}&token=${token}`
   }
+  static popular_tags(token: string) {
+    return `${this.endpoint}/tags_with_id?&token=${token}`
+  }
 }

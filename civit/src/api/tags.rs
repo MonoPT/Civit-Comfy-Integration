@@ -66,24 +66,24 @@ pub struct Tags {
 
 #[derive(Deserialize, Debug)]
 pub struct Metadata {
-    totalItems: usize,
-    currentPage: usize,
-    pageSize: usize,
-    totalPages: usize
+    pub totalItems: usize,
+    pub currentPage: usize,
+    pub pageSize: usize,
+    pub totalPages: usize
 }
 
 #[derive(Deserialize, Debug)]
 pub struct TagsResponse {
-    items: Vec<Tags>,
-    metadata: Metadata
+    pub items: Vec<Tags>,
+    pub metadata: Metadata
 }
 
 impl Civit {    
-    pub async fn tags(&self, options: TagsOptions) -> TagsResponse {
+    pub async fn models_by_tag(&self, options: TagsOptions) -> TagsResponse {
         let client = &self.client;
         
         let parameters =  options.to_parameters();
-                    
+           
         let response = client
                 .get(format!("https://civitai.com/api/v1/tags?{parameters}"))
                 .header(CONTENT_TYPE, "application/json")

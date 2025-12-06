@@ -108,7 +108,9 @@
             }
             
             &:has(input:checked) {
-                background: #1971C2;
+                &, &:hover {
+                    background: #1971C2;
+                }
             }
         }
         
@@ -181,6 +183,8 @@
         
         &.active {
             background: #1971C2;
+            
+            
         }
         
         &:not(.active, .no_bg):hover {
@@ -203,7 +207,7 @@
             }
         }
         
-        &:has(input[type="radio"]:checked), &.radioCheckbox {
+        &:has(input[type="radio"]:checked), &:global(.radioCheckbox) {
             background: color-mix(in srgb, var(--navBG) 94%, #fff 6%);
         }
         

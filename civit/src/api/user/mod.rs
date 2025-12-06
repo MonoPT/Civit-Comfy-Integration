@@ -1,4 +1,5 @@
 use crate::Civit;
+use crate::api::tags_id::{TagsSort, TagsResponse, TagsOptions};
 use reqwest::header::HeaderMap;
 use scraper::Html;
 use scraper::Selector;
@@ -6,6 +7,8 @@ use serde::Serialize;
 use serde_json::Value;
 use serde::Deserialize;
 pub mod collections;
+
+use std::collections::HashSet;
 
 #[derive(Debug, Clone, Serialize)]
 pub struct UserData {
@@ -21,7 +24,8 @@ pub struct UserData {
     pub autoplay_gifs: bool,
     pub collections: Vec<Collection>,
     pub country_code: String,
-    pub region_code: usize
+    pub region_code: usize,
+    pub tags: HashSet<TagsResponse>
 }
 
 #[derive(Debug, Deserialize, Clone, Serialize)]
@@ -92,6 +96,8 @@ impl Civit {
                         }
                     };
                     
+                   
+                    
                     let user_data = UserData {
                         default_locale: v.get("defaultLocale").unwrap().to_string().replace("\"", ""),
                         color_scheme: v.get("props").unwrap().get("pageProps").unwrap().get("colorScheme").unwrap().to_string().replace("\"", ""),
@@ -105,7 +111,8 @@ impl Civit {
                         autoplay_gifs: user_j.get("autoplayGifs").unwrap().to_string().parse::<bool>().unwrap(),
                         collections: collections,
                         country_code: v.get("props").unwrap().get("pageProps").unwrap().get("region").unwrap().get("countryCode").unwrap().to_string().replace("\"", ""),
-                        region_code: v.get("props").unwrap().get("pageProps").unwrap().get("region").unwrap().get("regionCode").unwrap().to_string().trim().to_string().replace("\"", "").parse().unwrap()
+                        region_code: v.get("props").unwrap().get("pageProps").unwrap().get("region").unwrap().get("regionCode").unwrap().to_string().trim().to_string().replace("\"", "").parse().unwrap(),
+                        tags: HashSet::new()
                     };
                     
                     self.user_data = Some(user_data.clone());

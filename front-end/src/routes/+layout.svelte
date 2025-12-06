@@ -4,6 +4,7 @@
 		
 	import Login from "$lib/components/login.svelte"
 	import Button from '$lib/components/button.svelte';
+	import api from "$lib/api"
 	
 	import { userState, getCookie, loginUser, loading_user } from '../lib/state.svelte.ts';
     import { onMount } from 'svelte';
@@ -11,7 +12,7 @@
 			    
     let current_path = $state(page)
     
-    onMount(() => {      
+    onMount(async () => {      
       if (Object.keys(userState).length === 0) {
         let token = getCookie("user_token")
         
@@ -20,9 +21,15 @@
         }
         
         if (token) {
-          loginUser(token)
+          await loginUser(token)
         }
       }
+      
+      // Fetch tags
+      /*if (Object.keys(userState).length > 0) {
+        let respTags = await fetch(api.popular_tags(token))
+        userState["tags"] = await respTags.json()
+        }*/
     })
     
 	let { children } = $props();

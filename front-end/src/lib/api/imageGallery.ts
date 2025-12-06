@@ -30,8 +30,13 @@ export class ImageGallery {
     let type = Array.from((params['mediaType'] || "").split(",")).filter((i) => i.length > 0)
     let browsingLevel = params["Show NSFW"] ? 31 : 1       
     let techniques = Array.from((params['techniques'] || "").split(",")).filter((i) => i.length > 0).map((i) => parseInt(i)).join(",")
+    let requiringMeta = params["Metadata only"] ? true : false
+    let madeOnsite = params["Made On-site"] ? true : false
+    let originalsOnly = params["Originals Only"] ? true : false
+    let remixesOnly = params["Remixes Only"] ? true : false
+    let tags = Array.from((params['tags'] || "").split(",")).filter((i) => i.length > 0)
         
-    let param_string = `period=${period}&sort=${sort}&baseModel=${baseModel}&mediaType=${type}&cursor=${ImageGallery.cursor}&browsingLevel=${browsingLevel}&techniques=${techniques}`;
+    let param_string = `period=${period}&tags=${tags.join(",")}&originalsOnly=${originalsOnly}&remixesOnly=${remixesOnly}&madeOnsite=${madeOnsite}&requiringMeta=${requiringMeta}&sort=${sort}&baseModel=${baseModel}&mediaType=${type}&cursor=${ImageGallery.cursor}&browsingLevel=${browsingLevel}&techniques=${techniques}`;
     
     const response = await fetch(`${api.infinite_images(user_token, param_string)}`)
     ImageGallery.isFetching = false

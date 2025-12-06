@@ -29,6 +29,9 @@ export const loginUser = async (token: string) => {
     userState[key] = response[key]
   }
   
+  //userState["tags"] = []
+  
+  // Set user
   setCookie("user_token", token, 61)
   window.dispatchEvent(new CustomEvent("FinishloadingUser"));
 }
