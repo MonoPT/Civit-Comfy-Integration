@@ -1,12 +1,26 @@
 import FilterManager from "./filterManager"
 import api from "$lib/api"
 
+type Stats = {
+  collectedCountAllTime: number
+  commentCountAllTime: number
+  cryCountAllTime: number
+  dislikeCountAllTime: number
+  heartCountAllTime: number
+  laughCountAllTime: number
+  likeCountAllTime: number
+  tippedAmountCountAllTime: number
+  viewCountAllTime: number
+}
+
 export interface Image {
   url: string,
   index: number,
   width: number,
   height: number,
-  media_type: string
+  media_type: string,
+  id: number,
+  stats: Stats
 }
 
 export class ImageGallery {
@@ -48,8 +62,7 @@ export class ImageGallery {
     for (let i in image_data) {
       const img = image_data[i]
       if (!ImageGallery.images.includes(img.img_url)) {
-              
-        const image: Image = {url: img.img_url, index: ImageGallery.counter, width: img.width, height: img.height, media_type: img.type}
+        const image: Image = {id: img.id, url: img.img_url, index: ImageGallery.counter, width: img.width, height: img.height, media_type: img.type, stats: img.stats}
         
         ImageGallery.counter += 1
         ImageGallery.images.push(image)
