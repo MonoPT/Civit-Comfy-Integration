@@ -1,5 +1,5 @@
 <script>
-    let isOpen = $state(true)
+    let isOpen = $state(false)
 </script>
 
 <div class="container" class:open={isOpen} id="mediaVisualizer">

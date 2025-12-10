@@ -1,6 +1,7 @@
 <script lang="ts">
     import { onMount } from "svelte";
     import {ImageGallery, type Image} from "$lib/api/imageGallery";
+    import api from "$lib/api"
     import Spinner from "$lib/components/spinner.svelte";
     import {user_token} from "$lib/state.svelte"
     import Header from "$lib/components/header.svelte";
@@ -126,10 +127,19 @@
             target.appendChild(el)
           }
           
-          const src = target.getAttribute("data-url")!
+          const src_civit = target.getAttribute("data-url")!
           const mediaType = target.getAttribute("data-media")! as "image" | "video"
           const media_data_index = Number(target.getAttribute("data-mediaIndex")!)
           const media_data = ImageGallery.images.find((img) => img.index === media_data_index)!
+          
+          const uuid = target.getAttribute("data-uuid")!
+          const src_proxy = `${api.endpoint}/media_proxy?id=${uuid}`
+          
+          let src = src_civit;
+          
+          if (mediaType == "video") {
+            src = src_proxy;
+          }
           
           let media: HTMLImageElement | HTMLVideoElement
           
@@ -205,9 +215,7 @@
     {#each Array.from({ length: columns }, (_, index) => index) as number}
         <div class="column">       
             {#each images[number] as image}
-                <div class="image-wrapper skeleton-loading" data-mediaIndex={image.index} data-media={image.media_type} data-url={image.url} style="--aspectRation: {image.width / image.height}">
-                    
-                </div>
+                <div class="image-wrapper skeleton-loading" data-uuid={image.uuid} data-mediaIndex={image.index} data-media={image.media_type} data-url={image.url} style="--aspectRation: {image.width / image.height}"></div>
             {/each}
         </div>
     {/each}

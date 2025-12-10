@@ -20,7 +20,8 @@ export interface Image {
   height: number,
   media_type: string,
   id: number,
-  stats: Stats
+  stats: Stats,
+  uuid: String
 }
 
 export class ImageGallery {
@@ -62,7 +63,8 @@ export class ImageGallery {
     for (let i in image_data) {
       const img = image_data[i]
       if (!ImageGallery.images.includes(img.img_url)) {
-        const image: Image = {id: img.id, url: img.img_url, index: ImageGallery.counter, width: img.width, height: img.height, media_type: img.type, stats: img.stats}
+        console.log(img)
+        const image: Image = {uuid: img.url, id: img.id, url: img.img_url, index: ImageGallery.counter, width: img.width, height: img.height, media_type: img.type, stats: img.stats}
         
         ImageGallery.counter += 1
         ImageGallery.images.push(image)
