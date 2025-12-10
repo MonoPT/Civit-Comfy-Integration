@@ -137,7 +137,7 @@
           
           let src = src_civit;
           
-          if (mediaType == "video") {
+          if (mediaType == "video") { // redirects video to reverse proxy
             src = src_proxy;
           }
           
