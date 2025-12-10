@@ -1,21 +1,79 @@
-<div class="container open" id="mediaVisualizer">
+<script>
+    let isOpen = $state(true)
+</script>
+
+<div class="container" class:open={isOpen} id="mediaVisualizer">
     <div class="imageWrapper">
         <img src="https://image.civitai.com/xG1nkqKTMzGDvpLrqFT7WA/657f5ee5-b502-4af9-bedc-cbd5e469af7c/original=true,quality=90/113251212.jpeg" alt="">
-        <div class="reactionsWrapper">
-            <span>1</span>
-            <span>1</span>
-            <span>1</span>
-            <span>1</span>
-            <span>1</span>
+        <div class="reactionsContainer">
+            <span>👍 1</span>
+            <span>❤️ 1</span>
+            <span>😂 1</span>
+            <span>😢 1</span>
         </div>
     </div>
     <div class="metaWrapper">
         Lorem ipsum dolor sit amet consectetur adipisicing elit. Aliquam earum excepturi voluptatibus porro rem modi in, vitae nobis, numquam, voluptas velit laboriosam esse odit enim illo quia et nesciunt laudantium quo! Fugiat sit delectus placeat dicta laboriosam dolore consectetur perspiciatis saepe unde, ipsum vitae eum harum, voluptate sequi similique. Neque?
+        <div class="tags">
+            {#each [1,2,3,4,5,6,7,8,9,1,1,1,1,1,1,1,1,1] as i}
+                <span>tag {i}</span>
+            {/each}
+        </div>
+        
+        <div class="data-wrapper card">
+            <h2><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tabler-icon tabler-icon-forms "><path d="M12 3a3 3 0 0 0 -3 3v12a3 3 0 0 0 3 3"></path><path d="M6 3a3 3 0 0 1 3 3v12a3 3 0 0 1 -3 3"></path><path d="M13 7h7a1 1 0 0 1 1 1v8a1 1 0 0 1 -1 1h-7"></path><path d="M5 7h-1a1 1 0 0 0 -1 1v8a1 1 0 0 0 1 1h1"></path><path d="M17 12h.01"></path><path d="M13 12h.01"></path></svg>Generation data</h2>
+        </div>
     </div>
 </div>
 
 
 <style> 
+    .card {
+        background: var(--navBG);
+        border: 1px solid rgba(255,255,255, .1);
+        
+        position: relative;
+        padding: 1rem;
+        width: 100%;
+        min-height: 100px;
+        border-radius: .4rem;
+        
+        h2 {
+            display: flex;
+            align-items: center;
+            gap: .4rem;
+            
+            svg {
+                width: 2rem;
+                aspect-ratio: 1 / 1;
+                display: inline-block;
+            }
+        }
+    }
+    
+    .tags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: calc(var(--spacing) * 2);
+        
+        span {
+            font-size: .9em;
+            background: rgba(255,255,255,.15);
+            border-radius: calc(var(--spacing) * .7);
+            padding: calc(var(--spacing) * 1.5);
+            padding-inline: calc(var(--spacing) * 4);
+        }
+    }
+    
+    .metaWrapper {
+        height: 100%;
+        overflow-y: auto;
+        padding-top: calc(var(--spacing) * 6 + 2rem);
+        display: flex;
+        flex-direction: column;
+        gap: calc(var(--spacing) * 5);
+    }
+    
     .imageWrapper, .metaWrapper {
         max-width: calc(70vw / 2);
     }
@@ -33,7 +91,7 @@
         
         img {
             display: block;
-            height: calc(100% - var(--spacing) * 8);
+            height: calc(100% - var(--spacing) * 8 - 2rem * 2);
             width: auto;
         }
     }
@@ -42,10 +100,35 @@
         overflow: hidden;
     }
     
+    .reactionsContainer {
+        position: absolute;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 2;
+        bottom: 0rem;
+        padding: 1rem;
+        gap: calc(var(--spacing) * 1);
+        width: 100%;
+        flex-wrap: wrap;
+        
+        span {
+            display: flex;
+            align-items: center;
+            gap: calc(var(--spacing) * 2);
+            background: rgba(0,0,0,.6);
+            padding: calc(var(--spacing) * 1);
+            padding-inline: calc(var(--spacing) * 2);
+            border-radius: calc(var(--spacing) * 1);
+            width: max-content;
+            font-size: .8em;
+        }   
+    }
+    
     .container {
         display: flex;
         
-        gap: calc(var(--spacing) * 4);
+        gap: calc(var(--spacing) * 16);
         padding-inline: calc(var(--spacing) * 4);
         align-items: center;
         justify-content: center;
