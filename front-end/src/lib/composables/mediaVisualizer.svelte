@@ -1,5 +1,15 @@
 <script>
+    import { onMount } from "svelte";
+
     let isOpen = $state(false)
+    
+    onMount(() => 
+      window.addEventListener("loadMediaVisualizer", (e) => {
+        //@ts-ignore
+        let id = e.detail
+        console.log(id)
+      })
+    )
 </script>
 
 <div class="container" class:open={isOpen} id="mediaVisualizer">

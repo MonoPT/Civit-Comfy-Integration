@@ -137,11 +137,7 @@
           
           // redirects to reverse proxy
           let src = `${src_proxy}&media_type=${mediaType}`; 
-          
-          /*if ( == "video") {
-            src = `${src_proxy}&media_type=video`; 
-            }*/
-          
+                   
           let media: HTMLImageElement | HTMLVideoElement
           
           if (mediaType == "image") {
@@ -190,13 +186,21 @@
         threshold: 0.0,
       });
       
+    
       
       const mutationObserver = new MutationObserver((mutations) => {
           mutations.forEach(mutation => {
             mutation.addedNodes.forEach((node) => {
               if (node.nodeName !== "#text") {
-                if (!(node as HTMLElement).classList.contains("image-wrapper")) return
+                if (!(node as HTMLElement).classList.contains("image-wrapper") || (node as HTMLElement).classList.contains("registered")) return
+                (node as HTMLElement).classList.add("registered")
                 
+                node.addEventListener("click", (_) => {
+                  //@ts-ignore
+                  const id = node.getAttribute("data-id")!
+                  
+                  window.dispatchEvent(new CustomEvent("loadMediaVisualizer", {detail: id}))
+                })
                 observerPerfOt.observe(node as HTMLElement)
               }
             })
@@ -216,7 +220,7 @@
     {#each Array.from({ length: columns }, (_, index) => index) as number}
         <div class="column">       
             {#each images[number] as image}
-                <div class="image-wrapper skeleton-loading" data-uuid={image.uuid} data-mediaIndex={image.index} data-media={image.media_type} data-url={image.url} style="--aspectRation: {image.width / image.height}"></div>
+                <div class="image-wrapper skeleton-loading" data-id={image.id} data-uuid={image.uuid} data-mediaIndex={image.index} data-media={image.media_type} data-url={image.url} style="--aspectRation: {image.width / image.height}"></div>
             {/each}
         </div>
     {/each}
