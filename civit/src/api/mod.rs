@@ -5,12 +5,15 @@ mod user;
 mod image_infinite;
 mod tags_id;
 mod creator;
+mod generation_data;
 
 use serde::Deserialize;
 pub use models::{ModelsOptions, Model};
-pub use tags_id::{TagsOptions, TagsSort, TagsResponse};
+pub use tags_id::{TagsOptions, TagsSort, TagsResponse, VotableTagsResponse};
 pub use download::DownloadOptions;
 pub use image_infinite::ImagesInfiniteLoadOptions;
+pub use creator::Creator;
+pub use generation_data::GenerationData;
 
 pub use crate::api::user::UserData;
 
