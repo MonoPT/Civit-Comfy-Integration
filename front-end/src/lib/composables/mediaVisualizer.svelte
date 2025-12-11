@@ -4,6 +4,7 @@
     import {user_token} from "$lib/state.svelte"
     import {ImageGallery, type Image} from "$lib/api/imageGallery";
     import Spinner from "$lib/components/spinner.svelte";
+    import Controls from "$lib/components/visualizerContros.svelte"
     
     type GenData = {
       tags: {automated:boolean,concrete:boolean,downVotes:number,id:number,lastUpvote:string, name:string, needsReview: boolean, nsfwLevel:number, score: number, type:string, upVotes: number}[],
@@ -105,6 +106,26 @@
       
       observer.observe(container, config);
     })
+    
+    let meta_is_open = false
+    
+    onMount(() => {
+      window.addEventListener("visualizerToggleMeta", () => {
+        meta_is_open = !meta_is_open
+        
+        document.getElementById("mediaVisualizer")?.removeAttribute("data-open-metadata")
+        
+        if (meta_is_open) {
+          document.getElementById("mediaVisualizer")?.setAttribute("data-open-metadata", "")
+        }
+      })
+      
+      window.addEventListener("closeVisualizer", () => {
+        isOpen = false
+        meta_is_open = false
+        document.getElementById("mediaVisualizer")?.removeAttribute("data-open-metadata")
+      })
+    })
 </script>
 
 <div class="container" class:open={isOpen} id="mediaVisualizer">
@@ -127,6 +148,10 @@
                 <span>😢 {data.media_data.stats.cryCountAllTime}</span>
             {/if}
         </div>
+        
+        <div class="card mobileFastActions">
+            <Controls is_mobile={true} />
+        </div>
     </div>
     
     <div class="metaWrapper">
@@ -137,6 +162,14 @@
             </div>
         {:else}
             
+            <div class="card mobileFastActions">
+                <Controls open={true} is_mobile={true} />
+            </div>
+            
+            <div class="card cardDesktopFastActions">
+                <Controls />
+            </div>
+        
             {#if data.tags.length > 0}
                 <div class="card tagContainer">
                     <h2>Tags</h2>
@@ -254,7 +287,7 @@
 </div>
 
 
-<style> 
+<style>     
     .Images-Loading-Wrapper {
         display: flex;
         flex-direction: column;
@@ -482,6 +515,8 @@
         border-radius: .4rem;
         min-height: max-content;
         width: 100%;
+        
+        max-width: 80vw;
                 
         h2 {
             padding-top: 0;
@@ -555,15 +590,11 @@
         }
     }
     
-    .imageWrapper, .metaWrapper {
-        width: calc(70vw / 2);
-        
-        @media (max-width: 1100px) {
-            width: calc(100vw / 2);
-        }
-    }
+    
     
     .imageWrapper {
+        --spaceTop: 0px;
+        
         display: flex;
         align-items: center;
         justify-content: center;
@@ -576,7 +607,7 @@
         
         img, video {
             display: block;
-            height: calc(100% - var(--spacing) * 8 - 2rem * 2);
+            height: calc(100% - var(--spacing) * 8 - 2rem * 2 - var(--spaceTop));
             width: auto;
             
             &.landscape {
@@ -617,7 +648,68 @@
         }   
     }
     
+    .mobileFastActions {
+        display: none;
+        max-width: min(500px, 80vw);
+    }
+    
     .container {
+        .imageWrapper, .metaWrapper {
+            width: calc(70vw / 2);
+            
+            @media (max-width: 1100px) {
+                width: calc(100vw / 2);
+            }
+        }
+        
+        @media (max-width: 850px) {
+            .imageWrapper, .metaWrapper {
+                width: 100vw;
+                transition: .2s;
+            }
+            
+            .mobileFastActions {
+                display: block;
+            }
+            
+            .cardDesktopFastActions {
+                display: none;
+            }
+            
+            .metaWrapper {
+                position: absolute;
+                z-index: 99;
+                align-items: center;
+            }
+            
+            .imageWrapper {
+                padding: 0;
+                --spaceTop: 100px;
+                
+                img, video {
+                    
+                }
+                
+                
+                .reactionsContainer  {
+                    position: relative;
+                    padding: 0;
+                }
+            }
+            
+            &:not([data-open-metadata]) .metaWrapper {
+                transform: translateY(-100vh);
+            }
+            
+            :global(&[data-open-metadata]) .imageWrapper {
+                transform: translateY(-100vh);
+            }
+        }
+    }
+    
+    .container {
+        
+        
         display: flex;
         
         gap: calc(var(--spacing) * 16);
@@ -641,5 +733,6 @@
             opacity: 0;
             scale: .4;
         }
+        
     }
 </style>

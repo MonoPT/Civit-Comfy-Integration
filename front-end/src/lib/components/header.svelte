@@ -211,6 +211,26 @@
                 margin-left: 0;
             }
         }
+        
+        @media (max-width: 550px) {
+            .wrap {
+                display: flex;
+                
+              
+                :global(> :nth-child(1)) {
+                    grid-area: unset;
+                }
+                
+                :global(> :nth-child(2)) {
+                    grid-area: unset;
+                }
+                
+                :global(> :nth-child(3)) {
+                    grid-area: unset;
+                }
+            }
+            
+        }
     }
     
     .header:has(:global(input[name="openPopUpButton"]:checked)) {
