@@ -30,6 +30,7 @@ async fn main() {
         .merge(api::user::route())
         .merge(api::mansonary::route()) //Infinite media mansonary data
         .merge(api::tags::route())
+        .merge(api::visualizer_data::route())
         
         .fallback_service(ServeDir::new(static_files))
         .layer(ServiceBuilder::new().layer(cors_layer));

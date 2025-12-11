@@ -1,6 +1,7 @@
 use serde::{Deserialize, Serialize};
 use serde_json::json;
 use std::hash::{Hash, Hasher};
+use reqwest::header::{AUTHORIZATION, CONTENT_TYPE};
 
 
 use crate::Civit;
@@ -118,5 +119,44 @@ impl Eq for TagsResponse {}
 impl Hash for TagsResponse {
     fn hash<H: Hasher>(&self, state: &mut H) {
         self.id.hash(state);
+    }
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct VotableTagsResponse {
+    score: usize,
+    upVotes: usize,
+    downVotes: usize,
+    automated: bool,
+    needsReview: bool,
+    concrete: bool,
+    lastUpvote: Option<String>,
+    id: usize,
+    #[serde(rename = "type")]
+    tag_type: String,
+    nsfwLevel: usize,
+    name: String
+}
+
+impl Civit {
+    pub async fn votable_tags(&self, media_id: usize) -> Vec<VotableTagsResponse> {
+        let client = &self.client;
+        
+        let response = client
+                .get(format!("https://civitai.com/api/trpc/tag.getVotableTags?input={{\"json\":{{\"id\":{media_id},\"type\": \"image\",\"authed\":true}}}}"))
+                .header(CONTENT_TYPE, "application/json")
+                .header(AUTHORIZATION, format!("Bearer {}", &self.api_key))
+                .send()
+                .await.unwrap().json::<Value>().await.unwrap_or_default();
+        
+        let res = response.get("result").unwrap_or_default().get("data").unwrap_or_default().get("json").unwrap_or_default();
+        
+        return match serde_json::from_value::<Vec<VotableTagsResponse>>(res.clone()) {
+            Err(e) => {
+                println!("{e}");
+                vec![]
+            },
+            Ok(tags) => tags
+        };
     }
 }
