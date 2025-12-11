@@ -31,7 +31,7 @@ pub struct Tool {
     name: String,
     icon: Option<String>,
     domain: Option<String>,
-    priority: Option<String>,
+    priority: Option<usize>,
     notes: Option<String>
 }
 
@@ -63,6 +63,7 @@ impl Civit {
         
         return match serde_json::from_value::<GenerationData>(res.clone()) {
             Err(e) => {
+                dbg!(&res);
                 println!("{e}");
                 None
             },

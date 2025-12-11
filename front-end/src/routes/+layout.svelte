@@ -52,6 +52,11 @@
                 <li><Button active_route="/image" current_route={current_path.url.pathname} onclick={() => {goto("/image")}} icon={1} no_bg={true} hoverColor="#3c3d42" bgHover={true} extraPadding={true}>Images</Button></li>
                 <li><Button active_route="/video" current_route={current_path.url.pathname} onclick={() => {goto("/video")}} icon={5} no_bg={true} hoverColor="#3c3d42" bgHover={true} extraPadding={true}>Videos</Button></li>
                 <li><Button active_route="/models" current_route={current_path.url.pathname} onclick={() => {goto("/models")}} icon={2} no_bg={true} hoverColor="#3c3d42" bgHover={true} extraPadding={true}>Models</Button></li>            
+            
+                <h2>{userState.user_name}</h2>
+                <li><Button active_route="/favorites" current_route={current_path.url.pathname} onclick={() => {goto("/favorites")}} icon={7} no_bg={true} hoverColor="#3c3d42" bgHover={true} extraPadding={true}>Favorites</Button></li>
+                <li><Button active_route="/liked-models" current_route={current_path.url.pathname} onclick={() => {goto("/liked-models")}} icon={7} no_bg={true} hoverColor="#3c3d42" bgHover={true} extraPadding={true}>Liked Models</Button></li>
+                <li><Button active_route="/collections" current_route={current_path.url.pathname} onclick={() => {goto("/collections")}} icon={8} no_bg={true} hoverColor="#3c3d42" bgHover={true} extraPadding={true}>Collections</Button></li>
             </ul>
         </nav>
         <main>
@@ -96,6 +101,7 @@
                 
                 h2 + li {
                     margin-top: calc(var(--spacing) * 8);
+
                 }
                 
                 li, ul, & {
@@ -142,6 +148,12 @@
                     letter-spacing: .03em;
                     margin-block: 1rem;
                     padding-top: calc(.25rem * 5);
+                    
+                    overflow: hidden;
+                    display: -webkit-box;
+                    -webkit-line-clamp: 1;
+                    line-clamp: 1;
+                    -webkit-box-orient: vertical;
                     
                     @media (max-width: 670px) {
                         display: none;

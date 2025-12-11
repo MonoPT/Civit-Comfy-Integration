@@ -18,7 +18,7 @@ pub struct Creator {
     links: Vec<CreatorLink>,
     stats: CreatorStats,
     rank: Option<Rank>,
-    profilePicture: profilePicture
+    profilePicture: Option<profilePicture>
 }
 
 #[derive(Debug, Deserialize, Serialize)]
@@ -48,17 +48,17 @@ pub struct CreatorStats {
 
 #[derive(Debug, Deserialize, Serialize)]
 pub struct profilePicture {
-    id: usize,
-    name: String,
-    url: String,
-    nsfwLevel: usize,
-    hash: String,
-    userId: usize,
-    ingestion: String,
+    id: Option<usize>,
+    name: Option<String>,
+    url: Option<String>,
+    nsfwLevel: Option<usize>,
+    hash: Option<String>,
+    userId: Option<usize>,
+    ingestion: Option<String>,
     #[serde(rename = "type")]
-    media_type: String,
-    width: usize,
-    height: usize
+    media_type: Option<String>,
+    width: Option<usize>,
+    height: Option<usize>
 }
 
 impl Civit {

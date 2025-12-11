@@ -42,7 +42,7 @@
         //@ts-ignore
         let {id, creator_id, image_uuid} = e.detail
         isOpen = true;
-        
+                
         const media_data = ImageGallery.images.find((img) => img.uuid === image_uuid)!
         const mediaType = media_data.media_type as "image" | "video"
         
@@ -50,16 +50,17 @@
         const src_proxy = `${api.endpoint}/media_proxy?id=${uuid}`
         
         let src = `${src_proxy}&media_type=${mediaType}`; 
-        
+                
         data.media_type = mediaType
         data.image = src
         data.media_data = media_data
-        
+                
         if (media_data.width > media_data.height) {
           data.landscape = true
         }
                 
         const req = await fetch(api.media_data(user_token.token, id, creator_id));
+        isLoadingData = false
         
         if (req.status !== 200) {
           console.log(await req.text())
@@ -68,13 +69,9 @@
         }
         
         const resp_data = await req.json()
-        
-        console.log(resp_data)
-        
+                
         data.tags = resp_data.votable_tags
         data.gen_data = resp_data.generation_data
-                
-        isLoadingData = false
       })
     )
     
@@ -120,9 +117,25 @@
         }
       })
       
+      window.addEventListener("downloadVisualizerMedia", async () => {
+        const media = document.querySelector("#mediaVisualizer :is(img, video source)")!
+        
+        //@ts-ignore
+        const response = await fetch(media.src);
+        const blob = await response.blob();
+    
+        const blobUrl = URL.createObjectURL(blob);
+        
+        const a = document.createElement("a");
+        a.href = blobUrl;
+        a.download = `${data.media_data?.id}.${data.media_type === "image" ? 'jpg' : 'mp4'}`;
+        a.click();
+      })
+      
       window.addEventListener("closeVisualizer", () => {
         isOpen = false
         meta_is_open = false
+        data.media_type = "image"
         document.getElementById("mediaVisualizer")?.removeAttribute("data-open-metadata")
       })
     })

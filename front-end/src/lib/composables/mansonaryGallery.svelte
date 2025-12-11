@@ -311,6 +311,9 @@
                    gap: calc(var(--spacing) * 1);
                    width: 100%;
                    flex-wrap: wrap;
+                   opacity: 0;
+                   transform: translateY(100px);
+                   transition: .12s;
                    
                    :global(span) {
                        display: flex;
@@ -330,8 +333,12 @@
                            height: max-content;
                        }
                    }
-                   
-               } 
+               }
+              
+               &:hover :global(.reactionsContainer) {
+                   opacity: 1;
+                   transform: translateY(0);
+               }
             }
         }
                 
