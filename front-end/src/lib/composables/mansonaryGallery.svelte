@@ -135,11 +135,12 @@
           const uuid = target.getAttribute("data-uuid")!
           const src_proxy = `${api.endpoint}/media_proxy?id=${uuid}`
           
-          let src = src_civit;
+          // redirects to reverse proxy
+          let src = `${src_proxy}&media_type=${mediaType}`; 
           
-          if (mediaType == "video") { // redirects video to reverse proxy
-            src = src_proxy;
-          }
+          /*if ( == "video") {
+            src = `${src_proxy}&media_type=video`; 
+            }*/
           
           let media: HTMLImageElement | HTMLVideoElement
           
