@@ -6,11 +6,33 @@ use serde_json::Value;
 #[derive(Debug, Deserialize, Serialize)]
 pub struct GenerationData {
     #[serde(rename = "type")]
-    media_type: String,
+    media_type: Option<String>,
     onSite: bool,
-    process: String,
+    process: Option<String>,
     meta: Value,
     resources: Vec<Resource>,
+    tools: Vec<Tool>,
+    techniques: Vec<Technique>,
+    remixOfId: Option<usize>,
+    external: Value,
+    canRemix: Option<bool>
+}
+
+#[derive(Debug, Deserialize, Serialize)]
+pub struct Technique { 
+    id: usize,
+    name: String,
+    notes: Option<String>
+}
+
+#[derive(Debug, Deserialize, Serialize)]
+pub struct Tool { 
+    id: usize,
+    name: String,
+    icon: Option<String>,
+    domain: Option<String>,
+    priority: Option<String>,
+    notes: Option<String>
 }
 
 #[derive(Debug, Deserialize, Serialize)]

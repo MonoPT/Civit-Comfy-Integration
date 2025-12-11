@@ -17,8 +17,16 @@ pub struct Creator {
     excludeFromLeaderboards: bool,
     links: Vec<CreatorLink>,
     stats: CreatorStats,
-    rank: Option<String>,
+    rank: Option<Rank>,
     profilePicture: profilePicture
+}
+
+#[derive(Debug, Deserialize, Serialize)]
+pub struct Rank {
+    leaderboardCosmetic: String,
+    leaderboardId: String,
+    leaderboardRank: usize,
+    leaderboardTitle: String
 }
 
 #[derive(Debug, Deserialize, Serialize)]
@@ -70,6 +78,7 @@ impl Civit {
         
         return match serde_json::from_value::<Creator>(res.clone()) {
             Err(e) => {
+                dbg!(res);
                 println!("{e}");
                 None
             },

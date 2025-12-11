@@ -1,32 +1,82 @@
-<script>
+<script lang="ts">
     import { onMount } from "svelte";
-
+    import api from "$lib/api"
+    import {user_token} from "$lib/state.svelte"
+    import {ImageGallery, type Image} from "$lib/api/imageGallery";
+    
+    type GenData = {
+      tags: {automated:boolean,concrete:boolean,downVotes:number,id:number,lastUpvote:string, name:string, needsReview: boolean, nsfwLevel:number, score: number, type:string, upVotes: number}[],
+      image: string,
+      media_type: "image" | "video",
+      media_data: null | Image
+    }
+    
     let isOpen = $state(false)
+    let data: GenData = $state({
+      tags: [],
+      image: "",
+      media_type: "image",
+      media_data: null
+    })
     
     onMount(() => 
-      window.addEventListener("loadMediaVisualizer", (e) => {
+      window.addEventListener("loadMediaVisualizer", async (e) => {
         //@ts-ignore
-        let id = e.detail
-        console.log(id)
+        let {id, creator_id, image_uuid} = e.detail
+        isOpen = true;
+        
+        const media_data = ImageGallery.images.find((img) => img.uuid === image_uuid)!
+        const mediaType = media_data.media_type as "image" | "video"
+        
+        const uuid = media_data.uuid
+        const src_proxy = `${api.endpoint}/media_proxy?id=${uuid}`
+        
+        let src = `${src_proxy}&media_type=${mediaType}`; 
+        
+        data.media_type = mediaType
+        data.image = src
+        data.media_data = media_data
+                
+        const req = await fetch(api.media_data(user_token.token, id, creator_id));
+        
+        if (req.status !== 200) return
+        
+        const resp_data = await req.json()
+        
+        console.log(resp_data)
+        
+        data.tags = resp_data.votable_tags
+        
+        
       })
     )
 </script>
 
 <div class="container" class:open={isOpen} id="mediaVisualizer">
     <div class="imageWrapper">
-        <img src="https://image.civitai.com/xG1nkqKTMzGDvpLrqFT7WA/657f5ee5-b502-4af9-bedc-cbd5e469af7c/original=true,quality=90/113251212.jpeg" alt="">
+        {#if data.media_type === "image"}
+            <img src={data.image} alt="">
+            {:else}
+            <video autoplay muted loop>
+                <track kind="captions" />
+                <source src={data.image}/>
+            </video>
+        {/if}
+        
+            
         <div class="reactionsContainer">
-            <span>👍 1</span>
-            <span>❤️ 1</span>
-            <span>😂 1</span>
-            <span>😢 1</span>
+            {#if data.media_data}
+                <span>👍 {data.media_data.stats.likeCountAllTime}</span>
+                <span>❤️ {data.media_data.stats.heartCountAllTime}</span>
+                <span>😂 {data.media_data.stats.laughCountAllTime}</span>
+                <span>😢 {data.media_data.stats.cryCountAllTime}</span>
+            {/if}
         </div>
     </div>
     <div class="metaWrapper">
-        Lorem ipsum dolor sit amet consectetur adipisicing elit. Aliquam earum excepturi voluptatibus porro rem modi in, vitae nobis, numquam, voluptas velit laboriosam esse odit enim illo quia et nesciunt laudantium quo! Fugiat sit delectus placeat dicta laboriosam dolore consectetur perspiciatis saepe unde, ipsum vitae eum harum, voluptate sequi similique. Neque?
         <div class="tags">
-            {#each [1,2,3,4,5,6,7,8,9,1,1,1,1,1,1,1,1,1] as i}
-                <span>tag {i}</span>
+            {#each data.tags as tag}
+                <span data-tag-id={tag.id}>{tag.name}</span>
             {/each}
         </div>
         
@@ -65,6 +115,8 @@
         width: 100%;
         min-height: 100px;
         border-radius: .4rem;
+        min-height: max-content;
+        width: 100%;
                 
         h2 {
             padding-top: 0;
@@ -87,7 +139,7 @@
         gap: calc(var(--spacing) * 2);
         
         span {
-            font-size: .9em;
+            font-size: .8em;
             background: rgba(255,255,255,.15);
             border-radius: calc(var(--spacing) * .7);
             padding: calc(var(--spacing) * 1.5);
@@ -128,7 +180,7 @@
     }
     
     .imageWrapper, .metaWrapper {
-        max-width: calc(70vw / 2);
+        width: calc(70vw / 2);
     }
     
     .imageWrapper {
@@ -142,7 +194,7 @@
         
         
         
-        img {
+        img, video {
             display: block;
             height: calc(100% - var(--spacing) * 8 - 2rem * 2);
             width: auto;

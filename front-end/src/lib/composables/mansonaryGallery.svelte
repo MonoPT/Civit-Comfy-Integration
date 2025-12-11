@@ -198,8 +198,12 @@
                 node.addEventListener("click", (_) => {
                   //@ts-ignore
                   const id = node.getAttribute("data-id")!
+                  //@ts-ignore
+                  const creator_id = node.getAttribute("data-creator-id")!
+                  //@ts-ignore
+                  const image_uuid = node.getAttribute("data-uuid")!                  
                   
-                  window.dispatchEvent(new CustomEvent("loadMediaVisualizer", {detail: id}))
+                  window.dispatchEvent(new CustomEvent("loadMediaVisualizer", {detail: {id, creator_id, image_uuid}}))
                 })
                 observerPerfOt.observe(node as HTMLElement)
               }
@@ -220,7 +224,7 @@
     {#each Array.from({ length: columns }, (_, index) => index) as number}
         <div class="column">       
             {#each images[number] as image}
-                <div class="image-wrapper skeleton-loading" data-id={image.id} data-uuid={image.uuid} data-mediaIndex={image.index} data-media={image.media_type} data-url={image.url} style="--aspectRation: {image.width / image.height}"></div>
+                <div class="image-wrapper skeleton-loading" data-creator-id={image.creatorId} data-id={image.id} data-uuid={image.uuid} data-mediaIndex={image.index} data-media={image.media_type} data-url={image.url} style="--aspectRation: {image.width / image.height}"></div>
             {/each}
         </div>
     {/each}
