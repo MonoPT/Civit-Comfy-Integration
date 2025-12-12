@@ -5,13 +5,13 @@
 <span class="loader" style="width: {size}px; height: {size}px; --tickness: {tickness}px"></span>
 
 <style>
-    .loader {
+    :global(.loader) {
         display: block;
         border-radius: 50%;
         position: relative;
         animation: rotate 1s linear infinite;
     }
-    .loader::before {
+    :global(.loader::before) {
         content: "";
         box-sizing: border-box;
         position: absolute;
