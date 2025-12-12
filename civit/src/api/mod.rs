@@ -6,6 +6,7 @@ mod image_infinite;
 mod tags_id;
 mod creator;
 mod generation_data;
+mod collections;
 
 use serde::Deserialize;
 pub use models::{ModelsOptions, Model};
@@ -14,6 +15,7 @@ pub use download::DownloadOptions;
 pub use image_infinite::ImagesInfiniteLoadOptions;
 pub use creator::Creator;
 pub use generation_data::GenerationData;
+pub use collections::CollectionType;
 
 pub use crate::api::user::UserData;
 

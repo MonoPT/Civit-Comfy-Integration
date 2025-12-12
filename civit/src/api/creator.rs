@@ -65,8 +65,6 @@ impl Civit {
     pub async fn creator(&self, creator_id: u32) -> Option<Creator> {
         let client = &self.client;
         
-        
-           
         let response = client
                 .get(format!("https://civitai.com/api/trpc/user.getCreator?input={{\"json\":{{\"id\":{creator_id},\"authed\":true}}}}"))
                 .header(CONTENT_TYPE, "application/json")
