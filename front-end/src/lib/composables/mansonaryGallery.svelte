@@ -91,9 +91,7 @@
         })          
       })
       
-      
       const observer = new IntersectionObserver(handleIntersection, {root: null, rootMargin: '0px', threshold: 0});
-      
       observer.observe(imageGallerySentinel);
     })
     
@@ -111,7 +109,6 @@
       let ids = data.map((el: any) => el.collectionId);
                   
       collection_list[id] = ids;
-      //ids.forEach((id: number) => collection_list[id].push(id))
       
       const loader = target.querySelector(".loader")
       if (loader) loader.remove()
@@ -119,7 +116,7 @@
       add_fast_items_by_element_id(id)
     }
     
-    const favoriteMedia = async (id: number) => {
+    const favoriteMedia = async (id: number, favorite = true) => {
       const target = document.querySelector(`.image-wrapper[data-id="${id}"]`)
       if(!target) return
       
@@ -133,8 +130,12 @@
       
       target.appendChild(spinner)
       
-      const res = await fetch(api.favorite_media(user_token.token, id))
-      console.log(await res.text())
+      if (favorite) {
+        await fetch(api.favorite_media(user_token.token, id))
+      } else {
+        await fetch(api.unfavorite_media(user_token.token, id))
+      }
+      
       
       load_collection_data_by_media_id(id)
     }
@@ -162,18 +163,25 @@
       let favoriteIcon = document.createElement("span")
       favoriteIcon.classList.add("favoriteIcon")
       
+      favoriteIcon.innerHTML = `<svg class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-1phnduy" focusable="false" aria-hidden="true" viewBox="0 0 24 24"><path d="m12 21.35-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54z"></path></svg>`
+      
       if (in_collections.includes(favorite_collection_id)) {
-        favoriteIcon.innerHTML = `<svg fill="#ec2727" height="200px" width="200px" version="1.1" id="Filled_Icons" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 24 24" enable-background="new 0 0 24 24" xml:space="preserve"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <g id="Favorite-Filled"> <path d="M12,22C9.63,20.17,1,13.12,1,7.31C1,4.38,3.47,2,6.5,2c1.9,0,3.64,0.93,4.65,2.48L12,5.78l0.85-1.3 C13.86,2.93,15.6,2,17.5,2C20.53,2,23,4.38,23,7.31C23,13.15,14.38,20.18,12,22z"></path> </g> </g></svg>`
+        favoriteIcon.classList.add("favorited")
+        favoriteIcon.addEventListener("click", () => favoriteMedia(id, false))
       } else {
-        favoriteIcon.innerHTML = `<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <path fill-rule="evenodd" clip-rule="evenodd" d="M11.993 5.09691C11.0387 4.25883 9.78328 3.75 8.40796 3.75C5.42122 3.75 3 6.1497 3 9.10988C3 10.473 3.50639 11.7242 4.35199 12.67L12 20.25L19.4216 12.8944L19.641 12.6631C20.4866 11.7172 21 10.473 21 9.10988C21 6.1497 18.5788 3.75 15.592 3.75C14.2167 3.75 12.9613 4.25883 12.007 5.09692L12 5.08998L11.993 5.09691ZM12 7.09938L12.0549 7.14755L12.9079 6.30208L12.9968 6.22399C13.6868 5.61806 14.5932 5.25 15.592 5.25C17.763 5.25 19.5 6.99073 19.5 9.10988C19.5 10.0813 19.1385 10.9674 18.5363 11.6481L18.3492 11.8453L12 18.1381L5.44274 11.6391C4.85393 10.9658 4.5 10.0809 4.5 9.10988C4.5 6.99073 6.23699 5.25 8.40796 5.25C9.40675 5.25 10.3132 5.61806 11.0032 6.22398L11.0921 6.30203L11.9452 7.14752L12 7.09938Z"></path> </g></svg>`;
+        favoriteIcon.addEventListener("click", () => favoriteMedia(id))
       }
       
-      // todo: store collections in state and get id of favorite collections
-      
-      favoriteIcon.addEventListener("click", () => favoriteMedia(id))
+      let collectionsButton = document.createElement("span")
+      collectionsButton.classList.add("Collections")
+      collectionsButton.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#2F9E44" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="tabler-icon tabler-icon-bookmark "><path d="M18 7v14l-6 -4l-6 4v-14a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4z"></path></svg>`
+            
+      collectionsButton.addEventListener("click", () => window.dispatchEvent(new CustomEvent("openCollectionSelector", {
+        detail: {id, media_type: "Image"}
+      })))
       
       container.appendChild(favoriteIcon)
-      
+      container.appendChild(collectionsButton)
       target.appendChild(container)
     }
     
@@ -286,8 +294,6 @@
         threshold: 0.0,
       });
       
-    
-      
       const mutationObserver = new MutationObserver((mutations) => {
           mutations.forEach(mutation => {
             mutation.addedNodes.forEach((node) => {              
@@ -351,7 +357,25 @@
 <style>   
    
     .image-wrapper {
+        --iconsClr: rgba(255,255,255, .8);
+        
+        &:after {
+            content: '';
+            background: #000;
+            background: linear-gradient(180deg,rgba(0, 0, 0, .8) 0%, rgba(0, 0, 0, 0) 100%);
+            width: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
+            min-height: 80px;
+            z-index: 1;
+            pointer-events: none;
+            opacity: 0;
+            transition: .12s;
+        }
+        
         :global(.loader), :global(.fastActions) {
+            z-index: 2;
             transition: .12s;
             opacity: 0;
             position: absolute;
@@ -359,22 +383,38 @@
             top: .5rem;
         }
         
-        &:hover :global(.loader), &:hover :global(.fastActions) {
+        &:hover :global(.loader), &:hover :global(.fastActions), &:hover:after {
             opacity: 1;
         }
         
         :global(.fastActions) {
+            display: flex;
+            gap: .5rem;
+            
             :global(span) {
                 cursor: pointer;
+                
+                :global(&.Collections) {
+                 :global(svg path) {
+                     stroke: var(--iconsClr);
+                 }   
+                }
             }
                         
             :global(svg) {
                 width: 1.5rem;
                 height: max-content;
                 
-                
                 :global(path) {
-                    fill: #ec2727;
+                    stroke: var(--iconsClr);
+                    fill: transparent;
+                    stroke-width: 1.5;
+                }
+            }
+            
+            :global(.favorited) {
+                :global(svg path) {
+                    fill: var(--iconsClr);
                 }
             }
         }

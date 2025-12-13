@@ -13,7 +13,7 @@ struct CollectionItem {
 }
 
 impl Civit {
-    pub async fn collection_save_item_by_id(&self, add_collection: &Vec<Collection>, media_id: usize, media_type: CollectionType) -> String {       
+    pub async fn collection_save_item_by_id(&self, add_collection: &Vec<Collection>, remove_collection: &Vec<Collection>, media_id: usize, media_type: CollectionType) -> String {       
         let mut cookies = std::collections::HashMap::new();
         cookies.insert("__Secure-civitai-token", &self.auth_token);
                 
@@ -28,6 +28,8 @@ impl Civit {
             read: c.read.to_string()
         }).collect::<Vec<CollectionItem>>();
         
+        let remove_collection = remove_collection.iter().map(|collection| collection.id).collect::<Vec<usize>>();
+        
         let response = self.client.post(format!("https://civitai.com/api/trpc/collection.saveItem"))
             .headers(headers)
             .json(&json!({
@@ -35,7 +37,7 @@ impl Civit {
                 "imageId": media_id,
                 "type": media_type,
                 "collections": add_collection,
-                "removeFromCollectionIds": [],
+                "removeFromCollectionIds": remove_collection,
                 "authed": true
               }
             }))

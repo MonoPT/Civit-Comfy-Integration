@@ -17,12 +17,20 @@ export default class API {
     return `${this.endpoint}/media_data/${user_id}/${model_id}?&token=${token}`
   }
   
+  static get_collections(token: string) {
+    return `${this.endpoint}/get_collections?&token=${token}`
+  }
+  
   static collections_with_media(token: string, media_id: number) {
     return `${this.endpoint}/collection_with_media/${media_id}?&token=${token}`
   }
   
   static favorite_media(token: string, media_id: number) {
-    return `${this.endpoint}/favorite_media/${media_id}?&token=${token}`
+    return `${this.endpoint}/favorite_media/${media_id}?token=${token}`
+  }
+  
+  static unfavorite_media(token: string, media_id: number) {
+    return `${this.endpoint}/unfavorite_media/${media_id}?token=${token}`
   }
   
 }

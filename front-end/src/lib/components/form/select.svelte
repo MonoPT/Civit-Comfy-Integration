@@ -20,10 +20,11 @@
       data_options: OptionItem[],
       enable_search?: boolean,
       selected?: string[],
-      select_list_cards?: boolean
+      select_list_cards?: boolean,
+      onlySelect?: boolean
     }
     
-    let {icon = 1, icon_pos = "right", btn_onclick = (a: any) => {}, empty_name = "", name = "", selection_name = "", data_options = [], maxContent = undefined, singleOption = false, enable_search = true, selected = [], select_list_cards = false}: propList = $props()
+    let {icon = 1, onlySelect = false, icon_pos = "right", btn_onclick = (a: any) => {}, empty_name = "", name = "", selection_name = "", data_options = [], maxContent = undefined, singleOption = false, enable_search = true, selected = [], select_list_cards = false}: propList = $props()
     
     let btn: HTMLElement | undefined = $state();
     let input: HTMLInputElement
@@ -133,7 +134,7 @@
     })
 </script>
 
-<div style="--popupMaxH: {maxHeightSelectPopup}" class:MaxContent={maxContent} class="input-wrapper mainContainer {icon > 0 ? 'icon' : ''} {icon_pos}" class:menuOpen={menu_is_open} bind:this={component_ref}>
+<div style="--popupMaxH: {maxHeightSelectPopup}" class:onlySelect class:MaxContent={maxContent} class="input-wrapper mainContainer  {icon > 0 ? 'icon' : ''} {icon_pos}" class:menuOpen={menu_is_open} bind:this={component_ref}>
     <label class="wrap" bind:this={label}>
         {#if icon > 0}
             <div class="icon">
@@ -315,6 +316,18 @@
                     }
                 }
             }
+        }
+    }
+    
+    .mainContainer.onlySelect {
+        .dropdown-container {
+            position: relative;
+            opacity: 1;
+            transform: scaleY(1);
+        }
+        
+        label {
+            display: none;
         }
     }
     
