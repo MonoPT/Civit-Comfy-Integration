@@ -1,5 +1,8 @@
 <script lang="ts">
     import { onMount } from "svelte";
+    import Spinner from "$lib/components/spinner.svelte"
+    import api from "$lib/api";
+    import { user_token, userState } from "$lib/state.svelte";
     
     let {open = false, is_mobile=false, media_id = 0, media_type = "Image"} = $props()
     
@@ -7,6 +10,11 @@
     let buttonClose: HTMLElement
     let downloadButton: HTMLElement
     let collectionsButton: HTMLElement
+    let favoriteButton: HTMLElement
+    
+    let favoriteLoading = $state(true)
+    let isFavorite = $state(false)
+
     
     onMount(() => {
       buttonClose.addEventListener("click", () => window.dispatchEvent(new CustomEvent("closeVisualizer")))
@@ -18,7 +26,41 @@
       
       if(!button) return
       button.addEventListener("click", () => window.dispatchEvent(new CustomEvent("visualizerToggleMeta")))
+      load_favorite()
+      
+      favoriteButton.addEventListener("click", async () => {
+        if (favoriteLoading) return
+        favoriteLoading = true
+        
+        if (isFavorite) {
+          await fetch(api.unfavorite_media(user_token.token, media_id))
+        } else {
+          await fetch(api.favorite_media(user_token.token, media_id))
+        }
+        
+        load_favorite()
+      })
     })
+    
+    const load_favorite = async () => {
+      favoriteLoading = true
+      isFavorite = false
+      
+      let res = await fetch(api.collections_with_media(user_token.token, media_id))
+      if (res.status !== 200) return
+      
+      let collections = await res.json()
+      
+      const favorite_collection_id = userState.collections.find((collection: any) => collection.name === "comfyui_civit_favorites").id || -1
+      
+      let fColl = collections.find((collection: any) => collection.collectionId === favorite_collection_id)
+      
+      if (fColl) {
+        isFavorite = true 
+      }
+      
+      favoriteLoading = false
+    }
 </script>
 
 <div class="wrapper" class:open class:is_mobile>
@@ -32,6 +74,14 @@
     
     <div class="icon collection" bind:this={collectionsButton}>
         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="tabler-icon tabler-icon-bookmark "><path d="M18 7v14l-6 -4l-6 4v-14a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4z"></path></svg>
+    </div>
+    
+    <div class="icon favorite" class:favorited={isFavorite} bind:this={favoriteButton}>
+        {#if !favoriteLoading}
+            <svg class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-1phnduy" focusable="false" aria-hidden="true" viewBox="0 0 24 24"><path d="m12 21.35-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54z"></path></svg>
+        {:else}
+            <Spinner size={15} tickness={2} />
+        {/if}
     </div>
     
     <div class="icon mobileOpenMeta" bind:this={button}>
@@ -64,6 +114,8 @@
             transition: .12s;
             transform-origin: center;
             cursor: pointer;
+            min-width: 2rem;
+            min-height: 2rem;
             
             &:hover {
                 background: rgba(255,255,255, .2);
@@ -78,6 +130,15 @@
             
             &.mobileOpenMeta {
                 margin-left: auto;
+            }
+            
+            &.favorite {
+                fill: transparent;
+                stroke: #fff;
+                
+                :global(&.favorited) {
+                    fill: #fff;
+                }
             }
         }
     }
