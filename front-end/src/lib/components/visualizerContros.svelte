@@ -47,7 +47,12 @@
       isFavorite = false
       
       let res = await fetch(api.collections_with_media(user_token.token, media_id))
-      if (res.status !== 200) return
+      if (res.status !== 200) {
+        favoriteLoading = false;
+        console.error("Could not get media with collection for media id " + media_id)
+        console.log(await res.text())
+        return
+      }
       
       let collections = await res.json()
       
