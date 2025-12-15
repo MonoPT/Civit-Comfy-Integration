@@ -5,7 +5,10 @@
     import Spinner from "$lib/components/spinner.svelte";
     import {user_token, userState, collection_list} from "$lib/state.svelte"
     import Header from "$lib/components/header.svelte";
+    import {} from "$lib/mansonary/imageUtils.svelte"
+    import {create_loader} from "$lib/mansonary/utils"
     
+
     import {page} from "$app/state"
     
     let {media, page_title} = $props()
@@ -110,8 +113,6 @@
       
       const loader = target.querySelector(".loader")
       if (loader) loader.remove()
-      
-      add_fast_items_by_element_id(id)
     }
     
     const favoriteMedia = async (id: number, favorite = true) => {
@@ -133,9 +134,6 @@
       } else {
         await fetch(api.unfavorite_media(user_token.token, id))
       }
-      
-      
-      load_collection_data_by_media_id(id)
     }
     
     const add_fast_items_by_element_id = (id: number) => {
@@ -165,9 +163,17 @@
       
       if (in_collections.includes(favorite_collection_id)) {
         favoriteIcon.classList.add("favorited")
-        favoriteIcon.addEventListener("click", () => favoriteMedia(id, false))
+        favoriteIcon.addEventListener("click", async () => {
+          await favoriteMedia(id, false)
+          await load_collection_data_by_media_id(id)
+          add_fast_items_by_element_id(id)
+        })
       } else {
-        favoriteIcon.addEventListener("click", () => favoriteMedia(id))
+        favoriteIcon.addEventListener("click", async () => {
+          await favoriteMedia(id)
+          await load_collection_data_by_media_id(id)
+          add_fast_items_by_element_id(id)
+        })
       }
       
       let collectionsButton = document.createElement("span")
@@ -181,16 +187,6 @@
       container.appendChild(favoriteIcon)
       container.appendChild(collectionsButton)
       target.appendChild(container)
-    }
-    
-    const create_loader = (size: number, tickness: number) => {
-      let spinner = document.createElement("span")
-      spinner.classList.add("loader")
-      spinner.style.setProperty("width", `${size}px`)
-      spinner.style.setProperty("height", `${size}px`)
-      spinner.style.setProperty("--tickness", `${tickness}px`)
-      
-      return spinner
     }
     
     onMount(() => { // Infinite scroller loader and observers
@@ -308,13 +304,14 @@
                 
                 node.addEventListener("click", (e) => { 
                   const target = e.target as HTMLElement;
-                  if(target.closest(".fastActions")) return
+                  if(target.closest(".fastActions")) return // Prevents opening media visualizer if click is inside fast actions
                   
                   window.dispatchEvent(new CustomEvent("loadMediaVisualizer", {detail: {id, creator_id, image_uuid}}))
                 })
                 
                 node.addEventListener("pointerenter", async (_) => {
-                  load_collection_data_by_media_id(id)
+                  await load_collection_data_by_media_id(id)
+                  add_fast_items_by_element_id(id)
                 }, {once: true})
                 
                 observerPerfOt.observe(node as HTMLElement)
