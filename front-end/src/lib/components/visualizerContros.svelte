@@ -1,15 +1,20 @@
 <script lang="ts">
     import { onMount } from "svelte";
     
-    let {open = false, is_mobile=false} = $props()
+    let {open = false, is_mobile=false, media_id = 0, media_type = "Image"} = $props()
     
     let button: HTMLElement
     let buttonClose: HTMLElement
     let downloadButton: HTMLElement
+    let collectionsButton: HTMLElement
     
     onMount(() => {
       buttonClose.addEventListener("click", () => window.dispatchEvent(new CustomEvent("closeVisualizer")))
       downloadButton.addEventListener("click", () => window.dispatchEvent(new CustomEvent("downloadVisualizerMedia")))
+      collectionsButton.addEventListener("click", () => window.dispatchEvent(new CustomEvent("openCollectionSelector", {
+        detail: {id: media_id, media_type: media_type}
+      })))
+      
       
       if(!button) return
       button.addEventListener("click", () => window.dispatchEvent(new CustomEvent("visualizerToggleMeta")))
@@ -23,6 +28,10 @@
     
     <div class="icon" bind:this={downloadButton}>
         <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tabler-icon tabler-icon-download "><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2 -2v-2"></path><path d="M7 11l5 5l5 -5"></path><path d="M12 4l0 12"></path></svg>
+    </div>
+    
+    <div class="icon collection" bind:this={collectionsButton}>
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="tabler-icon tabler-icon-bookmark "><path d="M18 7v14l-6 -4l-6 4v-14a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4z"></path></svg>
     </div>
     
     <div class="icon mobileOpenMeta" bind:this={button}>

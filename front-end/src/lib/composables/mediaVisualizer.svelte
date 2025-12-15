@@ -12,7 +12,8 @@
       media_type: "image" | "video",
       media_data: null | Image,
       gen_data: any | null,
-      landscape: boolean
+      landscape: boolean,
+      media_id: number
     }
     
     let isLoadingData = $state(false)
@@ -23,7 +24,8 @@
       media_type: "image",
       media_data: null,
       gen_data: null,
-      landscape: false
+      landscape: false,
+      media_id: 0
     })
         
     let checkedOverflow = false
@@ -41,6 +43,7 @@
         isLoadingData = true
         //@ts-ignore
         let {id, creator_id, image_uuid} = e.detail
+        data.media_id = id
         isOpen = true;
                 
         const media_data = ImageGallery.images.find((img) => img.uuid === image_uuid)!
@@ -163,7 +166,7 @@
         </div>
         
         <div class="card mobileFastActions">
-            <Controls is_mobile={true} />
+            <Controls is_mobile={true} media_id={data.media_id} media_type = "Image"/>
         </div>
     </div>
     
@@ -176,11 +179,11 @@
         {:else}
             
             <div class="card mobileFastActions">
-                <Controls open={true} is_mobile={true} />
+                <Controls open={true} is_mobile={true} media_id={data.media_id} media_type = "Image" />
             </div>
             
             <div class="card cardDesktopFastActions">
-                <Controls />
+                <Controls media_id={data.media_id} media_type = "Image" />
             </div>
         
             {#if data.tags.length > 0}
