@@ -34,6 +34,7 @@ async fn main() {
         .merge(api::favorite_media::route())
         .merge(api::get_collection_with_media::route())
         .merge(api::get_collections::route())
+        .merge(api::update_collections::route())
         
         .fallback_service(ServeDir::new(static_files))
         .layer(ServiceBuilder::new().layer(cors_layer));

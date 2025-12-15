@@ -16,10 +16,15 @@
     
     let selected: string[] = $state([])
     
+    let current_state = $state({id: 0, media_type: "Image"})
+    
     onMount(() => {
       window.addEventListener("openCollectionSelector", async (e) => {
         //@ts-ignore
         const {id, media_type} = e.detail
+        current_state.id = id
+        current_state.media_type = media_type
+        
         isOpen = true
         isLoading = true
         collections = []
@@ -27,7 +32,7 @@
         
         const urls = [
           api.collections_with_media(user_token.token, id),
-          api.get_collections(user_token.token)
+          api.get_collections_by_media_type(user_token.token, media_type)
         ];
         
         const responses = await Promise.all(
@@ -51,7 +56,9 @@
         }).filter((c) => c.name !== "comfyui_civit_favorites")
                 
         selected = (inCollections as {collectionId: number}[]).map((inc) => {
-          let f = collections_list.find((el: any) => el.id === inc.collectionId)
+          let f = collections_list.find((el: any) => {
+            return el.id === inc.collectionId
+          })
           if (f) return f.name;
           return ""
         }).filter((cn) => cn.length > 0)
@@ -60,8 +67,30 @@
       })
     })
     
-    onMount(() => closeButton.addEventListener("click", () => isOpen = false))
+    onMount(() => closeButton.addEventListener("click", async () => isOpen = false))
     
+    const saveToCollection = async () => {
+      isLoading = true
+      
+      const inputs = Array.from(collectionContainer.querySelectorAll(`input[name="SelectedCollections"]`)) as HTMLInputElement[]
+      
+      let selected: number[] = []
+      let not_selected: number[] = []
+      
+      inputs.forEach((input) => {
+        const value = parseInt(input.value)
+        
+        if (input.checked) {
+          selected.push(value)
+        } else {
+          not_selected.push(value)
+        }
+      })
+      
+      let res = await fetch(api.update_media_collections(user_token.token, current_state.id, selected, not_selected))
+      
+      window.dispatchEvent(new CustomEvent("openCollectionSelector", {detail: {id: current_state.id, media_type: current_state.media_type}}))
+    }
 </script>
 
 <div class="container" class:open={isOpen} id="selectCollections" bind:this={collectionContainer}>
@@ -90,9 +119,9 @@
         </div>
         
         {#if !isLoading}
-            <div class="saveWrapper">
+            <button class="saveWrapper" onclick={() => saveToCollection()}>
                 <span>Save</span>
-            </div>
+            </button>
         {/if}
     </div>
 </div>
@@ -100,6 +129,8 @@
 
 <style>    
     .saveWrapper {
+        all: inherit;
+        border: none;
         margin-top: calc(var(--spacing) * 4);
         margin-left: auto;
         border-radius: calc(var(--spacing));

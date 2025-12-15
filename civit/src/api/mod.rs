@@ -17,7 +17,7 @@ pub use creator::Creator;
 pub use generation_data::GenerationData;
 pub use collections::CollectionType;
 
-pub use crate::api::user::UserData;
+pub use crate::api::user::{UserData, Collection};
 
 pub struct Civit {
     api_key: String,

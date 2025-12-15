@@ -42,3 +42,41 @@ impl Civit {
         collections
     }
 }
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct ResponseInCollectionByType {
+    id: usize,
+    name: Option<String>,
+    description: Option<String>,
+    read: Option<String>,
+    userId: usize,
+    write: String,
+    imageId: Option<usize>,
+    isOwner: bool,
+    image: Option<String>,
+    tags: Vec<String>
+}
+
+impl Civit {
+    pub async fn get_collection_by_media_type(&self, media_type: &CollectionType) -> Vec<ResponseInCollectionByType> {       
+        let mut cookies = std::collections::HashMap::new();
+        cookies.insert("__Secure-civitai-token", &self.auth_token);
+                
+        let cookie_header = cookies.iter().map(|c| format!("{}={}", c.0, c.1)).collect::<Vec<String>>().join(";");
+        
+        let mut headers = HeaderMap::new();
+        headers.append(reqwest::header::COOKIE, reqwest::header::HeaderValue::from_str(&cookie_header).unwrap());
+        
+        let payload = json!({"json":{"permissions":["ADD","ADD_REVIEW","MANAGE"],"type":media_type,"authed":true}});
+
+        let response = self.client.get(format!("https://civitai.com/api/trpc/collection.getAllUser?input={payload}"))
+            .headers(headers)
+        .send().await.unwrap().json::<Value>().await.unwrap_or_default();
+                
+        let res = response.get("result").unwrap_or_default().get("data").unwrap_or_default().get("json").unwrap_or_default().to_owned();
+        
+        let collections: Vec<ResponseInCollectionByType> = serde_json::from_value(res).unwrap();
+        
+        collections
+    }
+}

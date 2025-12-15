@@ -42,7 +42,7 @@ impl Civit {
               }
             }))
         .send().await.unwrap().json::<Value>().await.unwrap_or_default();
-        
+                
         let res = response.get("result").unwrap_or_default().get("data").unwrap_or_default().get("json").unwrap_or_default().get("status");
         
         match res {

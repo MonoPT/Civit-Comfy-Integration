@@ -1,12 +1,11 @@
 use crate::Civit;
-use reqwest::header::{AUTHORIZATION, CONTENT_TYPE};
 use serde::{Deserialize, Serialize};
 use serde_json::{Value, json};
 use crate::api::user::Collection;
 
 use reqwest::header::HeaderMap;
 
-#[derive(Debug, Serialize)]
+#[derive(Debug, Serialize, Deserialize)]
 pub enum CollectionType {
     Image,
     Model,
