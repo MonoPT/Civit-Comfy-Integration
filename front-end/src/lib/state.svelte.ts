@@ -4,6 +4,7 @@ export const userState: any = $state({});
 export const loading_user = $state({loading: true, error: ""})
 export const user_token = $state({token: ""})
 
+export let collection_list: {[key: number]: number[]} = [] // list of collection to wich media belongs
 
 export const loginUser = async (token: string) => {
   loading_user.loading = true

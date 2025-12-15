@@ -3,7 +3,7 @@
     import {ImageGallery, type Image} from "$lib/api/imageGallery";
     import api from "$lib/api"
     import Spinner from "$lib/components/spinner.svelte";
-    import {user_token, userState} from "$lib/state.svelte"
+    import {user_token, userState, collection_list} from "$lib/state.svelte"
     import Header from "$lib/components/header.svelte";
     
     import {page} from "$app/state"
@@ -12,8 +12,6 @@
     
     let column_width = $state(370);
     let columns = $state(4);
-    
-    let collection_list: {[key: number]: number[]} = [] // list of collection to wich media belongs
     
     let currentRoute = $state( page.url.pathname);
     
@@ -357,7 +355,7 @@
 <style>   
    
     .image-wrapper {
-        --iconsClr: rgba(255,255,255, .8);
+        --iconsClr: #ccc;
         
         &:after {
             content: '';
