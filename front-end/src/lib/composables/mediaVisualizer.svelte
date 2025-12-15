@@ -1,10 +1,12 @@
 <script lang="ts">
     import { onMount } from "svelte";
     import api from "$lib/api"
-    import {user_token} from "$lib/state.svelte"
+    import {user_token, userState} from "$lib/state.svelte"
     import {ImageGallery, type Image} from "$lib/api/imageGallery";
     import Spinner from "$lib/components/spinner.svelte";
     import Controls from "$lib/components/visualizerContros.svelte"
+    import {collection_list} from "$lib/state.svelte"
+    import {fastItemsImage} from "$lib/mansonary/imageUtils.svelte"
     
     type GenData = {
       tags: {automated:boolean,concrete:boolean,downVotes:number,id:number,lastUpvote:string, name:string, needsReview: boolean, nsfwLevel:number, score: number, type:string, upVotes: number}[],
@@ -29,9 +31,40 @@
     })
         
     let checkedOverflow = false
+    let isLoadingFav = $state(true)
+    let isFavorite = $state(false)
     
-    onMount(() => 
-      window.addEventListener("loadMediaVisualizer", async (e) => {
+    const handleFavorites = async (id: number) => {
+      isLoadingFav = true
+      isFavorite = false
+      
+      let res = await fetch(api.collections_with_media(user_token.token, id))
+      if (res.status !== 200) {
+        isLoadingFav = false;
+        console.error("Could not get media with collection for media id " + id)
+        console.log(await res.text())
+        return
+      }
+      
+      let collections = await res.json()
+      
+      const favorite_collection_id = userState.collections.find((collection: any) => collection.name === "comfyui_civit_favorites").id || -1
+      
+      let fColl = collections.find((collection: any) => collection.collectionId === favorite_collection_id)
+      
+      if (fColl) {
+        isFavorite = true 
+      }
+      
+      collection_list[id] = collections.map((coll: any) => coll.collectionId)
+      
+      fastItemsImage(id)
+      isLoadingFav = false
+    }
+    
+    onMount(() => window.addEventListener("updateFavoriteVisualizer", () => handleFavorites(data.media_id)))
+    
+    onMount(() => window.addEventListener("loadMediaVisualizer", async (e) => {
         if (isLoadingData) return
         
         data.tags = []
@@ -45,6 +78,8 @@
         let {id, creator_id, image_uuid} = e.detail
         data.media_id = id
         isOpen = true;
+        
+        handleFavorites(id)
                 
         const media_data = ImageGallery.images.find((img) => img.uuid === image_uuid)!
         const mediaType = media_data.media_type as "image" | "video"
@@ -166,7 +201,7 @@
         </div>
         
         <div class="card mobileFastActions">
-            <Controls is_mobile={true} media_id={data.media_id} media_type = "Image"/>
+            <Controls is_mobile={true} media_id={data.media_id} media_type = "Image" favoriteLoading={isLoadingFav} isFavorite={isFavorite} />
         </div>
     </div>
     
@@ -179,11 +214,11 @@
         {:else}
             
             <div class="card mobileFastActions">
-                <Controls open={true} is_mobile={true} media_id={data.media_id} media_type = "Image" />
+                <Controls open={true} is_mobile={true} media_id={data.media_id} media_type = "Image" favoriteLoading={isLoadingFav} isFavorite={isFavorite} />
             </div>
             
             <div class="card cardDesktopFastActions">
-                <Controls media_id={data.media_id} media_type = "Image" />
+                <Controls media_id={data.media_id} media_type = "Image" favoriteLoading={isLoadingFav} isFavorite={isFavorite} />
             </div>
         
             {#if data.tags.length > 0}
@@ -702,9 +737,7 @@
                 padding: 0;
                 --spaceTop: 100px;
                 
-                img, video {
-                    
-                }
+               
                 
                 
                 .reactionsContainer  {

@@ -2,19 +2,15 @@
     import { onMount } from "svelte";
     import Spinner from "$lib/components/spinner.svelte"
     import api from "$lib/api";
-    import { user_token, userState } from "$lib/state.svelte";
+    import { user_token } from "$lib/state.svelte";
     
-    let {open = false, is_mobile=false, media_id = 0, media_type = "Image"} = $props()
+    let {open = false, is_mobile=false, media_id = 0, media_type = "Image", favoriteLoading = true, isFavorite = false} = $props()
     
     let button: HTMLElement
     let buttonClose: HTMLElement
     let downloadButton: HTMLElement
     let collectionsButton: HTMLElement
     let favoriteButton: HTMLElement
-    
-    let favoriteLoading = $state(true)
-    let isFavorite = $state(false)
-
     
     onMount(() => {
       buttonClose.addEventListener("click", () => window.dispatchEvent(new CustomEvent("closeVisualizer")))
@@ -26,7 +22,7 @@
       
       if(!button) return
       button.addEventListener("click", () => window.dispatchEvent(new CustomEvent("visualizerToggleMeta")))
-      load_favorite()
+      //load_favorite()
       
       favoriteButton.addEventListener("click", async () => {
         if (favoriteLoading) return
@@ -38,34 +34,10 @@
           await fetch(api.favorite_media(user_token.token, media_id))
         }
         
-        load_favorite()
-      })
+        window.dispatchEvent(new CustomEvent("updateFavoriteVisualizer"))
+        })
     })
-    
-    const load_favorite = async () => {
-      favoriteLoading = true
-      isFavorite = false
-      
-      let res = await fetch(api.collections_with_media(user_token.token, media_id))
-      if (res.status !== 200) {
-        favoriteLoading = false;
-        console.error("Could not get media with collection for media id " + media_id)
-        console.log(await res.text())
-        return
-      }
-      
-      let collections = await res.json()
-      
-      const favorite_collection_id = userState.collections.find((collection: any) => collection.name === "comfyui_civit_favorites").id || -1
-      
-      let fColl = collections.find((collection: any) => collection.collectionId === favorite_collection_id)
-      
-      if (fColl) {
-        isFavorite = true 
-      }
-      
-      favoriteLoading = false
-    }
+
 </script>
 
 <div class="wrapper" class:open class:is_mobile>
