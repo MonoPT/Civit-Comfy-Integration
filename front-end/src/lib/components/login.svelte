@@ -1,9 +1,16 @@
 <script lang="ts">
     import { loginUser, loading_user } from '../state.svelte.ts';
-    import Input from './form/input.svelte';
-    import Spinner from './spinner.svelte';
+
+    import { Spinner } from "$lib/components/ui/spinner/index.js";
         
-    async function loginUserBtn(value: string) {
+    import {SendHorizontal} from "@lucide/svelte"
+    
+    import { Button } from "$lib/components/ui/button/index.js";
+    import * as ButtonGroup from "$lib/components/ui/button-group/index.js";
+    import { Input } from "$lib/components/ui/input/index.js";
+    
+    async function loginUserBtn(e: Event) {
+      const value = document.querySelector<HTMLInputElement>("input[name='loginCookie']")!.value
       loginUser(value)
     }
     
@@ -12,27 +19,32 @@
 <div id="login">
     {#if loading_user.loading} 
         <div class="Images-Loading-Wrapper">
-            <Spinner size={35} tickness={3} />
+            <Spinner class="size-8" />
             <p>Loading user data</p>
         </div>
     {:else}
-        <div class="wrap">
+        <form class="wrap" onsubmit={loginUserBtn}>
             <h2>You're Logged out</h2>
             <h3>To login, follow the instruction bellow:</h3>
             <ol>
-                <li>Go to: <a href="https://civitai.com">https://civitai.com</a></li>
+                <li>Go to: <a href="https://civitai.com" target="_blank">https://civitai.com</a></li>
                 <li>Login into your account</li>
                 <li>Open the devtools (Ctrl + Shift + I)</li>
                 <li>Navigate to cookies section</li>
                 <li>Copy value of the cookie "__Secure-civitai-token" and paste it bellow</li>
             </ol>
-            
-            <Input placeholder="Paste Cookie here" btn_onclick={() => loginUserBtn}/>
+                                    
+            <ButtonGroup.Root class="w-full">
+              <Input required placeholder="Paste Cookie here" name="loginCookie" />
+              <Button variant="outline" type="submit" size="icon" aria-label="Search">
+                <SendHorizontal />
+              </Button>
+            </ButtonGroup.Root>
             
             {#if loading_user.error}
                 <h4 class="errorMsg">The provided token is not valid!</h4>
             {/if}
-        </div>
+        </form>
     {/if}
 </div>
 
