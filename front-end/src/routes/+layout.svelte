@@ -1,4 +1,6 @@
 <script lang="ts">
+    import "./layout.css";
+    
 	import favicon from '$lib/assets/favicon.svg';
 		
 	import Login from "$lib/components/login.svelte"
