@@ -1,0 +1,54 @@
+<script lang="ts">
+    let { size = 48, tickness = 4 } = $props();
+</script>
+
+<span class="loader" style="width: {size}px; height: {size}px; --tickness: {tickness}px"></span>
+
+<style>
+    :global(.loader) {
+        display: block;
+        border-radius: 50%;
+        position: relative;
+        animation: rotate 1s linear infinite;
+    }
+    :global(.loader::before) {
+        content: "";
+        box-sizing: border-box;
+        position: absolute;
+        inset: 0px;
+        border-radius: 50%;
+        border: var(--tickness) solid #fff;
+        animation: prixClipFix 2s linear infinite;
+    }
+
+    @keyframes rotate {
+        100% {
+            transform: rotate(360deg);
+        }
+    }
+
+    @keyframes prixClipFix {
+        0% {
+            clip-path: polygon(50% 50%, 0 0, 0 0, 0 0, 0 0, 0 0);
+        }
+        25% {
+            clip-path: polygon(50% 50%, 0 0, 100% 0, 100% 0, 100% 0, 100% 0);
+        }
+        50% {
+            clip-path: polygon(
+                50% 50%,
+                0 0,
+                100% 0,
+                100% 100%,
+                100% 100%,
+                100% 100%
+            );
+        }
+        75% {
+            clip-path: polygon(50% 50%, 0 0, 100% 0, 100% 100%, 0 100%, 0 100%);
+        }
+        100% {
+            clip-path: polygon(50% 50%, 0 0, 100% 0, 100% 100%, 0 100%, 0 0);
+        }
+    }
+</style>
