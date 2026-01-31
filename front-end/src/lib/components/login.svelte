@@ -1,19 +1,21 @@
 <script lang="ts">
     import { loginUser, loading_user } from '../state.svelte.ts';
-
-    import { Spinner } from "$lib/components/ui/spinner/index.js";
-        
-    import {SendHorizontal} from "@lucide/svelte"
     
+    // Icons
+    import {SendHorizontal, SunIcon, MoonIcon} from "@lucide/svelte"
+    
+    // Components
     import { Button } from "$lib/components/ui/button/index.js";
     import * as ButtonGroup from "$lib/components/ui/button-group/index.js";
     import { Input } from "$lib/components/ui/input/index.js";
+    import { toggleMode } from "mode-watcher";
+    import { Spinner } from "$lib/components/ui/spinner/index.js";
     
     async function loginUserBtn(e: Event) {
       const value = document.querySelector<HTMLInputElement>("input[name='loginCookie']")!.value
       loginUser(value)
     }
-    
+
 </script>
 
 <div id="login">
@@ -45,6 +47,17 @@
                 <h4 class="errorMsg">The provided token is not valid!</h4>
             {/if}
         </form>
+        
+        <Button onclick={toggleMode} variant="outline" size="icon" class="absolute bottom-2 left-2">
+          <SunIcon
+            class="h-[1.2rem] w-[1.2rem] scale-100 rotate-0 !transition-all dark:scale-0 dark:-rotate-90"
+          />
+          <MoonIcon
+            class="absolute h-[1.2rem] w-[1.2rem] scale-0 rotate-90 !transition-all dark:scale-100 dark:rotate-0"
+          />
+          <span class="sr-only">Toggle theme</span>
+        </Button>
+        
     {/if}
 </div>
 

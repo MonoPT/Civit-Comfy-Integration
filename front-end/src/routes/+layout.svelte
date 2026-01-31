@@ -7,7 +7,7 @@
 	import { userState, getCookie, loginUser, loading_user } from '../lib/state.svelte.ts';
     import { onMount } from 'svelte';
   
-    
+    import { ModeWatcher } from "mode-watcher";
 			        
     onMount(async () => {      
       if (Object.keys(userState).length === 0) {
@@ -31,6 +31,8 @@
 <svelte:head>
 	<link rel="icon" href={favicon} />
 </svelte:head>
+
+<ModeWatcher />
 
 {#if Object.keys(userState).length === 0 || loading_user.loading}
     <Login />
