@@ -14,7 +14,7 @@ const config = {
 			// these options are set automatically — see below
 			pages: 'build/civit',
 			assets: 'build/civit',
-			fallback: undefined,
+			fallback: "index.html",
 			precompress: false,
 			strict: true
     }),

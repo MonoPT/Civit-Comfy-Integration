@@ -13,8 +13,6 @@ use axum::routing::any;
 use tower_http::cors::{CorsLayer, Any};
 use tower::ServiceBuilder;
 
-// TODO: bas request with models gives me the base models possible
-
 pub async fn start_civit_frontend_server(port: usize, static_dir: &str) {    
     let cors_layer = CorsLayer::new()
         .allow_origin(Any)  // Open access to selected route
@@ -35,6 +33,9 @@ pub async fn start_civit_frontend_server(port: usize, static_dir: &str) {
         .fallback_service(ServeDir::new(static_dir))
         .layer(ServiceBuilder::new().layer(cors_layer));
         
+    let app = Router::new()
+        .nest("/civit", app);
+    
     let listener = tokio::net::TcpListener::bind(format!("0.0.0.0:{port}")).await.unwrap();
     let addr = listener.local_addr().unwrap().port();
     println!("http://127.0.0.1:{addr}");

@@ -50,15 +50,15 @@
             <ul>
                 <li class="marginTop"><Button icon={3} no_bg={true} hoverColor="#3c3d42" bgHover={true} extraPadding={true}>Downloads <span style="font-size: .8em;opacity: .6">(0)</span></Button></li>
                 <h2>Explore</h2>
-                <li><Button active_route="/popular" current_route={current_path.url.pathname} onclick={() => {goto("/popular")}} icon={6} no_bg={true} hoverColor="#3c3d42" bgHover={true} extraPadding={true}>Popular</Button></li>
-                <li><Button active_route="/image" current_route={current_path.url.pathname} onclick={() => {goto("/image")}} icon={1} no_bg={true} hoverColor="#3c3d42" bgHover={true} extraPadding={true}>Images</Button></li>
-                <li><Button active_route="/video" current_route={current_path.url.pathname} onclick={() => {goto("/video")}} icon={5} no_bg={true} hoverColor="#3c3d42" bgHover={true} extraPadding={true}>Videos</Button></li>
-                <li><Button active_route="/models" current_route={current_path.url.pathname} onclick={() => {goto("/models")}} icon={2} no_bg={true} hoverColor="#3c3d42" bgHover={true} extraPadding={true}>Models</Button></li>            
+                <li><Button active_route="/civit/popular" current_route={current_path.url.pathname} onclick={() => {goto("/civit/popular")}} icon={6} no_bg={true} hoverColor="#3c3d42" bgHover={true} extraPadding={true}>Popular</Button></li>
+                <li><Button active_route="/civit/image" current_route={current_path.url.pathname} onclick={() => {goto("/civit/image")}} icon={1} no_bg={true} hoverColor="#3c3d42" bgHover={true} extraPadding={true}>Images</Button></li>
+                <li><Button active_route="/civit/video" current_route={current_path.url.pathname} onclick={() => {goto("/civit/video")}} icon={5} no_bg={true} hoverColor="#3c3d42" bgHover={true} extraPadding={true}>Videos</Button></li>
+                <li><Button active_route="/civit/models" current_route={current_path.url.pathname} onclick={() => {goto("/civit/models")}} icon={2} no_bg={true} hoverColor="#3c3d42" bgHover={true} extraPadding={true}>Models</Button></li>            
             
                 <h2>{userState.user_name}</h2>
-                <li><Button active_route="/favorites" current_route={current_path.url.pathname} onclick={() => {goto("/favorites")}} icon={7} no_bg={true} hoverColor="#3c3d42" bgHover={true} extraPadding={true}>Favorites</Button></li>
-                <li><Button active_route="/liked-models" current_route={current_path.url.pathname} onclick={() => {goto("/liked-models")}} icon={7} no_bg={true} hoverColor="#3c3d42" bgHover={true} extraPadding={true}>Liked Models</Button></li>
-                <li><Button active_route="/collections" current_route={current_path.url.pathname} onclick={() => {goto("/collections")}} icon={8} no_bg={true} hoverColor="#3c3d42" bgHover={true} extraPadding={true}>Collections</Button></li>
+                <li><Button active_route="/civit/favorites" current_route={current_path.url.pathname} onclick={() => {goto("/civit/favorites")}} icon={7} no_bg={true} hoverColor="#3c3d42" bgHover={true} extraPadding={true}>Favorites</Button></li>
+                <li><Button active_route="/civit/liked-models" current_route={current_path.url.pathname} onclick={() => {goto("/civit/liked-models")}} icon={7} no_bg={true} hoverColor="#3c3d42" bgHover={true} extraPadding={true}>Liked Models</Button></li>
+                <li><Button active_route="/civit/collections" current_route={current_path.url.pathname} onclick={() => {goto("/civit/collections")}} icon={8} no_bg={true} hoverColor="#3c3d42" bgHover={true} extraPadding={true}>Collections</Button></li>
             </ul>
         </nav>
         <main>

@@ -1,6 +1,6 @@
 import { dev } from '$app/environment';
 
-let port = "61058"
+let port = "3090" // Default dev server
 
 if (typeof window !== 'undefined' && !dev) {
   const url = new URL(window.location.href)
@@ -8,7 +8,7 @@ if (typeof window !== 'undefined' && !dev) {
 }
 
 export default class API {
-  static endpoint = `http://127.0.0.1:${port}`
+  static endpoint = `http://127.0.0.1:${port}/civit`
     
   static user_data(token: string) {
     return `${this.endpoint}/user_data?token=${token}`
