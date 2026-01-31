@@ -1,6 +1,7 @@
 [workspace]
 members = [
     "civit",
-    "app"
+    "app",
+    "civitComfyBindings"
 ]
 resolver = "3"
