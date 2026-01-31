@@ -1,6 +1,15 @@
+import { dev } from '$app/environment';
+
+let port = "61058"
+
+if (typeof window !== 'undefined' && !dev) {
+  const url = new URL(window.location.href)
+  port = url.port
+}
+
 export default class API {
-  static endpoint = "http://127.0.0.1:3090"
-  
+  static endpoint = `http://127.0.0.1:${port}`
+    
   static user_data(token: string) {
     return `${this.endpoint}/user_data?token=${token}`
   }

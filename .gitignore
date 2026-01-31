@@ -1,2 +1,6 @@
 /target
 model.temp
+__pycache__
+.env
+/backend/target
+/node_modules

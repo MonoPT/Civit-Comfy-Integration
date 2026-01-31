@@ -15,17 +15,13 @@ use tower::ServiceBuilder;
 
 // TODO: bas request with models gives me the base models possible
 
-#[tokio::main]
-async fn main() {
-    
-    let static_files = format!("{}/front-end/build", std::env::current_dir().unwrap().to_string_lossy());
-    println!("Static folder: {static_files}");
-    
+pub async fn start_civit_frontend_server(port: usize, static_dir: &str) {    
     let cors_layer = CorsLayer::new()
         .allow_origin(Any)  // Open access to selected route
         .allow_methods(vec![Method::GET, Method::POST]);
     
     let app = Router::new()
+        .route("/health", any("ok"))
         .route("/media_proxy", any(media_proxy::proxy_route)) // proxy para tudo
         .merge(api::user::route())
         .merge(api::mansonary::route()) //Infinite media mansonary data
@@ -36,11 +32,10 @@ async fn main() {
         .merge(api::get_collections::route())
         .merge(api::update_collections::route())
         
-        .fallback_service(ServeDir::new(static_files))
+        .fallback_service(ServeDir::new(static_dir))
         .layer(ServiceBuilder::new().layer(cors_layer));
-    
-    
-    let listener = tokio::net::TcpListener::bind("0.0.0.0:3090").await.unwrap();
+        
+    let listener = tokio::net::TcpListener::bind(format!("0.0.0.0:{port}")).await.unwrap();
     let addr = listener.local_addr().unwrap().port();
     println!("http://127.0.0.1:{addr}");
     

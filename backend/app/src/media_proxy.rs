@@ -62,7 +62,13 @@ pub async fn proxy_route(mut req: Request) -> Response {
 use axum::body::to_bytes;
 
 async fn image_proxy(client: Client, axum_body: axum::body::Body, method: reqwest::Method, uri: &str, headers: &HeaderMap) -> Response {
-    let body = to_bytes(axum_body, 1024 * 1024).await.unwrap();
+    use http_body_util::BodyExt;
+    use reqwest::Body;
+    
+    //let body = to_bytes(axum_body, 1024 * 1024).await.unwrap();
+    
+    let stream = axum_body.into_data_stream();
+    let body = Body::wrap_stream(stream);
     
     let mut req_builder = client
         .request(method.clone(), uri)
@@ -74,8 +80,6 @@ async fn image_proxy(client: Client, axum_body: axum::body::Body, method: reqwes
     };
     
     req_builder = req_builder
-        //.header(":authority", "image.civitai.com")
-        //.header(":method", "GET")
         .header("Cookie", format!("__Secure-civitai-token={user_token}"))
         .header("cache-control", "max-age=0")
         .header("user-agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36 OPR/124.0.0.0")
@@ -85,13 +89,34 @@ async fn image_proxy(client: Client, axum_body: axum::body::Body, method: reqwes
     
     let mut builder = Response::builder().status(res.status());
     
+    const HOP_HEADERS: [&str; 8] = [
+        "connection",
+        "transfer-encoding",
+        "keep-alive",
+        "proxy-authenticate",
+        "proxy-authorization",
+        "te",
+        "trailers",
+        "upgrade",
+    ];
+    
     for (name, value) in res.headers().iter() {
-        builder = builder.header(name, value);
+        if !HOP_HEADERS.contains(&name.as_str()) {
+            builder = builder.header(name, value);
+        }
     }
     
-    let bytes = res.bytes().await.unwrap();
+    use axum::body::Body as AxumBody;
     
-    builder.body(bytes.into()).unwrap()
+    //let bytes = res.bytes().await.unwrap();
+    
+    //builder.body(bytes.into()).unwrap()
+    
+    let stream = res.bytes_stream();
+    
+    let body = AxumBody::from_stream(stream);
+    
+    builder.body(body).unwrap()
 }
 
 async fn video_proxy(client: Client, axum_body: axum::body::Body, method: reqwest::Method, uri: &str, headers: &HeaderMap) -> Response {

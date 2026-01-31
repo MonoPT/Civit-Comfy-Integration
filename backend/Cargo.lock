@@ -17,6 +17,7 @@ version = "0.1.0"
 dependencies = [
  "axum",
  "civit",
+ "http-body-util",
  "rand 0.9.2",
  "reqwest",
  "serde",
@@ -1302,7 +1303,17 @@ dependencies = [
 name = "rust_civit_comfy_bindings"
 version = "0.1.0"
 dependencies = [
+ "app",
+ "axum",
+ "civit",
  "pyo3",
+ "rand 0.9.2",
+ "reqwest",
+ "serde",
+ "serde_json",
+ "tokio",
+ "tower",
+ "tower-http",
 ]
 
 [[package]]

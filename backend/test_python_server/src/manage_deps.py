@@ -1,9 +1,13 @@
 import subprocess
 import sys
 
+from pathlib import Path
+
 def pip_install(pkg):
+    wheel = Path(pkg).resolve()
+    
     subprocess.check_call([
-        sys.executable, "-m", "pip", "install", "--upgrade", pkg
+        sys.executable, "-m", "pip", "install", "--force-reinstall", str(wheel)
     ])
 
 import importlib.util
@@ -13,6 +17,5 @@ def ensure(pkg):
         pip_install(pkg)
 
 
-
 def ensure_dependency(name: str):
-    ensure(name)
+    pip_install(name)

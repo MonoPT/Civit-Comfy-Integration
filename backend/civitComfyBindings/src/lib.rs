@@ -10,4 +10,14 @@ mod rust_civit_comfy_bindings {
     fn sum_as_string(a: usize, b: usize) -> PyResult<String> {
         Ok((a + b).to_string())
     }
+    
+    #[pyfunction]
+    fn start_server(port: usize, static_dir: &str) {
+        use tokio::runtime::Runtime;
+        
+        let rt = Runtime::new()
+            .unwrap();
+        
+        rt.block_on(app::start_civit_frontend_server(port, static_dir));
+    }
 }
