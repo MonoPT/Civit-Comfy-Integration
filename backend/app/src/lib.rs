@@ -29,12 +29,14 @@ pub async fn start_civit_frontend_server(port: usize, static_dir: &str) {
         .merge(api::get_collection_with_media::route())
         .merge(api::get_collections::route())
         .merge(api::update_collections::route())
+        .merge(api::get_base_model_list::route())
         
-        .fallback_service(ServeDir::new(static_dir))
-        .layer(ServiceBuilder::new().layer(cors_layer));
+        ;
         
     let app = Router::new()
-        .nest("/civit", app);
+        .nest("/civit", app)
+        .fallback_service(ServeDir::new(static_dir))
+        .layer(ServiceBuilder::new().layer(cors_layer));
     
     let listener = tokio::net::TcpListener::bind(format!("0.0.0.0:{port}")).await.unwrap();
     let addr = listener.local_addr().unwrap().port();

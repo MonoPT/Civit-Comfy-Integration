@@ -74,8 +74,11 @@ pub async fn infinite_images(data: Query<InfiniteImagesDataReq>) -> Response {
     let data = civit.load_infinite(options).await;
     
     match data {
-        None => return (StatusCode::INTERNAL_SERVER_ERROR, "500 Internal server error").into_response(),
-        Some(data) => {
+        Err(err_val) => {
+            dbg!(&err_val);
+            return (StatusCode::INTERNAL_SERVER_ERROR, "500 Internal server error").into_response()
+        },
+        Ok(data) => {
             return (StatusCode::OK, Json(data)).into_response()
         }
     }

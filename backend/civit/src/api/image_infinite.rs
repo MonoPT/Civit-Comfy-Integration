@@ -2,7 +2,7 @@ use serde::{Deserialize, Serialize};
 use serde_json::json;
 
 use crate::Civit;
-use reqwest::header::HeaderMap;
+use reqwest::{Response, header::HeaderMap};
 
 use serde_json::Value;
 
@@ -66,7 +66,7 @@ impl Default for ImagesInfiniteLoadOptions {
 }
 
 impl Civit {
-    pub async fn load_infinite(&mut self, options: ImagesInfiniteLoadOptions) -> Option<(Vec<ImageResponse>, String)>  {                    
+    pub async fn load_infinite(&mut self, options: ImagesInfiniteLoadOptions) -> Result<(Vec<ImageResponse>, String), Value>  {                    
         let mut cookies = std::collections::HashMap::new();
         cookies.insert("__Secure-civitai-token", &self.auth_token);
         
@@ -121,8 +121,7 @@ impl Civit {
         let json_val = response_json.get("result").unwrap_or(&Value::Null).get("data").unwrap_or(&Value::Null).get("json");
         
         if json_val.is_none() {
-            dbg!(&response_json);
-            return None;
+            return Err(response_json);
         }
         
         let json_val = json_val.unwrap();
@@ -136,7 +135,7 @@ impl Civit {
             i.img_url = Some(format!("https://image.civitai.com/xG1nkqKTMzGDvpLrqFT7WA/{}/transcode=true,original=true,quality=90/3cde953f-b339-426a-97fa-9b47071c1df6", i.url.clone().unwrap_or_default()));
         });
         
-        Some((items, next_cursor))
+        Ok((items, next_cursor))
     }
 }
 
