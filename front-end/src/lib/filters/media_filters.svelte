@@ -6,6 +6,8 @@
     
     import { type FilterOption } from "$lib/filter";
     
+    import AdvancedFilters from "$lib/filters/advanced_filters.svelte"
+    
     const {filters_state = $bindable<FilterOption>()} = $props()
 </script>
 
@@ -43,6 +45,10 @@
       </DropdownMenu.Group>
      </DropdownMenu.Content>
     </DropdownMenu.Root>
+    
+    <span class="block ml-auto">
+        <AdvancedFilters />
+    </span>
 </div>
 
 <style>

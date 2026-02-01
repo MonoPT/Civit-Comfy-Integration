@@ -74,7 +74,7 @@ impl Civit {
                         
         let mut headers = HeaderMap::new();
         headers.append(reqwest::header::COOKIE, reqwest::header::HeaderValue::from_str(&cookie_header).unwrap());
-                
+                        
         let mut params = json!({
           "json": {
             "period": options.period,
@@ -105,7 +105,7 @@ impl Civit {
           }
         });
            
-        //println!("{}", params);
+        println!("{}\n\n", params);
         
         if options.cursor.is_none() {
             params["meta"] = serde_json::from_str(r#"{ "values": { "cursor": ["undefined"] } }"#).unwrap();

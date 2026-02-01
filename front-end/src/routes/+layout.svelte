@@ -46,10 +46,10 @@
       <AppSidebar />
       <Sidebar.Inset>
         <header class="flex h-16 shrink-0 items-center gap-2 sticky top-0 z-50" style="background: var(--background);">
-          <div class="flex items-center gap-2 px-4">
+          <div class="flex items-center gap-2 px-4 w-full">
             <Sidebar.Trigger class="-ms-1" />
             <Separator orientation="vertical" class="me-2 data-[orientation=vertical]:h-4" />
-            <div class="header-content-nav">
+            <div class="header-content-nav w-full">
                 
             </div>
           </div>

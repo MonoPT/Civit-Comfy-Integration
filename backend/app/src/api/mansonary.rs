@@ -50,8 +50,8 @@ pub async fn infinite_images(data: Query<InfiniteImagesDataReq>) -> Response {
         _ => Some(data.cursor.clone())
     };
     
-    let medias = data.media_type.split(",").collect::<Vec<&str>>().iter().filter(|s| s.trim().len() > 0).map(|f| f.to_lowercase().to_string()).collect::<Vec<String>>();
-    let base_models = data.base_model.split(",").collect::<Vec<&str>>().iter().filter(|s| s.trim().len() > 0).map(|f| f.to_string()).collect::<Vec<String>>();
+    let medias = data.media_type.split(",").collect::<Vec<&str>>().iter().filter(|s| s.trim().len() > 0).map(|f| f.trim().to_lowercase().to_string()).collect::<Vec<String>>();
+    let base_models = data.base_model.split(",").collect::<Vec<&str>>().iter().filter(|s| s.trim().len() > 0).map(|f| f.trim().to_string()).collect::<Vec<String>>();
     let techniques = data.techniques.split(",").collect::<Vec<&str>>().iter().filter(|s| s.trim().len() > 0).map(|f| f.parse::<usize>().unwrap()).collect::<Vec<usize>>();
     let tags = data.tags.split(",").collect::<Vec<&str>>().iter().filter(|s| s.trim().len() > 0).map(|f| f.parse::<usize>().unwrap()).collect::<Vec<usize>>();
     
