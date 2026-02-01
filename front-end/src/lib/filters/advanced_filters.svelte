@@ -25,10 +25,12 @@
     base_model = await response.json()
   })
   
-  
+  let selected_base_models = $state("")
   
   const handle_select_change = (values: string[]) => {
     filters_state.baseModel.selected = {name: "", value: values.join(",")}
+    
+    selected_base_models = values.join(",")
   }
   
 </script>
@@ -52,7 +54,9 @@
 
 {#snippet selectModel()}
     <Select.Root type="multiple" onValueChange={handle_select_change}>
-      <Select.Trigger class="w-full">Base Model (all)</Select.Trigger>
+      <Select.Trigger class="w-full">Base Model ({
+          selected_base_models.split(",").filter((str) => str.trim().length > 0).length > 0 ? selected_base_models.split(",").filter((str) => str.trim().length > 0).length : "all"
+        })</Select.Trigger>
       <Select.Content preventScroll={false}>
         <Select.Group>
           {#each base_model as model}
