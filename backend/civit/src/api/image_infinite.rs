@@ -135,7 +135,7 @@ impl Civit {
         let mut items: Vec<ImageResponse> = serde_json::from_value(json_val.get("items").unwrap_or(&Value::Null).clone()).unwrap_or_default();
         
         items.iter_mut().for_each(|i| {
-            i.img_url = Some(format!("https://image.civitai.com/xG1nkqKTMzGDvpLrqFT7WA/{}/transcode=true,original=true,quality=90/3cde953f-b339-426a-97fa-9b47071c1df6", i.url.clone().unwrap_or_default()));
+            i.img_url = Some(format!("https://image.civitai.com/xG1nkqKTMzGDvpLrqFT7WA/{}/transcode=true,original=true,quality=100/3cde953f-b339-426a-97fa-9b47071c1df6", i.url.clone().unwrap_or_default()));
         });
         
         Ok((items, next_cursor))

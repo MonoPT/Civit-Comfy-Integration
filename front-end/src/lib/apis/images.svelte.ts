@@ -58,7 +58,7 @@ export default class load_mansonary {
     if (response.status === 200) {
       let res = await response.json() 
       
-      let images = (res[0] as object[]).map((asset_item) => {
+      let assets = (res[0] as object[]).map((asset_item) => {
         //@ts-ignore
         const original_image_url = asset_item.img_url
         
@@ -67,8 +67,6 @@ export default class load_mansonary {
         const new_url = original_image_url.replace("/transcode=true,original=true,quality=90/", "/transcode=true,width=400,original=false,optimized=true/")
         const new_poster_url = original_image_url.replace("/transcode=true,original=true,quality=90/", "/anim=false,transcode=true,width=400,original=false,optimized=true/")
 
-        
-        
         //@ts-ignore
         asset_item.optimized_asset_url = new_url
         
@@ -82,7 +80,9 @@ export default class load_mansonary {
       })
       load_mansonary.cursor = (res[1] as string).replaceAll("\"", "")
       
-      return {status: response.status, assets: images}
+      console.log(assets)
+      
+      return {status: response.status, assets: assets}
     }
     
     return {status: response.status, assets: []}
