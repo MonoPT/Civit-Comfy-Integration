@@ -2,6 +2,7 @@
   import * as DropdownMenu from "$lib/components/ui/dropdown-menu/index.js";
   import { Button } from "$lib/components/ui/button/index.js";
   import * as Select from "$lib/components/ui/select/index.js";
+  import { Input } from "$lib/components/ui/input/index.js";
   
   import { type FilterOption } from "$lib/filter";
   import { ListFilter } from "@lucide/svelte";
@@ -16,6 +17,10 @@
   let base_model = $state<string[]>([])
   let tools = $state<{id: number, name: string}[]>([])
   let techniques = $state<{id: number, name: string, type: string}[]>([])
+  
+  let searchModels = $state("")
+  let searchTools = $state("")
+  let searchTechniques = $state("")
   
   onMount(async () => {
     fetch(API.get_base_models(user_token.token)).then(async (response) => {
@@ -76,22 +81,27 @@
   <DropdownMenu.Group>
     <DropdownMenu.Label>Filters</DropdownMenu.Label>
     <DropdownMenu.Separator />
-    {@render selectModel()}
-    {@render selectTools()}
-    {@render selectTechniques()}
+    <div class="wrapper flex flex-col gap-2">
+        {@render selectModel()}
+        {@render selectTools()}
+        {@render selectTechniques()}
+    </div>
   </DropdownMenu.Group>
  </DropdownMenu.Content>
 </DropdownMenu.Root>
 
-
+{searchModels}
 {#snippet selectModel()}
     <Select.Root type="multiple" onValueChange={handle_select_change_base_model}>
       <Select.Trigger class="w-full">Base Model ({
           selected_base_models.split(",").filter((str) => str.trim().length > 0).length > 0 ? selected_base_models.split(",").filter((str) => str.trim().length > 0).length : "all"
         })</Select.Trigger>
       <Select.Content preventScroll={false}>
+          <div class="wrapper sticky block left-0 z-1 py-2" style="background: var(--popover); top: -5px;">
+              <Input bind:value={searchModels} type="text" placeholder="Search..." class="max-w-xs" />
+          </div>
         <Select.Group>
-          {#each base_model as model}
+          {#each base_model.filter((model) => searchModels.trim().length > 0 ? model.toLowerCase().includes(searchModels.toLowerCase()) : true) as model}
                <Select.Item value={model}> {model}</Select.Item>
           {/each}
         </Select.Group>
@@ -105,8 +115,11 @@
           selected_tools.split(",").filter((str) => str.trim().length > 0).length > 0 ? selected_tools.split(",").filter((str) => str.trim().length > 0).length : "all"
         })</Select.Trigger>
       <Select.Content preventScroll={false}>
+          <div class="wrapper sticky block left-0 z-1 py-2" style="background: var(--popover); top: -5px;">
+              <Input bind:value={searchTools} type="text" placeholder="Search..." class="max-w-xs" />
+          </div>
         <Select.Group>
-          {#each tools as tool}
+          {#each tools.filter((tool) => searchTools.trim().length > 0 ? tool.name.toLowerCase().includes(searchTools.toLowerCase()) : true) as tool}
                <Select.Item value={`${tool.id}`}> {tool.name}</Select.Item>
           {/each}
         </Select.Group>
@@ -117,11 +130,14 @@
 {#snippet selectTechniques()}
     <Select.Root type="multiple" onValueChange={handle_select_change_technique}>
       <Select.Trigger class="w-full">Techniques ({
-          selected_tools.split(",").filter((str) => str.trim().length > 0).length > 0 ? selected_tools.split(",").filter((str) => str.trim().length > 0).length : "all"
+          selected_techniques.split(",").filter((str) => str.trim().length > 0).length > 0 ? selected_techniques.split(",").filter((str) => str.trim().length > 0).length : "all"
         })</Select.Trigger>
       <Select.Content preventScroll={false}>
+          <div class="wrapper sticky block left-0 z-1 py-2" style="background: var(--popover); top: -5px;">
+              <Input bind:value={searchTechniques} type="text" placeholder="Search..." class="max-w-xs" />
+          </div>
         <Select.Group>
-          {#each techniques as technique}
+          {#each techniques.filter((technique) => searchTechniques.trim().length > 0 ? technique.name.toLowerCase().includes(searchTechniques.toLowerCase()) : true) as technique}
                <Select.Item value={`${technique.id}`}> {technique.name}</Select.Item>
           {/each}
         </Select.Group>
