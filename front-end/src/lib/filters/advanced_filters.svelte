@@ -81,7 +81,7 @@
   <DropdownMenu.Group>
     <DropdownMenu.Label>Filters</DropdownMenu.Label>
     <DropdownMenu.Separator />
-    <div class="wrapper flex flex-col gap-2">
+    <div class="wrapper flex flex-col gap-2 py-2">
         {@render selectModel()}
         {@render selectTools()}
         {@render selectTechniques()}
