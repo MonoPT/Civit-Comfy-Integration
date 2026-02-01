@@ -3,15 +3,38 @@
     import imageLoader from "$lib/apis/images.svelte"
     import { RegularMasonryGrid  as MasonryGrid, Frame } from '@masonry-grid/svelte'
     
+    import { type FilterOption, type Filter } from "$lib/filter";
+    
     let assets_list: any[] = $state([])
+    let applied_filters: Filter[] = []
     
     let is_loadings_assets = false;
     
-    const {media_type = ""}: {media_type?: "" | "Image" | "Video"} = $props()
+
+    const {filters}: {filters: FilterOption} = $props()
     
-    onMount(() => {     
+    $effect(() => {
+      const filters_selected: Filter[] = []
+      
+      for (const key in filters) {
+        const value = filters[key];
+        
+        const selected_name = value.selected.name
+        const selected_value = value.selected.value
+        
+        filters_selected.push({name: key, value: selected_value})
+      }
+
+      
+      applied_filters = filters_selected
+      assets_list = [] // Resets asset list
       imageLoader.reset()
-      imageLoader.set_media(media_type)
+      load_assets_batch()
+	});
+    
+    onMount(() => {   
+      assets_list = []      
+      imageLoader.reset()
       load_assets_batch();
       
       window.addEventListener("scroll", handle_scroll)
@@ -32,7 +55,7 @@
       
       is_loadings_assets = true
       
-      let resp = await imageLoader.fetch_assets();
+      let resp = await imageLoader.fetch_assets(applied_filters);
       
       if (resp.status === 200) {
         assets_list = [...assets_list, ...resp.assets]

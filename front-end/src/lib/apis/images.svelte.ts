@@ -6,24 +6,22 @@ type return_assets = {
   assets: object[]
 }
 
+import { type Filter } from "$lib/filter";
+
 export default class load_mansonary {
   static cursor = ""
   static media = ""  
-  
-  static set_media(media: "" | "Image" | "Video") {
-    load_mansonary.media = media
-  }
   
   static reset() {
     load_mansonary.cursor = ""
   }
   
-  static default_payload() {
-    return {
+  static default_payload(override: Filter[] = []) {
+    let filter_list: {[key: string]: string} =  {
       period: "Month",
       sort: "Most Reactions",
       baseModel: "",
-      mediaType: load_mansonary.media,
+      mediaType: "Image",
       cursor: load_mansonary.cursor,
       browsingLevel: "31",
       techniques: "",
@@ -33,12 +31,27 @@ export default class load_mansonary {
       remixesOnly: "false",
       tags: ""
     }
+    
+    for (const key in override) {
+      const value = override[key];
+      
+      const selected_name = value.name
+      const selected_value = value.value
+            
+      const val_to_override = filter_list[selected_name]
+      
+      if (val_to_override) { // If key exists in base list, override it with new value
+        filter_list[selected_name] = selected_value
+      }
+    }
+    
+    return filter_list
   }
   
-  static async fetch_assets(): Promise<return_assets> {
-    let payload = load_mansonary.default_payload()
+  static async fetch_assets(override: Filter[] = []): Promise<return_assets> {
+    let payload = load_mansonary.default_payload(override)
     let endpoint = API.infinite_images(user_token.token, new URLSearchParams(payload).toString())
-    
+        
     let response = await fetch(endpoint)
     
     if (response.status === 200) {
