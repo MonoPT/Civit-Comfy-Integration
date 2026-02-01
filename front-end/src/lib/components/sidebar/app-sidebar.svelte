@@ -1,9 +1,6 @@
 <script lang="ts" module>    
-  import BookOpenIcon from "@lucide/svelte/icons/book-open";
-  import BotIcon from "@lucide/svelte/icons/bot";
-  import Settings2Icon from "@lucide/svelte/icons/settings-2";
-  import SquareTerminalIcon from "@lucide/svelte/icons/square-terminal";
   
+  import {Star, Image, Video} from "@lucide/svelte"
   
   const data = {
     explore: [
@@ -30,17 +27,17 @@
       {
         title: "Popular",
         url: "/civit/",
-        icon: BotIcon,
+        icon: Star,
       },
       {
         title: "Images",
         url: "/civit/images",
-        icon: BotIcon,
+        icon: Image,
       },
       {
         title: "Videos",
         url: "/civit/video",
-        icon: BotIcon,
+        icon: Video,
       },
     ],
   };

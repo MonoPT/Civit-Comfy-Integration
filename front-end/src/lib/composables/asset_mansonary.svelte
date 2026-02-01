@@ -68,4 +68,10 @@
         overflow: hidden;
         position: relative;
     }
+    
+    img, video {
+        display: block;
+        width: 100%;
+        height: 100%;
+    }
 </style>
