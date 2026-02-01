@@ -78,14 +78,10 @@
         <Frame width={asset.ratio.w} height={asset.ratio.h}>
             <div class="asset-container">
                 <Skeleton class="skeleteonLoader h-full w-full absolute top-0 left-0" />
-                {#if asset.type === "Image"}
-                    <img loading="lazy" src='{asset.optimized_asset_url}' alt='Civit' />
-                {:else}
-                    <video loop autoplay muted preload="auto" poster={asset.optimized_poster_img_url} disablepictureinpicture>
-                        <source src="{asset.optimized_asset_url}.webm" type="video/webm">
-                        <source src="{asset.optimized_asset_url}.mp4" type="video/mp4">
-                    </video>
-                {/if}
+                <video loop autoplay muted preload="auto" poster={asset.optimized_poster_img_url} disablepictureinpicture>
+                    <source src="{asset.optimized_asset_url}.webm" type="video/webm">
+                    <source src="{asset.optimized_asset_url}.mp4" type="video/mp4">
+                </video>
             </div>
         </Frame>
     {/each}
