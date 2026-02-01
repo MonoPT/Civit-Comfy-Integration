@@ -18,5 +18,13 @@ export let media_filters = {
       {name: "Newest", value: "Newest"},
       {name: "Oldest", value: "Oldest"}
     ]
+  },
+  browsingLevel: { // NSFW Filter
+    selected: { name: "Hide Nsfw", value: "0" },
+    options: [
+      { name: "Hide Nsfw", value: "0" },
+      { name: "Include Nsfw", value: "31" },
+      { name: "Only Nsfw", value: "100" },
+    ]
   }
 }
