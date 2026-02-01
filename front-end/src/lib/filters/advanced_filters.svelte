@@ -39,7 +39,7 @@
    <Button {...props} variant="ghost" class="font-normal"><ListFilter/> Filters</Button>
   {/snippet}
  </DropdownMenu.Trigger>
- <DropdownMenu.Content class="w-56">
+ <DropdownMenu.Content preventScroll={false} class="w-56">
   <DropdownMenu.Group>
     <DropdownMenu.Label>Filters</DropdownMenu.Label>
     <DropdownMenu.Separator />
@@ -53,7 +53,7 @@
 {#snippet selectModel()}
     <Select.Root type="multiple" onValueChange={handle_select_change}>
       <Select.Trigger class="w-full">Base Model (all)</Select.Trigger>
-      <Select.Content>
+      <Select.Content preventScroll={false}>
         <Select.Group>
           {#each base_model as model}
                <Select.Item value={model}> {model}</Select.Item>
