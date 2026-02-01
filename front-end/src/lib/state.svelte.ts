@@ -6,6 +6,16 @@ export const user_token = $state({token: ""})
 
 export let collection_list: {[key: number]: number[]} = [] // list of collection to wich media belongs
 
+export const logoutUser = () => {
+  user_token.token = ""
+  
+  for (const key in userState) {
+    delete userState[key];
+  }
+  
+  setCookie("user_token", "", 0)
+}
+
 export const loginUser = async (token: string) => {
   loading_user.loading = true
   loading_user.error = ""
