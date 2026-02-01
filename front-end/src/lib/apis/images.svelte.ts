@@ -8,8 +8,10 @@ type return_assets = {
 
 export default class load_mansonary {
   static cursor = ""
-  
-  static assets_stack = []
+    
+  static reset() {
+    load_mansonary.cursor = ""
+  }
   
   static default_payload() {
     return {
@@ -43,10 +45,16 @@ export default class load_mansonary {
         
         // Replace otimization settings
         
-        const new_url = original_image_url.replace("/transcode=true,original=true,quality=90/", "/anim=false,transcode=true,width=400,original=false,optimized=true/")
+        const new_url = original_image_url.replace("/transcode=true,original=true,quality=90/", "/transcode=true,width=400,original=false,optimized=true/")
+        const new_poster_url = original_image_url.replace("/transcode=true,original=true,quality=90/", "/anim=false,transcode=true,width=400,original=false,optimized=true/")
+
+        
         
         //@ts-ignore
-        asset_item.optimized_img_url = new_url
+        asset_item.optimized_asset_url = new_url
+        
+        //@ts-ignore
+        asset_item.optimized_poster_img_url = new_poster_url
         
         asset_item.ratio = getAspectRatio(asset_item.width || 0, asset_item.height || 0)
         

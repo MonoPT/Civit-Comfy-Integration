@@ -8,6 +8,7 @@
     let is_loadings_assets = false;
     
     onMount(() => {     
+      imageLoader.reset()
       load_assets_batch();
       
       window.addEventListener("scroll", handle_scroll)
@@ -33,7 +34,7 @@
       if (resp.status === 200) {
         assets_list = [...assets_list, ...resp.assets]
       }
-      
+            
       is_loadings_assets = false
     }
 </script>
@@ -44,9 +45,24 @@
 >
     {#each assets_list as asset}
         <Frame width={asset.ratio.w} height={asset.ratio.h}>
-            <div class="container">
-                <img loading="lazy" src='{asset.optimized_img_url}' alt='Photo' />
+            <div class="asset-container">
+                {#if asset.type === "Image"}
+                    <img loading="lazy" src='{asset.optimized_asset_url}' alt='Civit' />
+                {:else}
+                    <video loop autoplay muted preload="auto" poster={asset.optimized_poster_img_url} disablepictureinpicture>
+                        <source src="{asset.optimized_asset_url}.webm" type="video/webm">
+                        <source src="{asset.optimized_asset_url}.mp4" type="video/mp4">
+                    </video>
+                {/if}
             </div>
         </Frame>
     {/each}
 </MasonryGrid>
+
+<style>
+    .asset-container {
+        border-radius: 5px;
+        overflow: hidden;
+        position: relative;
+    }
+</style>
