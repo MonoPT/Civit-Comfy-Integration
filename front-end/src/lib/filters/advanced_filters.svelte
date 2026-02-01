@@ -5,7 +5,7 @@
   import { Input } from "$lib/components/ui/input/index.js";
   
   import { type FilterOption } from "$lib/filter";
-  import { ListFilter } from "@lucide/svelte";
+  import { ListFilter, Box, Brush, PencilRuler  } from "@lucide/svelte";
   
   import {user_token} from "$lib/state.svelte"
   import API from "$lib/api"
@@ -90,10 +90,9 @@
  </DropdownMenu.Content>
 </DropdownMenu.Root>
 
-{searchModels}
 {#snippet selectModel()}
     <Select.Root type="multiple" onValueChange={handle_select_change_base_model}>
-      <Select.Trigger class="w-full">Base Model ({
+      <Select.Trigger class="w-full"><Box /> Base Model ({
           selected_base_models.split(",").filter((str) => str.trim().length > 0).length > 0 ? selected_base_models.split(",").filter((str) => str.trim().length > 0).length : "all"
         })</Select.Trigger>
       <Select.Content preventScroll={false}>
@@ -111,7 +110,7 @@
 
 {#snippet selectTools()}
     <Select.Root type="multiple" onValueChange={handle_select_change_tool}>
-      <Select.Trigger class="w-full">Tools ({
+      <Select.Trigger class="w-full"><PencilRuler /> Tools ({
           selected_tools.split(",").filter((str) => str.trim().length > 0).length > 0 ? selected_tools.split(",").filter((str) => str.trim().length > 0).length : "all"
         })</Select.Trigger>
       <Select.Content preventScroll={false}>
@@ -129,7 +128,7 @@
 
 {#snippet selectTechniques()}
     <Select.Root type="multiple" onValueChange={handle_select_change_technique}>
-      <Select.Trigger class="w-full">Techniques ({
+      <Select.Trigger class="w-full"><Brush /> Techniques ({
           selected_techniques.split(",").filter((str) => str.trim().length > 0).length > 0 ? selected_techniques.split(",").filter((str) => str.trim().length > 0).length : "all"
         })</Select.Trigger>
       <Select.Content preventScroll={false}>
