@@ -105,7 +105,7 @@ impl Civit {
           }
         });
            
-        println!("{}\n\n", params);
+        //println!("{}\n\n", params);
         
         if options.cursor.is_none() {
             params["meta"] = serde_json::from_str(r#"{ "values": { "cursor": ["undefined"] } }"#).unwrap();
