@@ -8,7 +8,7 @@
     
     import AdvancedFilters from "$lib/filters/advanced_filters.svelte"
     
-    const {filters_state = $bindable<FilterOption>()} = $props()
+    let {filters_state = $bindable<FilterOption>()} = $props()
 </script>
 
 <div class="filterWrapper">
@@ -47,7 +47,7 @@
     </DropdownMenu.Root>
     
     <span class="block ml-auto">
-        <AdvancedFilters />
+        <AdvancedFilters bind:filters_state />
     </span>
 </div>
 

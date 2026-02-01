@@ -95,8 +95,6 @@
     <div class="flex flex-col items-center gap-2">
         <Spinner class="size-8" />
     </div>
-    {:else}
-    not loading
 {/if}
 
 <style>

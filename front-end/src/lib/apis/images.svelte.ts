@@ -40,7 +40,7 @@ export default class load_mansonary {
             
       const val_to_override = filter_list[selected_name]
       
-      if (val_to_override) { // If key exists in base list, override it with new value
+      if (val_to_override !== undefined) { // If key exists in base list, override it with new value
         filter_list[selected_name] = selected_value
       }
     }

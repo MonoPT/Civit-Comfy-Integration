@@ -3,8 +3,10 @@
   import { Button } from "$lib/components/ui/button/index.js";
   import * as Select from "$lib/components/ui/select/index.js";
   
+  import { type FilterOption } from "$lib/filter";
   import { ListFilter } from "@lucide/svelte";
   
+  const {filters_state = $bindable<FilterOption>()} = $props()
   let showStatusBar = $state(true);
  
   import BaseModels from "$lib/data/base_model_descriptions"
@@ -23,7 +25,7 @@
   })
   
   const handle_select_change = (values: string[]) => {
-    console.log(values)
+    filters_state.baseModel.selected = {name: "", value: values.join(",")}
   }
   
 </script>
@@ -39,13 +41,13 @@
     <DropdownMenu.Label>Filters</DropdownMenu.Label>
     <DropdownMenu.Separator />
     <DropdownMenu.CheckboxItem closeOnSelect={false} bind:checked={showStatusBar}>Status Bar</DropdownMenu.CheckboxItem>
-    {@render dropdown()}
+    {@render selectModel()}
   </DropdownMenu.Group>
  </DropdownMenu.Content>
 </DropdownMenu.Root>
 
 
-{#snippet dropdown()}
+{#snippet selectModel()}
     <Select.Root type="multiple" onValueChange={handle_select_change}>
       <Select.Trigger class="w-full">Base Model (all)</Select.Trigger>
       <Select.Content>

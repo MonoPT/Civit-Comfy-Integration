@@ -26,5 +26,9 @@ export let media_filters = {
       { name: "Include Nsfw", value: "31" },
       { name: "Only Nsfw", value: "100" },
     ]
+  },
+  baseModel: {
+    selected: { name: "", value: "" },
+    options: []
   }
 }
