@@ -8,7 +8,12 @@ type return_assets = {
 
 export default class load_mansonary {
   static cursor = ""
-    
+  static media = ""  
+  
+  static set_media(media: "" | "Image" | "Video") {
+    load_mansonary.media = media
+  }
+  
   static reset() {
     load_mansonary.cursor = ""
   }
@@ -18,7 +23,7 @@ export default class load_mansonary {
       period: "Month",
       sort: "Most Reactions",
       baseModel: "",
-      mediaType: "Image",
+      mediaType: load_mansonary.media,
       cursor: load_mansonary.cursor,
       browsingLevel: "31",
       techniques: "",
@@ -56,6 +61,7 @@ export default class load_mansonary {
         //@ts-ignore
         asset_item.optimized_poster_img_url = new_poster_url
         
+        //@ts-ignore
         asset_item.ratio = getAspectRatio(asset_item.width || 0, asset_item.height || 0)
         
         return asset_item

@@ -7,7 +7,7 @@
   
   const data = {
     explore: [
-      {
+      /*{
         title: "Playground",
         url: "#",
         icon: SquareTerminalIcon,
@@ -26,57 +26,21 @@
             url: "#",
           },
         ],
-      },
+        },*/
       {
-        title: "Models",
-        url: "/civit/models",
+        title: "Popular",
+        url: "/civit/",
         icon: BotIcon,
       },
       {
-        title: "Documentation",
-        url: "#",
-        icon: BookOpenIcon,
-        items: [
-          {
-            title: "Introduction",
-            url: "#",
-          },
-          {
-            title: "Get Started",
-            url: "#",
-          },
-          {
-            title: "Tutorials",
-            url: "#",
-          },
-          {
-            title: "Changelog",
-            url: "#",
-          },
-        ],
+        title: "Images",
+        url: "/civit/images",
+        icon: BotIcon,
       },
       {
-        title: "Settings",
-        url: "#",
-        icon: Settings2Icon,
-        items: [
-          {
-            title: "General",
-            url: "#",
-          },
-          {
-            title: "Team",
-            url: "#",
-          },
-          {
-            title: "Billing",
-            url: "#",
-          },
-          {
-            title: "Limits",
-            url: "#",
-          },
-        ],
+        title: "Videos",
+        url: "/civit/video",
+        icon: BotIcon,
       },
     ],
   };
