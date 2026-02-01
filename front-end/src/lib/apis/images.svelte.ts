@@ -29,7 +29,8 @@ export default class load_mansonary {
       madeOnsite: "false",
       originalsOnly: "false",
       remixesOnly: "false",
-      tags: ""
+      tags: "",
+      tools: ""
     }
     
     for (const key in override) {

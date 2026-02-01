@@ -53,4 +53,12 @@ export default class API {
   static get_base_models(token: string) {
     return `${this.endpoint}/base_models_list?token=${token}`
   }
+  
+  static get_tools(token: string) {
+    return `${this.endpoint}/get_tools_list?token=${token}`
+  }
+  
+  static get_techniques(token: string) {
+    return `${this.endpoint}/get_techniques_list?token=${token}`
+  }
 }

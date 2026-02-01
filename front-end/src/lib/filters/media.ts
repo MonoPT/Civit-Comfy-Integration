@@ -30,5 +30,13 @@ export let media_filters = {
   baseModel: {
     selected: { name: "", value: "" },
     options: []
+  },
+  tools: {
+    selected: { name: "", value: "" },
+    options: []
+  },
+  techniques: {
+    selected: { name: "", value: "" },
+    options: []
   }
 }

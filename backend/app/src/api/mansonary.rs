@@ -26,6 +26,7 @@ pub struct InfiniteImagesDataReq {
     #[serde(rename = "browsingLevel")]
     browsing_level: usize,
     techniques: String,
+    tools: String,
     #[serde(rename = "requiringMeta")]
     requiring_meta: bool,
     #[serde(rename = "madeOnsite")]
@@ -54,6 +55,8 @@ pub async fn infinite_images(data: Query<InfiniteImagesDataReq>) -> Response {
     let base_models = data.base_model.split(",").collect::<Vec<&str>>().iter().filter(|s| s.trim().len() > 0).map(|f| f.trim().to_string()).collect::<Vec<String>>();
     let techniques = data.techniques.split(",").collect::<Vec<&str>>().iter().filter(|s| s.trim().len() > 0).map(|f| f.parse::<usize>().unwrap()).collect::<Vec<usize>>();
     let tags = data.tags.split(",").collect::<Vec<&str>>().iter().filter(|s| s.trim().len() > 0).map(|f| f.parse::<usize>().unwrap()).collect::<Vec<usize>>();
+    let tools = data.tools.split(",").collect::<Vec<&str>>().iter().filter(|s| s.trim().len() > 0).map(|f| f.parse::<usize>().unwrap()).collect::<Vec<usize>>();
+
     
     // Options
     let mut options = ImagesInfiniteLoadOptions::default();
@@ -64,6 +67,7 @@ pub async fn infinite_images(data: Query<InfiniteImagesDataReq>) -> Response {
     options.browsingLevel = data.browsing_level;
     options.base_models = base_models;
     options.techniques = techniques;
+    options.tools = tools;
     options.withMeta = data.requiring_meta;
     options.remixesOnly = data.remixes_only;
     options.nonRemixesOnly = data.originals_only;
