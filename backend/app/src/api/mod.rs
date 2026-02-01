@@ -7,3 +7,5 @@ pub mod get_collection_with_media;
 pub mod get_collections;
 pub mod update_collections;
 pub mod get_base_model_list;
+pub mod get_tools;
+pub mod get_techniques;

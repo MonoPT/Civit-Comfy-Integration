@@ -7,6 +7,8 @@ mod tags_id;
 mod creator;
 mod generation_data;
 mod collections;
+mod tool_list;
+mod technique_list;
 
 use serde::Deserialize;
 pub use models::{ModelsOptions, Model};

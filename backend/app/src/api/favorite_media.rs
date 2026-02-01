@@ -1,10 +1,10 @@
 use axum::{
-    Json, Router, extract::Query, http::StatusCode, response::{IntoResponse, Response}, routing::get,
+    Router, extract::Query, http::StatusCode, response::{IntoResponse, Response}, routing::get,
     extract::Path
 };
 
 use civit::CollectionType;
-use serde::{Deserialize, Serialize};
+use serde::{Deserialize};
 
 use civit::Civit;
 

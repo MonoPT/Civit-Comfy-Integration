@@ -30,7 +30,8 @@ pub async fn start_civit_frontend_server(port: usize, static_dir: &str) {
         .merge(api::get_collections::route())
         .merge(api::update_collections::route())
         .merge(api::get_base_model_list::route())
-        
+        .merge(api::get_tools::route())
+        .merge(api::get_techniques::route())
         ;
         
     let app = Router::new()

@@ -10,7 +10,6 @@
   import API from "$lib/api"
   
   const {filters_state = $bindable<FilterOption>()} = $props()
-  let showStatusBar = $state(true);
  
   import { onMount } from "svelte";
   
@@ -45,7 +44,6 @@
   <DropdownMenu.Group>
     <DropdownMenu.Label>Filters</DropdownMenu.Label>
     <DropdownMenu.Separator />
-    <DropdownMenu.CheckboxItem closeOnSelect={false} bind:checked={showStatusBar}>Status Bar</DropdownMenu.CheckboxItem>
     {@render selectModel()}
   </DropdownMenu.Group>
  </DropdownMenu.Content>
