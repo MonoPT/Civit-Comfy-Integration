@@ -8,8 +8,11 @@
     import * as DropdownMenu from "$lib/components/ui/dropdown-menu/index.js";
     import * as Sidebar from "$lib/components/ui/sidebar/index.js";
     import { useSidebar } from "$lib/components/ui/sidebar/index.js";
-    import { onMount } from "svelte";
+    import { Button } from "$lib/components/ui/button/index.js";
     
+    import {SunIcon, MoonIcon} from "@lucide/svelte"
+    
+    import { toggleMode } from "mode-watcher";
 
     const sidebar = useSidebar();
     
@@ -54,6 +57,20 @@
             </div>
           </div>
         </DropdownMenu.Label>
+        <DropdownMenu.Separator />
+        
+        <span onclick={toggleMode}>
+            <DropdownMenu.Item> 
+                <SunIcon 
+                    class="h-[1.2rem] w-[1.2rem] scale-100 rotate-0 transition-all! dark:scale-0 dark:-rotate-90"
+                />
+                <MoonIcon
+                    class="absolute h-[1.2rem] w-[1.2rem] scale-0 rotate-90 transition-all! dark:scale-100 dark:rotate-0"
+                />
+               <span>Toggle theme</span>
+            </DropdownMenu.Item>
+        </span>
+        
         <DropdownMenu.Separator />
         <span onclick={logoutUser}>
             <DropdownMenu.Item> 
