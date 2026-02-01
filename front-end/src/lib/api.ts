@@ -50,4 +50,7 @@ export default class API {
     return `${this.endpoint}/unfavorite_media/${media_id}?token=${token}`
   }
   
+  static get_base_models(token: string) {
+    return `${this.endpoint}/base_models_list?token=${token}`
+  }
 }

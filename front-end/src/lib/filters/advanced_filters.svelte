@@ -6,23 +6,26 @@
   import { type FilterOption } from "$lib/filter";
   import { ListFilter } from "@lucide/svelte";
   
+  import {user_token} from "$lib/state.svelte"
+  import API from "$lib/api"
+  
   const {filters_state = $bindable<FilterOption>()} = $props()
   let showStatusBar = $state(true);
  
-  import BaseModels from "$lib/data/base_model_descriptions"
+  import { onMount } from "svelte";
   
-  let base_model = $state({
-    ...Object.fromEntries(
-      Object.entries(BaseModels).map(([key, value]) => [
-        key,
-        { ...value, selected: false },
-      ])
-    ),
-  } as {
-    [K in keyof typeof BaseModels]: typeof BaseModels[K] & {
-      selected: boolean;
-    };
+  let base_model = $state<string[]>([])
+  
+  onMount(async () => {
+    
+    const response = await fetch(API.get_base_models(user_token.token))
+    
+    if (response.status !== 200) return
+        
+    base_model = await response.json()
   })
+  
+  
   
   const handle_select_change = (values: string[]) => {
     filters_state.baseModel.selected = {name: "", value: values.join(",")}
@@ -52,8 +55,8 @@
       <Select.Trigger class="w-full">Base Model (all)</Select.Trigger>
       <Select.Content>
         <Select.Group>
-          {#each Object.entries(base_model) as model}
-               <Select.Item value={model[1].name}>{model[1].name}</Select.Item>
+          {#each base_model as model}
+               <Select.Item value={model}> {model}</Select.Item>
           {/each}
         </Select.Group>
       </Select.Content>
