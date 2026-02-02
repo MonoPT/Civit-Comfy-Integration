@@ -1,9 +1,14 @@
 mod api;
+mod downloader;
 
 mod media_proxy;
 
+use std::sync::Arc;
+
 use axum::{
-    Router, http::Method
+    Router, 
+    http::Method,
+    Extension
 };
 
 use rand::rng;
@@ -14,12 +19,43 @@ use tower_http::cors::{CorsLayer, Any};
 use tower::ServiceBuilder;
 
 use tokio::{sync::oneshot};
-use std::{sync::mpsc};
+use tokio::sync::{Mutex, mpsc};
 use notify::{Event, RecursiveMode, Result, Watcher};
+
+#[derive(Clone, Debug)]
+struct AppState {
+    tx_downloader: mpsc::Sender<downloader::DownloadJob>,
+    downloads: Arc<Mutex<Vec<ModelDownloading>>>
+}
+
+use serde::Serialize;
+
+#[derive(Debug, Serialize, Clone)]
+struct ModelDownloading {
+    model_payload: String,
+    downloaded: u64,
+    total_size: u64,
+    started_at: chrono::DateTime<chrono::Utc>,
+    finished_at: Option<chrono::DateTime<chrono::Utc>>,
+    download_speed: f64
+}
 
 pub async fn start_civit_frontend_server(port: usize, static_dir: &str) {
     // Shutdown signal
     let (shutdown_tx, shutdown_rx) = oneshot::channel::<()>();
+    
+    // Downloader channel
+    let models_being_downloaded: Arc<Mutex<Vec<ModelDownloading>>> = Arc::new(Mutex::new(vec![]));
+    
+    let (tx_downloader, rx_downloader) = mpsc::channel::<downloader::DownloadJob>(100);
+        
+    tokio::spawn(downloader::download_worker(rx_downloader, Arc::clone(&models_being_downloaded)));
+    
+    //
+    let state = Arc::new(AppState { 
+        tx_downloader,
+        downloads: Arc::clone(&models_being_downloaded)
+    });
     
     let working_dir = std::env::current_dir().unwrap();
             
@@ -41,18 +77,20 @@ pub async fn start_civit_frontend_server(port: usize, static_dir: &str) {
         .merge(api::get_base_model_list::route())
         .merge(api::get_tools::route())
         .merge(api::get_techniques::route())
+        .merge(downloader::route())
         ;
         
     let app = Router::new()
         .nest("/civit", app)
         .fallback_service(ServeDir::new(static_dir))
         .layer(ServiceBuilder::new().layer(cors_layer)) 
+        .layer(Extension(state))
     ;
-    
+        
     // Listen for file delete to shutdown server instance
     let file_to_watch = working_dir.join("civit_comfy_state");
     tokio::spawn(async move {
-        
+        use std::{sync::mpsc};
         let (tx, rx) = mpsc::channel::<Result<Event>>();
         
         let mut watcher = notify::recommended_watcher(tx).unwrap();
@@ -88,7 +126,7 @@ pub async fn start_civit_frontend_server(port: usize, static_dir: &str) {
     println!("http://127.0.0.1:{addr}");
     
     axum::serve(listener, app)
-        .with_graceful_shutdown(async {
+        .with_graceful_shutdown(async { // Waits for file delcared above to be removed, if so it shutdowns the isntance. prevents two instances from being running at the same time
             let _ = shutdown_rx.await;
         })
         .await.unwrap()
