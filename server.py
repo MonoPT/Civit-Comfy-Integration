@@ -1,11 +1,6 @@
 import argparse
-import os
 
-file_p = os.path.dirname(os.path.abspath(__file__))
-
-static_dir = f"{file_p}/front-end/build"
-
-def main(port: int):    
+def main(port: int, static_dir):    
     print("Running server on another process with port:", port)
     
     from rust_civit_comfy_bindings import start_server
@@ -16,13 +11,17 @@ def main(port: int):
         pass
 
 if __name__ == "__main__":    
-    print("Hello world")
     parser = argparse.ArgumentParser(description="Start server on a given port")
     parser.add_argument(
         "port",
         type=int,
         help="Port number to run the server on"
     )
+    parser.add_argument(
+        "static_folder",
+        type=str,
+        help="Frontend static build"
+    )
 
     args = parser.parse_args()
-    main(args.port)
+    main(args.port, args.static_folder)

@@ -22,6 +22,8 @@ __all__ = ['NODE_CLASS_MAPPINGS']
 
 from server import PromptServer
 from aiohttp import web
+import aiohttp
+
 routes = PromptServer.instance.routes
 
 # Install and update dependencies
@@ -38,21 +40,46 @@ def is_port_free(port, host="127.0.0.1"):
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
         return s.connect_ex((host, port)) != 0
 
-if is_port_free(3090):
-    port = 3090
-else:
-    with socketserver.TCPServer(("localhost", 0), None) as server:
-        port = server.server_address[1]
-
+with socketserver.TCPServer(("localhost", 0), None) as server:
+    port = server.server_address[1]
+    
 from rust_civit_comfy_bindings import sum_as_string, start_server
 
 print(f"Civit backend server started on port {port}")
 
-## Catch all route - rev proxy
-@routes.get('/my_new_path')
-async def my_function(request):
+def reverse_proxy(request, rest_of_path: str):
+    return web.json_response({"path": rest_of_path})
+    
+UPSTREAM = f"http://127.0.0.1:{port}"
+    
+@routes.get(r"/civit/{rest_of_path:.*}")
+async def my_function(request: web.Request) -> web.StreamResponse:
+    upstream_url = f"{UPSTREAM}{request.rel_url}"
+    
+    print(upstream_url)
 
-    return web.json_response({"teste": True})
+    async with aiohttp.ClientSession() as session:
+        async with session.request(
+            method=request.method,
+            url=upstream_url,
+            headers={k: v for k, v in request.headers.items()
+                     if k.lower() != "host"},
+            data=await request.read(),
+            allow_redirects=False,
+        ) as resp:
+
+            proxy_resp = web.StreamResponse(
+                status=resp.status,
+                headers=resp.headers
+            )
+
+            await proxy_resp.prepare(request)
+
+            async for chunk in resp.content.iter_chunked(8192):
+                await proxy_resp.write(chunk)
+
+            await proxy_resp.write_eof()
+            return proxy_resp
     
 @routes.get('/civit-comfy-port')
 async def my_function(request):
@@ -63,8 +90,12 @@ file_p = os.path.dirname(os.path.abspath(__file__))
 import subprocess
 import sys
 
+static_dir = f"{file_p}/front-end/build"
+
+print(f"Static dir: {static_dir}")
+
 subprocess.Popen(
-    [sys.executable, f"{file_p}/server.py", f"{port}"],
+    [sys.executable, f"{file_p}/server.py", f"{port}", f"{static_dir}"],
     stdin=subprocess.DEVNULL,
     stdout=subprocess.DEVNULL,
     stderr=subprocess.DEVNULL,

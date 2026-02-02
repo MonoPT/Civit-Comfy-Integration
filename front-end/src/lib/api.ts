@@ -7,8 +7,17 @@ if (typeof window !== 'undefined' && !dev) {
   port = url.port
 }
 
+let endpoint = ""
+
+if (dev) {
+  endpoint = `http://127.0.0.1:${port}/civit`
+} else {
+  endpoint = `/civit`
+}
+
+
 export default class API {
-  static endpoint = `http://127.0.0.1:${port}/civit`
+  static endpoint = endpoint
     
   static user_data(token: string) {
     return `${this.endpoint}/user_data?token=${token}`

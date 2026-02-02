@@ -103,6 +103,7 @@ pub async fn start_civit_frontend_server(port: usize, static_dir: &str) {
         
     let _ = std::fs::File::create(&file_to_watch);
         
+    
     tokio::spawn(async move {
         use std::{sync::mpsc};
         let (tx, rx) = mpsc::channel::<Result<Event>>();

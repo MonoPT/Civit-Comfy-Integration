@@ -10,6 +10,10 @@ dev-frontend:
 publish-list:
     cd backend/target/wheels; ls
     
+build:
+    cd front-end; npm run build
+    
 publish file token:
+    cd front-end; npm run build
     cd backend/civitComfyBindings/; maturin build --release; 
     cd backend/target/wheels; uv publish {{file}} --token {{token}}
