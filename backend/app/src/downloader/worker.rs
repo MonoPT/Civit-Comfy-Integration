@@ -18,7 +18,8 @@ pub struct ModelStatusMessage {
     model_payload: String,
     downloaded: u64,
     total: u64,
-    download_speed: f64
+    download_speed: f64,
+    status: String
 }
     
 pub async fn download_worker(mut rx_downloader: Receiver<DownloadJob>, models_being_downloaded: Arc<Mutex<Vec<ModelDownloading>>>) {
@@ -43,6 +44,7 @@ pub async fn download_worker(mut rx_downloader: Receiver<DownloadJob>, models_be
                     model.downloaded = msg.downloaded;
                     model.total_size = msg.total;
                     model.download_speed = msg.download_speed;
+                    model.status = msg.status;
                     
                     if msg.downloaded >= msg.total {
                         model.finished_at = Some(chrono::Utc::now());
@@ -54,7 +56,8 @@ pub async fn download_worker(mut rx_downloader: Receiver<DownloadJob>, models_be
     
     while let Some(job) = rx_downloader.recv().await {
         if models_being_downloaded.clone().lock().await.iter().find(|model| {
-            model.model_payload == job.payload
+            model.model_payload == job.payload &&
+            model.status != "downloading"
         }).is_some() {
             println!("Model {} already being downloading. Skiping request", &job.payload);
             continue;
@@ -66,7 +69,8 @@ pub async fn download_worker(mut rx_downloader: Receiver<DownloadJob>, models_be
             total_size: 0,
             started_at: chrono::Utc::now(),
             finished_at: None,
-            download_speed: 0.0
+            download_speed: 0.0,
+            status: String::from("downloading")
         });
         let tx_task = tx_task.clone();
         
@@ -96,13 +100,10 @@ async fn process_job(
         return;
     }
     
-    // TODO: add user token to request
     use tokio::{
         fs::OpenOptions,
-        io::{AsyncSeekExt, AsyncWriteExt},
         sync::Mutex,
     };
-    
     
     const CONNECTIONS: u64 = 8;
     let download_url = format!("https://civitai.com/api/download/models/{}", job.payload);
@@ -126,83 +127,30 @@ async fn process_job(
     let file_name = std::path::Path::new(&target_folder).join(file_name);
     
     let file = Arc::new(Mutex::new(
-        OpenOptions::new()
+        match OpenOptions::new()
             .create(true)
             .write(true)
             .open(file_name)
-            .await.unwrap(),
+            .await {
+                Ok(f) => f,
+                Err(e) => {
+                    println!("{e}");
+                    
+                    let _ = tx.send(ModelStatusMessage {
+                        model_payload: payload_name,
+                        downloaded: 0,
+                        total: size,
+                        download_speed: 0.0,
+                        status: "error".to_string()
+                    }).await;
+                    return;
+                }
+            }
     ));
     
     let chunk_size = std::cmp::max(1, size / CONNECTIONS);
         
     let downloaded = Arc::new(AtomicU64::new(0));
-    
-    /*for i in 0..CONNECTIONS {
-        let tx = tx.clone();
-        let payload_name = payload_name.clone();
-        
-        let download_url = download_url.clone();
-        let cookie = cookie.clone();
-        
-        let client = client.clone();
-        let file = Arc::clone(&file);
-        let downloaded = Arc::clone(&downloaded);
-        
-        let start = i * chunk_size;
-        let end = if i == CONNECTIONS - 1 {
-            size - 1
-        } else {
-            (i + 1) * chunk_size - 1
-        };
-
-        let handle = tokio::spawn(async move {
-            let tx = tx.clone();
-            
-            let resp = client
-                .get(download_url)
-                .header(COOKIE, cookie.clone())
-                .header(reqwest::header::RANGE, format!("bytes={}-{}", start, end))
-                .send()
-                .await.unwrap();
-
-            let mut stream = resp.bytes_stream();
-            let mut offset = start;
- 
-            let start = std::time::Instant::now();
-            
-            while let Some(chunk) = stream.next().await {
-                let chunk = chunk?;
-                let payload_name = payload_name.clone();
-                
-                {
-                    let mut file = file.lock().await;
-                    file.seek(std::io::SeekFrom::Start(offset)).await?;
-                    file.write_all(&chunk).await?;
-                }
-    
-                offset += chunk.len() as u64;
-    
-                let current = downloaded.fetch_add(chunk.len() as u64, Ordering::Relaxed)
-                    + chunk.len() as u64;
-                
-                // Calculate download speed
-                let elapsed = start.elapsed().as_secs_f64(); // seconds as f64
-                let download_speed = current as f64 / elapsed; // bytes per second
-                
-                let _ = tx.send(ModelStatusMessage {
-                    model_payload: payload_name,
-                    downloaded: current,
-                    total: size,
-                    download_speed: download_speed,
-                }).await;
-            }
-            
-            Ok::<(), Box<dyn std::error::Error + Send + Sync>>(())
-        });
-
-        handles.push(handle);
-    */
-    
    
     let handles = download_loop(
         &client,
@@ -217,9 +165,13 @@ async fn process_job(
         chunk_size
     ).await;
     
+    let mut status = String::from("finished");
+    let mut total_downloaded = size;
+    
     match handles {
         Err(_) => {
-            
+           status = String::from("error"); 
+           total_downloaded = downloaded.fetch_add(0, Ordering::Relaxed);
         },
         Ok(handles) => {
             for h in handles {
@@ -230,9 +182,10 @@ async fn process_job(
     
     let _ = tx.send(ModelStatusMessage {
         model_payload: payload_name,
-        downloaded: size,
+        downloaded: total_downloaded,
         total: size,
-        download_speed: 0.0
+        download_speed: 0.0,
+        status: status
     }).await;
 }
 
@@ -280,7 +233,7 @@ async fn download_loop(
                 .header(COOKIE, cookie.clone())
                 .header(reqwest::header::RANGE, format!("bytes={}-{}", start, end))
                 .send()
-                .await.unwrap();
+                .await?;
 
             let mut stream = resp.bytes_stream();
             let mut offset = start;
@@ -311,6 +264,7 @@ async fn download_loop(
                     downloaded: current,
                     total: size,
                     download_speed: download_speed,
+                    status: String::from("downloading")
                 }).await;
             }
             
