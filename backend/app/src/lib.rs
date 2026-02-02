@@ -42,6 +42,8 @@ struct ModelDownloading {
     file_name: String
 }
 
+static TRACKING_FILE_NAME: &str = ".civit_comfy_state";
+
 pub async fn start_civit_frontend_server(port: usize, static_dir: &str) {
     // Shutdown signal
     let (shutdown_tx, shutdown_rx) = oneshot::channel::<()>();
@@ -59,8 +61,6 @@ pub async fn start_civit_frontend_server(port: usize, static_dir: &str) {
         downloads: Arc::clone(&models_being_downloaded)
     });
     
-    let working_dir = std::env::current_dir().unwrap();
-            
     let cors_layer = CorsLayer::new()
         .allow_origin(Any)  // Open access to selected route
         .allow_methods(vec![Method::GET, Method::POST]);
@@ -89,15 +89,27 @@ pub async fn start_civit_frontend_server(port: usize, static_dir: &str) {
         .layer(Extension(state))
     ;
         
-    // Listen for file delete to shutdown server instance
-    let file_to_watch = working_dir.join("civit_comfy_state");
+    
+    
+    // Listen for file delete to shutdown server instance    
+    let working_dir = user_dirs::cache_dir().unwrap();
+    let file_to_watch = working_dir.join(TRACKING_FILE_NAME);
+    
+    println!("{}", file_to_watch.to_string_lossy());
+    
+    if file_to_watch.exists() {
+        let _ = std::fs::remove_file(&file_to_watch);
+    }
+        
+    let _ = std::fs::File::create(&file_to_watch);
+        
     tokio::spawn(async move {
         use std::{sync::mpsc};
         let (tx, rx) = mpsc::channel::<Result<Event>>();
         
         let mut watcher = notify::recommended_watcher(tx).unwrap();
         
-        watcher.watch(std::path::Path::new("."), RecursiveMode::Recursive).unwrap();
+        watcher.watch(std::path::Path::new(&working_dir), RecursiveMode::Recursive).unwrap();
         // Block forever, printing out events as they come in
         let lf = file_to_watch.to_string_lossy().replace("\\", "/").replace("//", "/"); 
         

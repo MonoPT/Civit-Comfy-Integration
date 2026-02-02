@@ -6,3 +6,10 @@ dev:
 
 dev-frontend:
     cd front-end; npm run dev
+
+publish-list:
+    cd backend/target/wheels; ls
+    
+publish file token:
+    cd backend/civitComfyBindings/; maturin build --release; 
+    cd backend/target/wheels; uv publish {{file}} --token {{token}}

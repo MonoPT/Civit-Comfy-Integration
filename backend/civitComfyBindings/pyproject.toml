@@ -16,4 +16,4 @@ classifiers = [
     "Programming Language :: Python :: Implementation :: PyPy",
 ]
 dynamic = ["version"]
-version = "0.1.31"
+version = "0.1.35"

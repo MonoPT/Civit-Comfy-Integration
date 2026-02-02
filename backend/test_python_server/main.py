@@ -5,7 +5,7 @@ __FILE__ = os.path.dirname(os.path.abspath(__file__))
 
 pkg = "rust_civit_comfy_bindings-0.1.31-cp312-cp312-win_amd64.whl"
 
-ensure_dependency(f"../target/wheels/{pkg}")
+ensure_dependency(f"../target/wheels/")
 
 from rust_civit_comfy_bindings import sum_as_string, start_server
 
