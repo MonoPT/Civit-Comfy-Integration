@@ -38,7 +38,8 @@ struct ModelDownloading {
     started_at: chrono::DateTime<chrono::Utc>,
     finished_at: Option<chrono::DateTime<chrono::Utc>>,
     download_speed: f64,
-    status: String
+    status: String,
+    file_name: String
 }
 
 pub async fn start_civit_frontend_server(port: usize, static_dir: &str) {

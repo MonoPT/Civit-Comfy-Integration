@@ -19,7 +19,8 @@ pub struct ModelStatusMessage {
     downloaded: u64,
     total: u64,
     download_speed: f64,
-    status: String
+    status: String,
+    file_name: String
 }
     
 pub async fn download_worker(mut rx_downloader: Receiver<DownloadJob>, models_being_downloaded: Arc<Mutex<Vec<ModelDownloading>>>) {
@@ -46,6 +47,10 @@ pub async fn download_worker(mut rx_downloader: Receiver<DownloadJob>, models_be
                     model.download_speed = msg.download_speed;
                     model.status = msg.status;
                     
+                    if model.file_name.len() < 1 {
+                        model.file_name = msg.file_name;
+                    }
+                    
                     if msg.downloaded >= msg.total {
                         model.finished_at = Some(chrono::Utc::now());
                     }
@@ -55,12 +60,26 @@ pub async fn download_worker(mut rx_downloader: Receiver<DownloadJob>, models_be
     });
     
     while let Some(job) = rx_downloader.recv().await {
-        if models_being_downloaded.clone().lock().await.iter().find(|model| {
-            model.model_payload == job.payload &&
-            model.status != "downloading"
-        }).is_some() {
-            println!("Model {} already being downloading. Skiping request", &job.payload);
-            continue;
+        {
+            let model = models_being_downloaded.clone();
+            
+            let model = model.lock().await;
+            
+            let model = model.iter().find(|model| {
+                model.model_payload == job.payload
+            });
+            
+            if model.is_some() {
+                let model = model.unwrap();
+                
+                if model.status == "downloading" {
+                    println!("Model {} already being downloading. Skiping request", &job.payload);
+                    continue;
+                }
+                
+                println!("Model {} already being downloading. Skiping request", &job.payload);
+                continue;
+            }
         }
         
         models_being_downloaded.clone().lock().await.push(ModelDownloading {
@@ -70,7 +89,8 @@ pub async fn download_worker(mut rx_downloader: Receiver<DownloadJob>, models_be
             started_at: chrono::Utc::now(),
             finished_at: None,
             download_speed: 0.0,
-            status: String::from("downloading")
+            status: String::from("downloading"),
+            file_name: String::new()
         });
         let tx_task = tx_task.clone();
         
@@ -123,8 +143,16 @@ async fn process_job(
         .build().unwrap();
             
     let (size, file_name) = get_size(&client, &download_url, &cookie).await.unwrap();
+        
+    let file_n_o = &file_name;
     
-    let file_name = std::path::Path::new(&target_folder).join(file_name);
+    let mut file_name = std::path::Path::new(&target_folder).join(file_n_o);
+    
+    if file_name.is_file() { // Creates file with diff name if model already exists
+        let f_name = format!("{}_{}", chrono::Utc::now().timestamp(), file_n_o);        
+        file_name = std::path::Path::new(&target_folder).join(f_name);
+    }
+ 
     
     let file = Arc::new(Mutex::new(
         match OpenOptions::new()
@@ -141,7 +169,8 @@ async fn process_job(
                         downloaded: 0,
                         total: size,
                         download_speed: 0.0,
-                        status: "error".to_string()
+                        status: "error".to_string(),
+                        file_name: String::new()
                     }).await;
                     return;
                 }
@@ -162,12 +191,13 @@ async fn process_job(
         Arc::clone(&file),
         Arc::clone(&downloaded),
         size,
-        chunk_size
+        chunk_size,
+        &file_n_o
     ).await;
     
     let mut status = String::from("finished");
     let mut total_downloaded = size;
-    
+        
     match handles {
         Err(_) => {
            status = String::from("error"); 
@@ -185,7 +215,8 @@ async fn process_job(
         downloaded: total_downloaded,
         total: size,
         download_speed: 0.0,
-        status: status
+        status: status,
+        file_name: String::new()
     }).await;
 }
 
@@ -203,11 +234,13 @@ async fn download_loop(
     file: Arc<Mutex<File>>,
     downloaded: Arc<AtomicU64>,
     size: u64,
-    chunk_size: u64
+    chunk_size: u64,
+    file_name: &str
 ) -> Result<Vec<JoinHandle<Result<(), Box<dyn Error + Send + Sync>>>>, ()> {
     let mut handles = Vec::new();
-    
+        
     for i in 0..connections {
+        let file_name = file_name.to_string();
         let tx = tx.clone();
         let payload_name = payload_name.clone();
         
@@ -241,6 +274,7 @@ async fn download_loop(
             let start = std::time::Instant::now();
             
             while let Some(chunk) = stream.next().await {
+                let file_name = file_name.clone();
                 let chunk = chunk?;
                 let payload_name = payload_name.clone();
                 
@@ -264,7 +298,8 @@ async fn download_loop(
                     downloaded: current,
                     total: size,
                     download_speed: download_speed,
-                    status: String::from("downloading")
+                    status: String::from("downloading"),
+                    file_name: file_name
                 }).await;
             }
             
