@@ -1,8 +1,15 @@
 <script lang="ts" module>    
   
-  import {Star, Image, Video} from "@lucide/svelte"
+  import {Star, Image, Video, ArrowDownToLine } from "@lucide/svelte"
   
   const data = {
+    downloads: [
+      {
+        title: "downloads",
+        url: "/civit/downloads",
+        icon: ArrowDownToLine ,
+      },
+    ],
     explore: [
       /*{
         title: "Playground",
@@ -43,9 +50,7 @@
   };
 </script>
 <script lang="ts">
-    
-    
-    import NavMain from "./nav-main.svelte";
+    import ItemMenu from "./nav-main.svelte";
     import NavUser from "./nav-user.svelte";
     import * as Sidebar from "$lib/components/ui/sidebar/index.js";
     import type { ComponentProps } from "svelte";
@@ -57,7 +62,8 @@
 </script>
 <Sidebar.Root {collapsible} {...restProps}>
   <Sidebar.Content>
-    <NavMain items={data.explore} />
+    <ItemMenu items={data.explore} label="Explore" />
+    <ItemMenu items={data.downloads} label="" />
   </Sidebar.Content>
   <Sidebar.Footer>
     <NavUser />

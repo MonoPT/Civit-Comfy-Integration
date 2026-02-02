@@ -4,12 +4,12 @@
   import ChevronRightIcon from "@lucide/svelte/icons/chevron-right";
   let {
     items,
+    label = ""
   }: {
+    label?: string,
     items: {
       title: string;
       url: string;
-      // This should be `Component` after @lucide/svelte updates types
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       icon: any;
       isActive?: boolean;
       items?: {
@@ -20,7 +20,9 @@
   } = $props();
 </script>
 <Sidebar.Group>
-  <Sidebar.GroupLabel>Explore</Sidebar.GroupLabel>
+    {#if label.trim().length > 0}
+        <Sidebar.GroupLabel>{label}</Sidebar.GroupLabel>
+    {/if}
   <Sidebar.Menu>
     {#each items as mainItem (mainItem.title)}
       <Collapsible.Root open={mainItem.isActive}>
