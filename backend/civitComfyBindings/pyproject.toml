@@ -3,6 +3,7 @@ requires = ["maturin>=1.11,<2.0"]
 build-backend = "maturin"
 
 [project]
+dynamic = ["version"]
 name = "rust_civit_comfy_bindings"
 requires-python = ">=3.8"
 description = "Rust bindings for my civit comfyui integration"
@@ -15,5 +16,6 @@ classifiers = [
     "Programming Language :: Python :: Implementation :: CPython",
     "Programming Language :: Python :: Implementation :: PyPy",
 ]
-dynamic = ["version"]
-#version = "0.1.35"
+
+[tool.maturin]
+version = "scm"
