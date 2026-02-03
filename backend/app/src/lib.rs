@@ -25,7 +25,8 @@ use notify::{Event, RecursiveMode, Result, Watcher};
 #[derive(Clone, Debug)]
 struct AppState {
     tx_downloader: mpsc::Sender<downloader::DownloadJob>,
-    downloads: Arc<Mutex<Vec<ModelDownloading>>>
+    downloads: Arc<Mutex<Vec<ModelDownloading>>>,
+    comfy_path: String
 }
 
 use serde::Serialize;
@@ -66,7 +67,8 @@ pub async fn start_civit_frontend_server(port: usize, static_dir: &str, comfy_pa
     //
     let state = Arc::new(AppState { 
         tx_downloader,
-        downloads: Arc::clone(&models_being_downloaded)
+        downloads: Arc::clone(&models_being_downloaded),
+        comfy_path: comfy_path.to_string()
     });
     
     let cors_layer = CorsLayer::new()

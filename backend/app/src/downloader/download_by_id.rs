@@ -49,13 +49,13 @@ pub async fn download_by_id(Path(model_id): Path<usize>, state: Extension<Arc<Ap
         "lora" => "loras",
         "controlnet" => "controlnet",
         "poses" => "poses",
-        _ => "other"
+        _ => &options.model_type
     }.to_string();
     
     let payload = DownloadJob {
         payload: url_payload,
         kind: DownloadKind::ModelId,
-        models_dir: String::from("C:/Users/USER/Downloads/Nova pasta"),
+        models_dir: format!("{}/models", state.comfy_path),
         model_type: model_folder,
         user_token: options.token.clone(),
         cover: options.cover.clone(),
@@ -68,6 +68,7 @@ pub async fn download_by_id(Path(model_id): Path<usize>, state: Extension<Arc<Ap
         stats: options.stats.clone()
     };
     
+    println!("Downloading model to {}/{}", payload.models_dir, payload.model_type);
 
     let _ = state.tx_downloader.send(payload).await;
     
