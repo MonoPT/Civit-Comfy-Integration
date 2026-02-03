@@ -4,6 +4,8 @@
     import { Button } from "$lib/components/ui/button/index.js";
     import * as Popover from "$lib/components/ui/popover/index.js";
         
+    import DOMPurify from "dompurify";
+    
     //@ts-ignore
     import byteSize from "byte-size";
     
@@ -104,7 +106,7 @@
                                 ></Accordion.Trigger>
                             </div>
                             <Accordion.Content class="py-2 text-wrap">
-                                {ModelV.description}
+                                {@html DOMPurify.sanitize(ModelV.description)}
                             </Accordion.Content>
                         </Accordion.Item>
                     </Accordion.Root>

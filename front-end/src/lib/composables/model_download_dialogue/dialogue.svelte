@@ -1,6 +1,4 @@
 <script lang="ts">
-    import data_d from "./data";
-
     let data = $state({})
     
     let dialogueState = $state(false)
