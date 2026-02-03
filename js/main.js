@@ -77,7 +77,7 @@ i.extensionManager.registerSidebarTab({
   }
 });
 let s = document.createElement("div");
-s.innerHTML = l.replace("{{Server_address}}", "http://localhost:5173/");
+s.innerHTML = l.replace("{{Server_address}}", "/civit/?v=1.0");
 let d = "nav.side-tool-bar-container";
 function v() {
   let n = 0, r = 100;

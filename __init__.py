@@ -52,6 +52,8 @@ def reverse_proxy(request, rest_of_path: str):
     
 UPSTREAM = f"http://127.0.0.1:{port}"
     
+print(f"Upstream: {UPSTREAM}")
+    
 @routes.get(r"/civit/{rest_of_path:.*}")
 async def my_function(request: web.Request) -> web.StreamResponse:
     upstream_url = f"{UPSTREAM}{request.rel_url}"
@@ -92,7 +94,7 @@ import sys
 from pathlib import Path
 
 static_dir = f"{file_p}/front-end/build"
-comfy_path = Path(f"{file_p}../../../").resolve()
+comfy_path = str(Path(f"{file_p}../../../").resolve())
 
 print(f"Static dir: {static_dir}")
 print(f"Detected comfy path: {comfy_path}")
@@ -100,7 +102,7 @@ print(f"Detected comfy path: {comfy_path}")
 
 
 subprocess.Popen(
-    [sys.executable, f"{file_p}/server.py", f"{port}", f"{static_dir}", str(comfy_path)],
+    [sys.executable, f"{file_p}/server.py", f"{port}", f"{static_dir}", f"test_path"],
     stdin=subprocess.DEVNULL,
     stdout=subprocess.DEVNULL,
     stderr=subprocess.DEVNULL,
