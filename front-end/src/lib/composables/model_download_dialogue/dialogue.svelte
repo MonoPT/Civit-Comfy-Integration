@@ -1,34 +1,35 @@
 <script lang="ts">
-    let data = $state({})
+    let data = $state({modelVersions: []})
     
     let dialogueState = $state(false)
     
     import { Button, buttonVariants } from "$lib/components/ui/button/index.js";
     import * as Dialog from "$lib/components/ui/dialog/index.js";
+    import { Input } from "$lib/components/ui/input/index.js";
     
     import Table from "./table.svelte"
     import { onMount } from "svelte";
+    
+    let needle = $state("")
     
     let table_state = $state({
       total: 0,
       selected: 0
     })
     
-    onMount(() => {
+    onMount(() => {      
       window.addEventListener("DownloadManagerShowModelVersions", (e) => {
-        data = {}
+        data = {modelVersions: []}
         dialogueState = false
         
         //@ts-ignore
         const {ModelData} = e.detail
-        console.log(ModelData)
+        
         data = ModelData
         dialogueState = true
         
         handleTableStateChange({target: null} as Event);
-      })
-      
-      //handleTableStateChange({target: null} as Event);
+      })      
     })
     
     async function handleTableStateChange(e: Event) {
@@ -68,14 +69,19 @@
 <Dialog.Root open={dialogueState}>
     <form>
         <Dialog.Content style="max-width: 80vw;">
-            <Dialog.Header>
-                <Dialog.Title>Download Model</Dialog.Title>
-                <Dialog.Description>
-                    Select which files you which to download
-                </Dialog.Description>
+            <Dialog.Header class="flex flex-row items-center">
+                <div class="w-max">
+                    <Dialog.Title>Download Model</Dialog.Title>
+                    <Dialog.Description class="pt-2">
+                        Select which files you which to download
+                    </Dialog.Description>
+                </div>
+                <div class="ml-auto mr-12 w-full">
+                    <Input bind:value={needle} type="text" placeholder="Search by model name" class="ml-auto" style="max-width: 400px;"  />
+                </div>
             </Dialog.Header>
             <div class="grid gap-4" style="max-height: 60vh; overflow-y: auto;">
-                <Table data={data} callback={handleTableStateChange} />
+                <Table data={data} needle={needle} callback={handleTableStateChange} />
             </div>
             <Dialog.Footer class="w-full flex flex-row justify-between! items-center">
                 <div class="text-muted-foreground flex-1 text-sm">

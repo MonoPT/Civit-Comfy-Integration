@@ -19,8 +19,8 @@
     import { type ModelData } from "$lib/apis/model_data";
     import { Checkbox } from "$lib/components/ui/checkbox/index.js";
 
-    const { data, callback }: { data: ModelData, callback: any } = $props();
-
+    const { data, callback, needle }: { data: ModelData, callback: any, needle: string } = $props();
+    
     const options: Intl.DateTimeFormatOptions = {
         year: "numeric",
         month: "long",
@@ -43,7 +43,9 @@
         </Table.Row>
     </Table.Header>
     <Table.Body>
-        {#each data.modelVersions as ModelV}
+        {#each (data.modelVersions as any[]).filter((item) => {
+          return (item.name as string).toLowerCase().includes(needle.toLowerCase())
+        }) as ModelV}
             <Table.Row>
                 <Table.Cell><Checkbox data-version-id={ModelV.id} onclick={callback} /></Table.Cell
                 >
