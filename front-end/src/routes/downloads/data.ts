@@ -3,8 +3,13 @@ export type Table = {
   thumbnail: string;
   status: "pending" | "processing" | "success" | "failed";
   email: string;
-  info: object;
+  info: TableModelInfo
 };
+
+export type TableModelInfo = {
+  name: string;
+  author: string
+}
 
 export const data: Table[] = [
   {
@@ -13,7 +18,8 @@ export const data: Table[] = [
     status: "pending",
     email: "m@example.com",
     info: {
-      
+      name: "Cat Tower",
+      author: "Name of auth"
     }
   },
   {
@@ -22,7 +28,8 @@ export const data: Table[] = [
     status: "processing",
     email: "example@gmail.com",
     info: {
-      
+      name: "Example model",
+      author: "Amazing dev 1"
     }
   },
   // ...

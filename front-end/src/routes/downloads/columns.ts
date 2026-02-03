@@ -5,7 +5,7 @@ import { renderComponent } from "$lib/components/ui/data-table/index.js";
 import DataTableActions from "./data-table-actions.svelte";
 import { Checkbox } from "$lib/components/ui/checkbox/index.js";
 
-import { type Table } from "./data"
+import { type Table, type TableModelInfo } from "./data"
 
 import DataTableEmailButton from "./data-table-email-button.svelte";
 
@@ -39,7 +39,6 @@ export const columns: ColumnDef<Table>[] = [
       return renderSnippet(amountHeaderSnippet);
     },
     cell: ({ row }) => {
- 
       const cellSnippet = createRawSnippet<[{ thumbnail: string }]>(
         (getThumbnail) => {
           const { thumbnail } = getThumbnail();
@@ -60,19 +59,25 @@ export const columns: ColumnDef<Table>[] = [
     accessorKey: "info",
     header: () => {
       const amountHeaderSnippet = createRawSnippet(() => ({
-        render: () => `<div class="text-left">Model Information</div>`,
+        render: () => `<div class="text-left w-full">Model Information <div class="spacer block relative" style="min-width: 0vw"></div></div>`,
       }));
       return renderSnippet(amountHeaderSnippet);
     },
     cell: ({ row }) => {
  
-      const cellSnippet = createRawSnippet<[{ info: object }]>(
+      const cellSnippet = createRawSnippet<[{ info: TableModelInfo }]>(
         (getInfo) => {
           const { info } = getInfo();
           
           return {
             render: () =>
-              `<div>Model info</div>`,
+              /*html*/`<div class="w-full h-full">
+                <h2 class="scroll-m-20 text-2xl font-semibold tracking-tight">${info.name}</h2>
+                <div class="model-details flex align-middle pt-2">
+                    <span>${info.author}</span>
+                    <span></span>
+                </div>
+              </div>`,
           };
         },
       );
