@@ -52,7 +52,7 @@ struct ModelDownloading {
 
 static TRACKING_FILE_NAME: &str = ".civit_comfy_state";
 
-pub async fn start_civit_frontend_server(port: usize, static_dir: &str) {
+pub async fn start_civit_frontend_server(port: usize, static_dir: &str, comfy_path: &str) {
     // Shutdown signal
     let (shutdown_tx, shutdown_rx) = oneshot::channel::<()>();
     

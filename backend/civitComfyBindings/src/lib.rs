@@ -12,12 +12,12 @@ mod rust_civit_comfy_bindings {
     }
     
     #[pyfunction]
-    fn start_server(port: usize, static_dir: &str) {
+    fn start_server(port: usize, static_dir: &str, comfy_path: &str) {
         use tokio::runtime::Runtime;
         
         let rt = Runtime::new()
             .unwrap();
         
-        rt.block_on(app::start_civit_frontend_server(port, static_dir));
+        rt.block_on(app::start_civit_frontend_server(port, static_dir, comfy_path));
     }
 }

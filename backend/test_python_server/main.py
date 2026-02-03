@@ -23,13 +23,17 @@ else:
         port = server.server_address[1]
 
 from multiprocessing import Process
+from pathlib import Path
+
 
 static_dir = f"{__FILE__}/../../front-end/build"
+comfy_path = Path(f"C:/ComfyUI").resolve()
+print(f"Comfy path: {comfy_path}. Dont forget to update this if yours is different")
 
 def main():
     server = Process(
         target=start_server,
-        args=(port,static_dir,),
+        args=(port,static_dir,str(comfy_path),),
         daemon=True
     )
     server.start()

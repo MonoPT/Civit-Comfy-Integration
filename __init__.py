@@ -89,13 +89,18 @@ file_p = os.path.dirname(os.path.abspath(__file__))
 
 import subprocess
 import sys
+from pathlib import Path
 
 static_dir = f"{file_p}/front-end/build"
+comfy_path = Path(f"{file_p}../../").resolve()
 
 print(f"Static dir: {static_dir}")
+print(f"Detected comfy path: {comfy_path}")
+
+
 
 subprocess.Popen(
-    [sys.executable, f"{file_p}/server.py", f"{port}", f"{static_dir}"],
+    [sys.executable, f"{file_p}/server.py", f"{port}", f"{static_dir}", str(comfy_path)],
     stdin=subprocess.DEVNULL,
     stdout=subprocess.DEVNULL,
     stderr=subprocess.DEVNULL,

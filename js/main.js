@@ -6,13 +6,13 @@ const l = `<div id="Civit-POPUP">
             type="button"
             data-pc-name="button"
             data-p-disabled="false"
-            class="flex items-center justify-center shrink-0 outline-hidden rounded-lg cursor-pointer disabled:opacity-50 disabled:pointer-events-none p-0 size-10 text-sm border-none bg-zinc-700 text-white absolute bottom-4 right-6 z-10 transition-opacity duration-200"
+            class="flex items-center justify-center shrink-0 outline-hidden rounded-lg cursor-pointer disabled:opacity-50 disabled:pointer-events-none p-0 size-10 text-sm bg-white border-none text-neutral-950 dark-theme:bg-zinc-700 dark-theme:text-white absolute top-4 right-6 z-10 transition-opacity duration-200"
             pc66=""
             data-pc-section="root"
         >
             <i data-v-76dd6fc0="" class="pi pi-times text-sm"></i>
         </button>
-        <iframe src="/civit/?v=1"></iframe>
+        <iframe src="{{Server_address}}"></iframe>
     </div>
 </div>
 
