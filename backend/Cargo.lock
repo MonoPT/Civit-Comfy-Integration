@@ -1490,7 +1490,7 @@ dependencies = [
 
 [[package]]
 name = "rust_civit_comfy_bindings"
-version = "0.1.0"
+version = "0.1.39"
 dependencies = [
  "app",
  "axum",

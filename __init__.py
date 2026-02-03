@@ -56,7 +56,7 @@ UPSTREAM = f"http://127.0.0.1:{port}"
 async def my_function(request: web.Request) -> web.StreamResponse:
     upstream_url = f"{UPSTREAM}{request.rel_url}"
     
-    print(upstream_url)
+    #print(upstream_url)
 
     async with aiohttp.ClientSession() as session:
         async with session.request(

@@ -3,9 +3,20 @@
         createSvelteTable,
         FlexRender,
     } from "$lib/components/ui/data-table/index.js";
+    
+    //@ts-ignore
+    import { toast } from "svelte-sonner";
+    
     import * as Table from "$lib/components/ui/table/index.js";
     import { Input } from "$lib/components/ui/input/index.js";
-
+    import { Button, buttonVariants } from "$lib/components/ui/button/index.js";
+    import * as Dialog from "$lib/components/ui/dialog/index.js";
+    import { Spinner } from "$lib/components/ui/spinner/index.js";
+    
+    import { Plus } from "@lucide/svelte";
+    
+    import {get_model_data} from "$lib/apis/model_data"
+    
     import {
         type ColumnDef,
         type SortingState,
@@ -70,6 +81,31 @@
             },
         },
     });
+    
+    let add_download_dialog = $state(false)
+    let is_fetching_model_data = $state(false)
+    
+    async function handleModelDownload(e: Event) {
+      is_fetching_model_data = true
+      const model_param = document.querySelector<HTMLInputElement>("#modelParam")!.value.trim()
+      
+      let resp = await get_model_data(model_param)
+            
+      is_fetching_model_data = false
+      
+      if (resp.status !== 200) {
+        toast.error("The provided url/id is not valid")
+        return
+      }
+      
+      add_download_dialog = false
+      
+      window.dispatchEvent(new CustomEvent("DownloadManagerShowModelVersions", {
+        detail: {
+          ModelData: resp.data
+        }
+      }))
+    }
 </script>
 
 <div>
@@ -85,6 +121,12 @@
                 }}
             class="max-w-sm"
         />
+        
+        <div class="actions flex items-center ml-auto">
+            <Button onclick={() => {add_download_dialog = true}} variant="outline"><Plus /> Download model</Button>
+            {@render add_model()}
+        </div>
+        
     </div>
     <div class="rounded-md border">
         <Table.Root>
@@ -141,3 +183,28 @@
         width: 190px;
     }
 </style>
+
+{#snippet add_model()}
+    <Dialog.Root open={add_download_dialog}>
+      <form>
+        <Dialog.Content>
+          <Dialog.Header>
+            <Dialog.Title>Download a new model</Dialog.Title>
+          </Dialog.Header>
+          <div class="grid gap-4">
+              <Input min="1" id="modelParam" type="text" required placeholder="Paste the model id or page url" class="w-full" />
+          </div>
+          <Dialog.Footer>
+            <Dialog.Close class={buttonVariants({ variant: "outline" })}
+              >Cancel</Dialog.Close>
+            <Button type="submit" disabled={is_fetching_model_data} onclick={handleModelDownload}>
+                {#if is_fetching_model_data}
+                    <Spinner />
+                {/if}
+                Download
+            </Button>
+          </Dialog.Footer>
+        </Dialog.Content>
+      </form>
+    </Dialog.Root>
+{/snippet}

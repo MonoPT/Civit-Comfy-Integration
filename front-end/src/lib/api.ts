@@ -70,4 +70,8 @@ export default class API {
   static get_techniques(token: string) {
     return `${this.endpoint}/get_techniques_list?token=${token}`
   }
+  
+  static get_model_by_id(token: string, id:number) {
+    return `${this.endpoint}/get_model/${id}?token=${token}`
+  }
 }

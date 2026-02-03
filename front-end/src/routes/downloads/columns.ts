@@ -33,7 +33,7 @@ export const columns: ColumnDef<Table>[] = [
     accessorKey: "thumbnail",
     header: () => {
       const amountHeaderSnippet = createRawSnippet(() => ({
-        render: () => `<div class="thumbnailHeader">thumbnail</div>`,
+        render: () => `<div class="thumbnailHeader"></div>`,
       }));
       return renderSnippet(amountHeaderSnippet);
     },
@@ -58,7 +58,7 @@ export const columns: ColumnDef<Table>[] = [
     accessorKey: "info",
     header: () => {
       const amountHeaderSnippet = createRawSnippet(() => ({
-        render: () => `<div class="text-left w-full">Model Information <div class="spacer block relative" style="min-width: 0vw"></div></div>`,
+        render: () => `<div class="text-left w-full"> <div class="spacer block relative" style="min-width: 0vw"></div></div>`,
       }));
       return renderSnippet(amountHeaderSnippet);
     },
@@ -128,7 +128,7 @@ export const columns: ColumnDef<Table>[] = [
     accessorKey: "version",
     header: () => {
       const amountHeaderSnippet = createRawSnippet(() => ({
-        render: () => `<div class="text-center">Version</div></div>`,
+        render: () => `<div class="text-center"></div></div>`,
       }));
       return renderSnippet(amountHeaderSnippet);
     },
@@ -154,7 +154,7 @@ export const columns: ColumnDef<Table>[] = [
     accessorKey: "size",
     header: () => {
       const amountHeaderSnippet = createRawSnippet(() => ({
-        render: () => `<div class="text-center">Version</div></div>`,
+        render: () => `<div class="text-center"></div></div>`,
       }));
       return renderSnippet(amountHeaderSnippet);
     },

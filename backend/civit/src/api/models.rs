@@ -3,11 +3,11 @@ use std::collections::HashMap;
 use super::{ParametersFromOptions, Civit, CivitResponse};
 use crate::filters::{Sort, Period};
 use reqwest::header::{AUTHORIZATION, CONTENT_TYPE};
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 use chrono::{DateTime, Utc};
 
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Serialize)]
 enum ModelTypes {
     Checkpoint, 
     TextualInversion, 
@@ -300,7 +300,7 @@ impl ParametersFromOptions for ModelsOptions {
     }
 }
 
-#[derive(Deserialize, Debug)]
+#[derive(Deserialize, Serialize, Debug)]
 struct Stats {
     #[serde(rename = "downloadCount")]
     download: usize,
@@ -314,13 +314,13 @@ struct Stats {
     tipped_amount: usize
 }
 
-#[derive(Deserialize, Debug)]
+#[derive(Deserialize, Serialize, Debug)]
 struct Creator {
     username: String,
     image: String
 }
 
-#[derive(Deserialize, Debug)]
+#[derive(Deserialize, Serialize, Debug)]
 struct ModelVersionStats {
     #[serde(rename = "downloadCount")]
     #[serde(default)]
@@ -333,14 +333,14 @@ struct ModelVersionStats {
     thumbs_down: usize
 }
 
-#[derive(Deserialize, Debug)]
+#[derive(Deserialize, Serialize, Debug)]
 struct ModelVersionMetadata {
     format: Option<String>,
     size: Option<String>,
     fp: Option<String>,
 }
 
-#[derive(Deserialize, Debug)]
+#[derive(Deserialize, Serialize, Debug)]
 struct ModelVersionFiles {
     id: usize,
     #[serde(rename = "sizeKB")]
@@ -365,7 +365,7 @@ struct ModelVersionFiles {
     primary: Option<bool>
 }
 
-#[derive(Deserialize, Debug)]
+#[derive(Deserialize, Serialize, Debug)]
 struct ModelImage {
     id: Option<usize>,
     url: String,
@@ -385,7 +385,7 @@ struct ModelImage {
     on_site: bool,
 }
 
-#[derive(Deserialize, Debug)]
+#[derive(Deserialize, Serialize, Debug)]
 pub struct ModelVersion {
     id: usize,
     index: Option<usize>,
@@ -413,7 +413,7 @@ pub struct ModelVersion {
     download_url: String,
 }
 
-#[derive(Deserialize, Debug)]
+#[derive(Deserialize, Debug, Serialize)]
 pub struct Model {
     id: usize,
     name: String,

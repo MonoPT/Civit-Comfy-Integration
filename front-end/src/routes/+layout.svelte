@@ -1,8 +1,12 @@
 <script lang="ts">
     import "./layout.css";
     
+    import { Toaster } from "$lib/components/ui/sonner/index.js";
+    
 	import favicon from '$lib/assets/favicon.svg';
 		
+	import ModelDownloadDialog from "$lib/composables/model_download_dialogue/dialogue.svelte"
+	
 	import Login from "$lib/components/login.svelte"
 	import { userState, getCookie, loginUser, loading_user } from '../lib/state.svelte.ts';
     import { onMount } from 'svelte';
@@ -37,7 +41,9 @@
 	<link rel="icon" href={favicon} />
 </svelte:head>
 
+<Toaster />
 <ModeWatcher />
+<ModelDownloadDialog />
 
 {#if Object.keys(userState).length === 0 || loading_user.loading}
     <Login />

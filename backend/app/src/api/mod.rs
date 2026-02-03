@@ -9,3 +9,4 @@ pub mod update_collections;
 pub mod get_base_model_list;
 pub mod get_tools;
 pub mod get_techniques;
+pub mod get_model;
