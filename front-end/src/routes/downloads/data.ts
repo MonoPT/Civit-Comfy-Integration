@@ -8,7 +8,9 @@ export type Table = {
 
 export type TableModelInfo = {
   name: string;
-  author: string
+  author: string;
+  base_model: string;
+  release_Date: string;
 }
 
 export const data: Table[] = [
@@ -19,7 +21,9 @@ export const data: Table[] = [
     email: "m@example.com",
     info: {
       name: "Cat Tower",
-      author: "Name of auth"
+      author: "Name of auth",
+      base_model: "NoobAI",
+      release_Date: "30 jan 2026"
     }
   },
   {
@@ -29,7 +33,9 @@ export const data: Table[] = [
     email: "example@gmail.com",
     info: {
       name: "Example model",
-      author: "Amazing dev 1"
+      author: "Amazing dev 1",
+      base_model: "SDXL 1.5",
+      release_Date: "30 jan 2026"
     }
   },
   // ...
