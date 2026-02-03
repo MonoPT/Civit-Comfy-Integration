@@ -27,6 +27,8 @@ if __name__ == "__main__":
         type=str,
         help="ComfyUI path"
     )
-
+    
+    print(f"Hello from server : {args.comfy_path}")
+    
     args = parser.parse_args()
-    main(args.port, args.static_folder, str(args.comfy_path))
+    main(args.port, args.static_folder, args.comfy_path)
