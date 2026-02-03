@@ -92,7 +92,7 @@ import sys
 from pathlib import Path
 
 static_dir = f"{file_p}/front-end/build"
-comfy_path = Path(f"{file_p}../../").resolve()
+comfy_path = Path(f"{file_p}../../../").resolve()
 
 print(f"Static dir: {static_dir}")
 print(f"Detected comfy path: {comfy_path}")

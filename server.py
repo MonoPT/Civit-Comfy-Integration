@@ -29,4 +29,4 @@ if __name__ == "__main__":
     )
 
     args = parser.parse_args()
-    main(args.port, args.static_folder, args.comfy_path)
+    main(args.port, args.static_folder, str(args.comfy_path))
