@@ -27,6 +27,4 @@
   
 </script>
  
-<!--<DataTable data={data} {columns} />-->
-
 <TableDownloads downloads={downloads} />

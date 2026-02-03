@@ -28,7 +28,8 @@ pub struct DownloadJob {
     author_name: String,
     published_at: String,
     based_on_model: String,
-    file_name: String
+    file_name: String,
+    stats: String
 }
 
 #[derive(Debug)]

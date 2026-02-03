@@ -18,7 +18,8 @@ pub struct ModelOptions {
     author_name: String,
     published_at: String,
     based_on_model: String,
-    file_name: String
+    file_name: String,
+    stats: String
 }
 
 pub async fn download_by_id(Path(model_id): Path<usize>, state: Extension<Arc<AppState>>, options: Query<ModelOptions>) -> Response {
@@ -63,7 +64,8 @@ pub async fn download_by_id(Path(model_id): Path<usize>, state: Extension<Arc<Ap
         author_name: options.author_name.clone(),
         published_at: options.published_at.clone(),
         based_on_model: options.based_on_model.clone(),
-        file_name: options.file_name.clone()
+        file_name: options.file_name.clone(),
+        stats: options.stats.clone()
     };
     
 

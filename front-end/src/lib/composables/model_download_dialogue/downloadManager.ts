@@ -11,6 +11,7 @@ export type ModelDownload = {
   published_at: string,
   file_name: string,
   based_on_model: string,
+  stats: string
 }
 
 export type DownloadProgress = {
@@ -29,10 +30,11 @@ export type DownloadProgress = {
   status: string;
   total_size: number;
   based_on_model: string,
+  stats: any
 }
 
 export function start_download(downloads: ModelDownload[]) {
   downloads.forEach((model) => {
-    fetch(API.download_model_by_id(user_token.token, model.id, model.type, model.cover, model.base_model, model.model_name, model.author_name, model.published_at, model.based_on_model, model.file_name))
+    fetch(API.download_model_by_id(user_token.token, model.id, model.type, model.cover, model.base_model, model.model_name, model.author_name, model.published_at, model.based_on_model, model.file_name, model.stats))
   })
 }

@@ -75,8 +75,8 @@ export default class API {
     return `${this.endpoint}/get_model/${id}?token=${token}`
   }
   
-  static download_model_by_id(token: string, id: number, type: string, cover: string, base_model: string, model_name: string, author_name: string, published_at: string, based_on_model: string, file_name: string) {
-    return `${this.endpoint}/download_by_id/${id}?token=${token}&model_type=${type}&cover=${cover}&base_model=${base_model}&model_name=${model_name}&published_at=${published_at}&author_name=${author_name}&based_on_model=${based_on_model}&file_name=${file_name}"`
+  static download_model_by_id(token: string, id: number, type: string, cover: string, base_model: string, model_name: string, author_name: string, published_at: string, based_on_model: string, file_name: string, stats: string) {
+    return `${this.endpoint}/download_by_id/${id}?token=${token}&model_type=${type}&cover=${cover}&base_model=${base_model}&model_name=${model_name}&published_at=${published_at}&author_name=${author_name}&based_on_model=${based_on_model}&file_name=${file_name}&stats=${stats}"`
   }
   
   static list_downloads(token: string) {

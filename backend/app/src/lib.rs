@@ -47,6 +47,7 @@ struct ModelDownloading {
     published_at: String,
     id: String,
     based_on_model: String,
+    stats: String
 }
 
 static TRACKING_FILE_NAME: &str = ".civit_comfy_state";

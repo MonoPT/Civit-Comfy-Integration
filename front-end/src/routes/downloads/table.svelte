@@ -103,25 +103,25 @@
                       <div class="model-details flex align-middle pt-4 gap-4">
                           <span class="flex items-center gap-2 text-muted-foreground">
                               <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-arrow-down-to-line-icon lucide-arrow-down-to-line"><path d="M12 17V3"/><path d="m6 11 6 6 6-6"/><path d="M19 21H5"/></svg>
-                              0
+                              {JSON.parse(download.stats.slice(0, -1)).downloadCount}
                           </span>
                           <span class="flex items-center gap-2 text-muted-foreground">
                               <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-thumbs-up-icon lucide-thumbs-up"><path d="M15 5.88 14 10h5.83a2 2 0 0 1 1.92 2.56l-2.33 8A2 2 0 0 1 17.5 22H4a2 2 0 0 1-2-2v-8a2 2 0 0 1 2-2h2.76a2 2 0 0 0 1.79-1.11L12 2a3.13 3.13 0 0 1 3 3.88Z"/><path d="M7 10v12"/></svg>
-                              0
+                              {JSON.parse(download.stats.slice(0, -1)).thumbsUpCount}
                           </span>
                           <span class="flex items-center gap-2 text-muted-foreground">
-                              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-library-icon lucide-library"><path d="m16 6 4 14"/><path d="M12 6v14"/><path d="M8 8v12"/><path d="M4 4v16"/></svg>
-                              0
+                              <svg style="rotate: 180deg;" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-thumbs-up-icon lucide-thumbs-up"><path d="M15 5.88 14 10h5.83a2 2 0 0 1 1.92 2.56l-2.33 8A2 2 0 0 1 17.5 22H4a2 2 0 0 1-2-2v-8a2 2 0 0 1 2-2h2.76a2 2 0 0 0 1.79-1.11L12 2a3.13 3.13 0 0 1 3 3.88Z"/><path d="M7 10v12"/></svg>
+                              {JSON.parse(download.stats.slice(0, -1)).thumbsDownCount}
                           </span>
                           <span class="flex items-center gap-2 text-muted-foreground">
                               <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-zap-icon lucide-zap"><path d="M4 14a1 1 0 0 1-.78-1.63l9.9-10.2a.5.5 0 0 1 .86.46l-1.92 6.02A1 1 0 0 0 13 10h7a1 1 0 0 1 .78 1.63l-9.9 10.2a.5.5 0 0 1-.86-.46l1.92-6.02A1 1 0 0 0 11 14z"/></svg>
-                              0
+                              {JSON.parse(download.stats.slice(0, -1)).tippedAmountCount}
                           </span>
                       </div>
                       <div class="model-details flex align-middle pt-8 gap-2 w-full flex-col text-muted-foreground" style="max-width: 400px">
                           <div class="flex items-center">
                               <span>{titleCaseWord(download.status)}</span>
-                              <span class="block ml-auto" style="font-size: .85em">{byteSize(Math.round(download.download_speed)).toString()}/s ({byteSize(Math.round(download.downloaded)).toString()} / {byteSize(Math.round(download.total_size)).toString()})</span>
+                              <span class="block ml-auto" style="font-size: .85em">{byteSize(Math.round(download.download_speed)).toString()}/s ({byteSize(Math.round(download.downloaded)).toString()} / {byteSize(Math.round(Math.max(download.total_size, 1))).toString()})</span>
                           </div>
                           <div class="block w-full">
                               <div data-slot="progress" class="bg-primary/20 relative h-2 overflow-hidden rounded-full w-full" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="66" data-value="66" data-state="loading" data-max="100" data-min="0" data-progress-root=""><div data-slot="progress-indicator" class="bg-primary h-full w-full flex-1 transition-all" 

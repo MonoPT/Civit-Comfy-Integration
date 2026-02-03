@@ -98,7 +98,8 @@ pub async fn download_worker(mut rx_downloader: Receiver<DownloadJob>, models_be
             model_name: job.model_name.clone(),
             author_name: job.author_name.clone(),
             published_at: job.published_at.clone(),
-            based_on_model: job.based_on_model.clone()
+            based_on_model: job.based_on_model.clone(),
+            stats: job.stats.clone()
         });
         let tx_task = tx_task.clone();
         

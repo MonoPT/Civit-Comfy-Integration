@@ -108,7 +108,9 @@
             cover: modelV.images[0].url || "",
             //@ts-ignore
             author_name: data.creator.username,
-            published_at: modelV.publishedAt || ""
+            published_at: modelV.publishedAt || "",
+            //@ts-ignore
+            stats: JSON.stringify(data.stats)
           })
         })
       })
