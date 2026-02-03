@@ -17,5 +17,5 @@ classifiers = [
     "Programming Language :: Python :: Implementation :: PyPy",
 ]
 
-[tool.maturin]
-version = "scm"
+#[tool.maturin]
+#version = "scm"
