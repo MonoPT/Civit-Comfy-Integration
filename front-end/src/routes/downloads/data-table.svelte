@@ -21,13 +21,13 @@
         columns: ColumnDef<TData, TValue>[];
         data: TData[];
     };
-
+    
     let { data, columns }: DataTableProps<TData, TValue> = $props();
-
+    
     let sorting = $state<SortingState>([]);
     let columnFilters = $state<ColumnFiltersState>([]);
     let rowSelection = $state<RowSelectionState>({});
-    
+      
     const table = createSvelteTable({
         get data() {
             return data;
@@ -76,13 +76,13 @@
     <div class="flex items-center py-4">
         <Input
             placeholder="Filter emails..."
-            value={(table.getColumn("email")?.getFilterValue() as string) ?? ""}
+            value={(table.getColumn("version")?.getFilterValue() as string) ?? ""}
             onchange={(e) => {
-                table.getColumn("email")?.setFilterValue(e.currentTarget.value);
+                table.getColumn("version")?.setFilterValue(e.currentTarget.value);
             }}
             oninput={(e) => {
-                table.getColumn("email")?.setFilterValue(e.currentTarget.value);
-            }}
+                table.getColumn("version")?.setFilterValue(e.currentTarget.value);
+                }}
             class="max-w-sm"
         />
     </div>
@@ -122,7 +122,7 @@
                             colspan={columns.length}
                             class="h-24 text-center"
                         >
-                            No results.
+                            Click on the add button to start downloading models.
                         </Table.Cell>
                     </Table.Row>
                 {/each}
@@ -135,3 +135,9 @@
   {table.getFilteredSelectedRowModel().rows.length} of{" "}
   {table.getFilteredRowModel().rows.length} row(s) selected.
 </div>
+
+<style>
+    :global(th:has(.thumbnailHeader)) {
+        width: 190px;
+    }
+</style>

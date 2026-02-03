@@ -6,10 +6,7 @@ import DataTableActions from "./data-table-actions.svelte";
 import { Checkbox } from "$lib/components/ui/checkbox/index.js";
 
 import { type Table, type TableModelInfo } from "./data"
-
-import DataTableEmailButton from "./data-table-email-button.svelte";
-
-import { User } from "@lucide/svelte";
+import { Progress } from "$lib/components/ui/progress/index.js";
 
 export const columns: ColumnDef<Table>[] = [
   {
@@ -36,7 +33,7 @@ export const columns: ColumnDef<Table>[] = [
     accessorKey: "thumbnail",
     header: () => {
       const amountHeaderSnippet = createRawSnippet(() => ({
-        render: () => `<div class="text-left">thumbnail</div>`,
+        render: () => `<div class="thumbnailHeader">thumbnail</div>`,
       }));
       return renderSnippet(amountHeaderSnippet);
     },
@@ -89,6 +86,34 @@ export const columns: ColumnDef<Table>[] = [
                         ${info.release_Date}
                     </span>
                 </div>
+                <div class="model-details flex align-middle pt-4 gap-4">
+                    <span class="flex items-center gap-2 text-muted-foreground">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-arrow-down-to-line-icon lucide-arrow-down-to-line"><path d="M12 17V3"/><path d="m6 11 6 6 6-6"/><path d="M19 21H5"/></svg>
+                        ${info.metrics.downloads}
+                    </span>
+                    <span class="flex items-center gap-2 text-muted-foreground">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-thumbs-up-icon lucide-thumbs-up"><path d="M15 5.88 14 10h5.83a2 2 0 0 1 1.92 2.56l-2.33 8A2 2 0 0 1 17.5 22H4a2 2 0 0 1-2-2v-8a2 2 0 0 1 2-2h2.76a2 2 0 0 0 1.79-1.11L12 2a3.13 3.13 0 0 1 3 3.88Z"/><path d="M7 10v12"/></svg>
+                        ${info.metrics.like}
+                    </span>
+                    <span class="flex items-center gap-2 text-muted-foreground">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-library-icon lucide-library"><path d="m16 6 4 14"/><path d="M12 6v14"/><path d="M8 8v12"/><path d="M4 4v16"/></svg>
+                        ${info.metrics.collected}
+                    </span>
+                    <span class="flex items-center gap-2 text-muted-foreground">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-zap-icon lucide-zap"><path d="M4 14a1 1 0 0 1-.78-1.63l9.9-10.2a.5.5 0 0 1 .86.46l-1.92 6.02A1 1 0 0 0 13 10h7a1 1 0 0 1 .78 1.63l-9.9 10.2a.5.5 0 0 1-.86-.46l1.92-6.02A1 1 0 0 0 11 14z"/></svg>
+                        ${info.metrics.donations}
+                    </span>
+                </div>
+                <div class="model-details flex align-middle pt-8 gap-2 w-full flex-col text-muted-foreground" style="max-width: 400px">
+                    <div class="flex items-center">
+                        <span>Downloading</span>
+                        <span class="block ml-auto" style="font-size: .85em">${info.download.download_speed} Mb/s (${info.download.current} Mb / ${info.download.total} Mb)</span>
+                    </div>
+                    <div class="block w-full">
+                        <div data-slot="progress" class="bg-primary/20 relative h-2 overflow-hidden rounded-full w-full" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="66" data-value="66" data-state="loading" data-max="100" data-min="0" data-progress-root=""><div data-slot="progress-indicator" class="bg-primary h-full w-full flex-1 transition-all" 
+                        style="transform: translateX(-${(100 - (info.download.current * 100) / info.download.total)}%);"></div></div>
+                    </div>
+                </div>
               </div>`,
           };
         },
@@ -100,15 +125,56 @@ export const columns: ColumnDef<Table>[] = [
     },
   },
   {
-    accessorKey: "status",
-    header: "Status",
+    accessorKey: "version",
+    header: () => {
+      const amountHeaderSnippet = createRawSnippet(() => ({
+        render: () => `<div class="text-center">Version</div></div>`,
+      }));
+      return renderSnippet(amountHeaderSnippet);
+    },
+    cell: ({ row }) => {
+ 
+      const cellSnippet = createRawSnippet<[{ version: string }]>(
+        (getVersion) => {
+          const { version } = getVersion();
+          
+          return {
+            render: () =>
+              `<div class="text-center">${version}</div>`,
+          };
+        },
+      );
+
+      return renderSnippet(cellSnippet, {
+        version: row.original.version,
+      });
+    },
   },
   {
-    accessorKey: "email",
-    header: ({ column }) =>
-      renderComponent(DataTableEmailButton, {
-        onclick: column.getToggleSortingHandler(),
-    }),
+    accessorKey: "size",
+    header: () => {
+      const amountHeaderSnippet = createRawSnippet(() => ({
+        render: () => `<div class="text-center">Version</div></div>`,
+      }));
+      return renderSnippet(amountHeaderSnippet);
+    },
+    cell: ({ row }) => {
+ 
+      const cellSnippet = createRawSnippet<[{ size: string }]>(
+        (getSize) => {
+          const { size } = getSize();
+          
+          return {
+            render: () =>
+              `<div class="text-center">${size}</div>`,
+          };
+        },
+      );
+
+      return renderSnippet(cellSnippet, {
+        size: row.original.size,
+      });
+    },
   },
   {
     id: "actions",
