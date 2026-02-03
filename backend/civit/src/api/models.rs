@@ -472,9 +472,9 @@ impl Civit {
                 .header(CONTENT_TYPE, "application/json")
                 .header(AUTHORIZATION, format!("Bearer {}", &self.api_key))
                 .send()
-                .await.unwrap().json::<Model>().await.unwrap();
-        
-        response
+                .await.unwrap().json::<Model>().await;
+              
+        response.unwrap()
     }
     
     pub async fn model_by_version(&self, model_version: usize) -> ModelVersion {

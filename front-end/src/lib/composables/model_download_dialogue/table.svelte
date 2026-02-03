@@ -38,6 +38,7 @@
             <Table.Head>Base Model</Table.Head>
             <Table.Head class="text-center">Files</Table.Head>
             <Table.Head>Stats</Table.Head>
+            <Table.Head class="text-center">Type</Table.Head>
             <Table.Head class="text-center">Total Size</Table.Head>
             <Table.Head class="text-end">Published at</Table.Head>
         </Table.Row>
@@ -70,6 +71,7 @@
                         </span>
                     </div>
                 </Table.Cell>
+                <Table.Cell class="text-center">{data.type}</Table.Cell>
                 <Table.Cell class="text-center">{byteSize(Math.round(ModelV.files.reduce((sum: number, file: any) => sum + file.sizeKB, 0)) * 1024).toString()}</Table.Cell>
                 <Table.Cell class="text-end"
                     >{new Date(ModelV.publishedAt).toLocaleDateString(
@@ -127,7 +129,6 @@
                 <Table.Header>
                     <Table.Row>
                         <Table.Head>Name</Table.Head>
-                        <Table.Head>Type</Table.Head>
                         <Table.Head>Format</Table.Head>
                         <Table.Head>FP</Table.Head>
                         <Table.Head>Size</Table.Head>
@@ -138,7 +139,6 @@
                     {#each files as file}
                         <Table.Row>
                             <Table.Cell>{file.name}</Table.Cell>
-                            <Table.Cell>{file.type}</Table.Cell>
                             <Table.Cell>{file.metadata.format}</Table.Cell>
                             <Table.Cell>{file.metadata.fp}</Table.Cell>
                             <Table.Cell>{file.metadata.size}</Table.Cell>

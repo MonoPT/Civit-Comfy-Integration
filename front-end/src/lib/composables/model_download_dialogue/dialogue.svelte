@@ -1,7 +1,9 @@
 <script lang="ts">
-    let data = $state({modelVersions: []})
+    let data = $state<{modelVersions: any[]}>({modelVersions: []})
     
     let dialogueState = $state(false)
+    
+    import {start_download} from "./downloadManager"
     
     import { Button, buttonVariants } from "$lib/components/ui/button/index.js";
     import * as Dialog from "$lib/components/ui/dialog/index.js";
@@ -24,7 +26,7 @@
         
         //@ts-ignore
         const {ModelData} = e.detail
-        
+                
         data = ModelData
         dialogueState = true
         
@@ -64,6 +66,43 @@
       }      
     }
     
+    function start_downloads() {
+      const total_entries = Array.from(document.querySelectorAll<HTMLElement>("#ModelVersionsTable [data-version-id]"))
+        .filter((item) => item.getAttribute("data-version-id") !== "headerCheckbox")
+      
+      const checked_entries = total_entries.filter((item) => {
+        return item.getAttribute("data-state") === "checked"
+      })
+      
+      if (checked_entries.length < 1) return
+      
+      const versions = checked_entries.map((entry) => {
+        return entry.getAttribute("data-version-id") || ""
+      }).filter((entry) => entry.trim().length > 1)
+      
+      if (versions.length < 1) return
+      
+      let modelsVersions = data.modelVersions.filter((item) => {
+        return versions.includes(`${item.id}`)
+      })
+      
+      let files: {id: number, type: string}[] = []
+      
+      modelsVersions.forEach((modelV) => {
+        //@ts-ignore
+        modelV.files.forEach((file) => {
+          files.push({
+            id: parseInt(file.downloadUrl.split("download/models/")[1]),
+            //@ts-ignore
+            type: data.type
+          })
+        })
+      })
+      
+      dialogueState = false
+      start_download(files)
+    }
+    
 </script>
 
 <Dialog.Root open={dialogueState}>
@@ -89,7 +128,7 @@
                 </div>
                 <div class="div">
                     <Dialog.Close class={buttonVariants({ variant: "outline" })}>Cancel</Dialog.Close>
-                    <Button type="submit" disabled={table_state.selected < 1}>Download Models</Button>
+                    <Button type="submit" onclick={start_downloads} disabled={table_state.selected < 1}>Download Models</Button>
                 </div>
             </Dialog.Footer>
         </Dialog.Content>

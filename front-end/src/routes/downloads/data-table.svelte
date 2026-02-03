@@ -123,7 +123,7 @@
         />
         
         <div class="actions flex items-center ml-auto">
-            <Button onclick={() => {add_download_dialog = true}} variant="outline"><Plus /> Download model</Button>
+            <Button onclick={() => {add_download_dialog = false; add_download_dialog = true}} variant="outline"><Plus /> Download model</Button>
             {@render add_model()}
         </div>
         

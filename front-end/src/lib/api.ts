@@ -74,4 +74,12 @@ export default class API {
   static get_model_by_id(token: string, id:number) {
     return `${this.endpoint}/get_model/${id}?token=${token}`
   }
+  
+  static download_model_by_id(token: string, id:number, type: string) {
+    return `${this.endpoint}/download_by_id/${id}?token=${token}&model_type=${type}`
+  }
+  
+  static list_downloads(token: string) {
+    return `${this.endpoint}/downloads?token=${token}"`
+  }
 }
