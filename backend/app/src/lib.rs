@@ -39,7 +39,14 @@ struct ModelDownloading {
     finished_at: Option<chrono::DateTime<chrono::Utc>>,
     download_speed: f64,
     status: String,
-    file_name: String
+    file_name: String,
+    cover: String,
+    base_model: String,
+    model_name: String,
+    author_name: String,
+    published_at: String,
+    id: String,
+    based_on_model: String,
 }
 
 static TRACKING_FILE_NAME: &str = ".civit_comfy_state";

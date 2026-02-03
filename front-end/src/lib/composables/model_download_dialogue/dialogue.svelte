@@ -12,6 +12,8 @@
     import Table from "./table.svelte"
     import { onMount } from "svelte";
     
+    import {type ModelDownload} from "./downloadManager"
+    
     let needle = $state("")
     
     let table_state = $state({
@@ -86,19 +88,31 @@
         return versions.includes(`${item.id}`)
       })
       
-      let files: {id: number, type: string}[] = []
+      
+      
+      let files: ModelDownload[] = []
       
       modelsVersions.forEach((modelV) => {
         //@ts-ignore
-        modelV.files.forEach((file) => {
+        modelV.files.forEach((file) => {  
+
           files.push({
             id: parseInt(file.downloadUrl.split("download/models/")[1]),
             //@ts-ignore
-            type: data.type
+            type: data.type,
+            model_name: modelV.name,
+            //@ts-ignore
+            base_model: data.name,
+            file_name: file.name,
+            based_on_model: modelV.baseModel,
+            cover: modelV.images[0].url || "",
+            //@ts-ignore
+            author_name: data.creator.username,
+            published_at: modelV.publishedAt || ""
           })
         })
       })
-      
+                  
       dialogueState = false
       start_download(files)
     }

@@ -21,7 +21,14 @@ pub struct DownloadJob {
     kind: DownloadKind,
     models_dir: String,
     model_type: String,
-    user_token: String
+    user_token: String,
+    cover: String,
+    base_model: String,
+    model_name: String,
+    author_name: String,
+    published_at: String,
+    based_on_model: String,
+    file_name: String
 }
 
 #[derive(Debug)]

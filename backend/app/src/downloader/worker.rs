@@ -1,10 +1,11 @@
 use std::{error::Error, sync::Arc};
 
-use super::{DownloadJob, DownloadKind};
+use super::{DownloadJob};
 
 use tokio::sync::mpsc::Receiver;
 
 use tokio::sync::{Mutex, mpsc};
+use uuid::Uuid;
 
 use crate::{ModelDownloading};
 
@@ -83,6 +84,7 @@ pub async fn download_worker(mut rx_downloader: Receiver<DownloadJob>, models_be
         }
         
         models_being_downloaded.clone().lock().await.push(ModelDownloading {
+            id: Uuid::new_v4().to_string(),
             model_payload: job.payload.clone(),
             downloaded: 0,
             total_size: 0,
@@ -90,7 +92,13 @@ pub async fn download_worker(mut rx_downloader: Receiver<DownloadJob>, models_be
             finished_at: None,
             download_speed: 0.0,
             status: String::from("downloading"),
-            file_name: String::new()
+            file_name: job.file_name.clone(),
+            cover: job.cover.clone(),
+            base_model: job.base_model.clone(),
+            model_name: job.model_name.clone(),
+            author_name: job.author_name.clone(),
+            published_at: job.published_at.clone(),
+            based_on_model: job.based_on_model.clone()
         });
         let tx_task = tx_task.clone();
         

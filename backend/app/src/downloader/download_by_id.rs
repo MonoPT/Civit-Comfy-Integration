@@ -11,7 +11,14 @@ pub struct ModelOptions {
     size: Option<String>,
     fp: Option<String>,
     token: String,
-    model_type: String
+    model_type: String,
+    cover: String,
+    base_model: String,
+    model_name: String,
+    author_name: String,
+    published_at: String,
+    based_on_model: String,
+    file_name: String
 }
 
 pub async fn download_by_id(Path(model_id): Path<usize>, state: Extension<Arc<AppState>>, options: Query<ModelOptions>) -> Response {
@@ -49,7 +56,14 @@ pub async fn download_by_id(Path(model_id): Path<usize>, state: Extension<Arc<Ap
         kind: DownloadKind::ModelId,
         models_dir: String::from("C:/Users/USER/Downloads/Nova pasta"),
         model_type: model_folder,
-        user_token: options.token.clone()
+        user_token: options.token.clone(),
+        cover: options.cover.clone(),
+        base_model: options.base_model.clone(),
+        model_name: options.model_name.clone(),
+        author_name: options.author_name.clone(),
+        published_at: options.published_at.clone(),
+        based_on_model: options.based_on_model.clone(),
+        file_name: options.file_name.clone()
     };
     
 
