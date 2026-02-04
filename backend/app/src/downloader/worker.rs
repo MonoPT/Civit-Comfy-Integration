@@ -68,7 +68,6 @@ pub async fn download_worker(mut rx_downloader: Receiver<DownloadJob>, models_be
     
     while let Some(job) = rx_downloader.recv().await {
         {
-            let _file = File::create("/workspace/tried_to_start_download.log").await;
             let model = models_being_downloaded.clone();
             
             let model = model.lock().await;
@@ -116,7 +115,6 @@ pub async fn download_worker(mut rx_downloader: Receiver<DownloadJob>, models_be
         let tx_task = tx_task.clone();
         
         tokio::spawn(async move {
-            let _file = File::create("/workspace/job_spawn_task.log").await;
             process_job(job, tx_task).await;
         });
     }
@@ -132,19 +130,29 @@ async fn process_job(
     let payload_name = job.payload.clone();
     
     if !std::path::Path::new(&job.models_dir).is_dir() {
+        let file = File::create("/workspace/invalid_download_path.log").await;
+        file.unwrap().write(format!("{}", job.models_dir).as_bytes());
         println!("Invalid download path");
         return;
     }
     
     let target_folder = std::path::Path::new(&job.models_dir).join(&job.model_type);
     
-    let _ = tokio::fs::create_dir_all(&target_folder).await;
+    let e = tokio::fs::create_dir_all(&target_folder).await;
     
     if !std::path::Path::new(&target_folder).is_dir() {
+        
+        match e {
+            Ok(_) => (),
+            Err(e) => {
+                let file = File::create("/workspace/invalid_folder_error.log").await;
+                file.unwrap().write(format!("{:?}", e).as_bytes());
+            }
+        }
+        
         println!("Could not create target folder");
         return;
     }
-    
     
     
     const CONNECTIONS: u64 = 8;
