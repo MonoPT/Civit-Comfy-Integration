@@ -74,11 +74,7 @@ pub async fn start_civit_frontend_server(port: usize, static_dir: &str, comfy_pa
     let cors_layer = CorsLayer::new()
         .allow_origin(Any)  // Open access to selected route
         .allow_methods(vec![Method::GET, Method::POST]);
-    
-    use tokio::fs::File;
-    
-    let _file = File::create("/workspace/0_rust_app_start.log");
-    
+            
     let app = Router::new()
         .route("/health", any("ok"))
         .route("/media_proxy", any(media_proxy::proxy_route)) // proxy para tudo
@@ -103,9 +99,7 @@ pub async fn start_civit_frontend_server(port: usize, static_dir: &str, comfy_pa
         .layer(ServiceBuilder::new().layer(cors_layer)) 
         .layer(Extension(state))
     ;
-        
-    let _file = File::create("/workspace/started.log").await;
-    
+            
     // Listen for file delete to shutdown server instance    
     let working_dir = user_dirs::cache_dir().unwrap();
     let file_to_watch = working_dir.join(TRACKING_FILE_NAME);
