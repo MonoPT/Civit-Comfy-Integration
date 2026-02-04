@@ -65,7 +65,7 @@ pub async fn download_by_id(Path(model_id): Path<usize>, state: Extension<Arc<Ap
     let payload = DownloadJob {
         payload: url_payload,
         kind: DownloadKind::ModelId,
-        models_dir: models_dir,
+        models_dir: String::from("/workspace/ComfyUI/models"),
         model_type: model_folder,
         user_token: options.token.clone(),
         cover: options.cover.clone(),
