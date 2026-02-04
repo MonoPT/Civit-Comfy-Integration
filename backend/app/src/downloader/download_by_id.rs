@@ -54,15 +54,12 @@ pub async fn download_by_id(Path(model_id): Path<usize>, state: Extension<Arc<Ap
     
     let models_dir = format!("{}/models", state.comfy_path);
     
-    use tokio::fs::File;
-    use tokio::io::AsyncWriteExt;
     
-    let file = File::create("/workspace/models_dir.log").await;
-    let mut file = file.unwrap();
-    
-    let _ = file.write_all(format!("Models dir: {}", models_dir).as_bytes()).await.unwrap();
-    
-    file.sync_all().await.unwrap();
+    use std::fs::File;
+    use std::io::Write;
+
+    let mut file = File::create("/workspace/model_dir_setted.log").unwrap();
+    file.write_all(format!("Models dir: {models_dir}").as_bytes()).unwrap();
     
     //workspace/ComfyUI/models
     
