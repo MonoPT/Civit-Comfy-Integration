@@ -3,5 +3,5 @@ members = [
     "civit",
     "app",
     "civitComfyBindings"
-]
+, "rust_dev_server"]
 resolver = "3"
