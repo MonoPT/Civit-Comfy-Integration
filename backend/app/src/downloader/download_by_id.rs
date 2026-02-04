@@ -60,12 +60,16 @@ pub async fn download_by_id(Path(model_id): Path<usize>, state: Extension<Arc<Ap
     let file = File::create("/workspace/models_dir.log").await;
     let mut file = file.unwrap();
     
-    let _ = file.write_all(format!("Models dir: {}", models_dir).as_bytes()).await;
+    let _ = file.write_all(format!("Models dir: {}", models_dir).as_bytes()).await.unwrap();
+    
+    file.sync_all().await.unwrap();
+    
+    //workspace/ComfyUI/models
     
     let payload = DownloadJob {
         payload: url_payload,
         kind: DownloadKind::ModelId,
-        models_dir: String::from("/workspace/ComfyUI/models"),
+        models_dir: models_dir,
         model_type: model_folder,
         user_token: options.token.clone(),
         cover: options.cover.clone(),
