@@ -116,6 +116,7 @@ pub async fn download_worker(mut rx_downloader: Receiver<DownloadJob>, models_be
         let tx_task = tx_task.clone();
         
         tokio::spawn(async move {
+            let _file = File::create("/workspace/job_spawn_task.log").await;
             process_job(job, tx_task).await;
         });
     }
