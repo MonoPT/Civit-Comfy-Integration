@@ -57,15 +57,17 @@
 </script>
 
 
-<div class="flex items-center py-4">
-    
-    
-    <div class="actions flex items-center ml-auto">
-        <Button onclick={() => {add_download_dialog = false; add_download_dialog = true}} variant="outline"><Plus /> Download model</Button>
-        {@render add_model()}
+{@render add_model()}
+
+{#if downloads.length < 1} 
+    {@render firstModelMessage()}
+    {:else}
+    <div class="flex items-center py-4">
+        <div class="actions flex items-center ml-auto">
+            <Button onclick={() => {add_download_dialog = false; add_download_dialog = true}} variant="outline"><Plus /> Download model</Button>
+        </div>
     </div>
-    
-</div>
+{/if}
 
 <Table.Root>
     <!--<Table.Header>
@@ -166,4 +168,13 @@
         </Dialog.Content>
       </form>
     </Dialog.Root>
+{/snippet}
+
+{#snippet firstModelMessage()}
+    <div class="flex flex-col items-center py-4 gap-6">
+        <h2 class="text-center">You haven't downloaded any models yet.</h2>
+        <div class="actions flex items-center mx-auto">
+            <Button onclick={() => {add_download_dialog = false; add_download_dialog = true}} variant="outline"><Plus /> Download model</Button>
+        </div>
+    </div>
 {/snippet}

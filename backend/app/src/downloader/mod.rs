@@ -6,6 +6,7 @@ pub use worker::download_worker;
 use axum::{Router, routing::get};
 
 use axum::{Extension, Json};
+use std::path::{Path, PathBuf};
 use std::sync::Arc;
 use crate::{AppState, ModelDownloading};
 
@@ -19,7 +20,7 @@ pub fn route() -> Router {
 pub struct DownloadJob {
     payload: String,
     kind: DownloadKind,
-    models_dir: String,
+    models_dir: PathBuf,
     model_type: String,
     user_token: String,
     cover: String,

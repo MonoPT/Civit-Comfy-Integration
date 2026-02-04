@@ -51,8 +51,10 @@ pub async fn download_by_id(Path(model_id): Path<usize>, state: Extension<Arc<Ap
         "poses" => "poses",
         _ => &options.model_type
     }.to_string();
+        
+    let base_dir = std::path::Path::new(&state.comfy_path);
     
-    let models_dir = format!("{}/models", state.comfy_path);
+    let models_dir = base_dir.join("models");
     
     let payload = DownloadJob {
         payload: url_payload,
@@ -70,7 +72,7 @@ pub async fn download_by_id(Path(model_id): Path<usize>, state: Extension<Arc<Ap
         stats: options.stats.clone()
     };
     
-    println!("Downloading model to {}/{}", payload.models_dir, payload.model_type);
+    println!("Downloading model to {}/{}", payload.models_dir.to_string_lossy(), payload.model_type);
 
     let _ = state.tx_downloader.send(payload).await;
     

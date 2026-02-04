@@ -120,15 +120,20 @@ async fn process_job(
     job: DownloadJob,
     tx: mpsc::Sender<ModelStatusMessage>,
 ) {
-        
     let payload_name = job.payload.clone();
+   
+    let models_dir = &job.models_dir;
     
-    if !std::path::Path::new(&job.models_dir).is_dir() {
+    let _ = tokio::fs::create_dir_all(&models_dir).await;
+    
+    println!("Models dir {:?}", models_dir);
+    
+    if !models_dir.is_dir() {
         println!("Invalid download path");
         return;
     }
     
-    let target_folder = std::path::Path::new(&job.models_dir).join(&job.model_type);
+    let target_folder = models_dir.join(&job.model_type);
     
     let _ = tokio::fs::create_dir_all(&target_folder).await;
     
