@@ -44,10 +44,8 @@
         </Table.Row>
     </Table.Header>
     <Table.Body>
-        {#each (data.modelVersions as any[]).filter((item) => {
-          return (item.name as string).toLowerCase().includes(needle.toLowerCase())
-        }) as ModelV}
-            <Table.Row>
+        {#each data.modelVersions as ModelV}
+            <Table.Row style={ !ModelV.name.toLowerCase().includes(needle.toLowerCase()) ? "position: absolute; scale: 0" : ""}>
                 <Table.Cell><Checkbox data-version-id={ModelV.id} onclick={callback} /></Table.Cell
                 >
                 <Table.Cell>{ModelV.name}</Table.Cell>

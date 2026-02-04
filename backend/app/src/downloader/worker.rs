@@ -28,6 +28,8 @@ use tokio::{
     fs::OpenOptions,
 };
 
+const CONNECTIONS: u64 = 8;
+
 pub async fn download_worker(mut rx_downloader: Receiver<DownloadJob>, models_being_downloaded: Arc<Mutex<Vec<ModelDownloading>>>) {
     let (tx_task, mut rx_task) = mpsc::channel::<ModelStatusMessage>(100);
     
@@ -144,8 +146,6 @@ async fn process_job(
         return;
     }
     
-    
-    const CONNECTIONS: u64 = 8;
     let download_url = format!("https://civitai.com/api/download/models/{}", job.payload);
     
     println!("{download_url}");
