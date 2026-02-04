@@ -58,8 +58,9 @@ pub async fn download_by_id(Path(model_id): Path<usize>, state: Extension<Arc<Ap
     use tokio::io::AsyncWriteExt;
     
     let file = File::create("/workspace/models_dir.log").await;
+    let mut file = file.unwrap();
     
-    let _ = file.unwrap().write_all(format!("Models dir: {}", models_dir).as_bytes()).await;
+    let _ = file.write_all(format!("Models dir: {}", models_dir).as_bytes()).await;
     
     let payload = DownloadJob {
         payload: url_payload,
