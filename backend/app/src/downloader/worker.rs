@@ -220,16 +220,22 @@ async fn process_job(
     ).await;
         
     let mut status = String::from("finished");
-    let mut total_downloaded = size;
+    let mut total_downloaded = downloaded.fetch_add(0, Ordering::Relaxed);
         
     match handles {
         Err(_e) => {            
             status = String::from("error"); 
-            total_downloaded = downloaded.fetch_add(0, Ordering::Relaxed);
         },
         Ok(handles) => {            
             for h in handles {
-                h.await.unwrap().unwrap();
+                match h.await {
+                    Ok(_) => {
+                        total_downloaded = size;
+                    },
+                    Err(_join) => {
+                        status = String::from("error"); 
+                    }
+                }
             }
         }
     }
@@ -296,7 +302,7 @@ async fn download_loop(
             let mut offset = start;
  
             let start = std::time::Instant::now();
-            
+                        
             while let Some(chunk) = stream.next().await {
                 let file_name = file_name.clone();
                 let chunk = chunk?;
