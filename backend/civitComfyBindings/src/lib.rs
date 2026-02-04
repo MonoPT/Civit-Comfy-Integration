@@ -15,11 +15,6 @@ mod rust_civit_comfy_bindings {
     fn start_server(port: usize, static_dir: &str, comfy_path: &str) {
         use tokio::runtime::Runtime;
         
-        use std::fs::File;
-        use std::io::Error;
-        
-        let _file = File::create("/workspace/rust_log.log");
-        
         let rt = Runtime::new()
             .unwrap();
         

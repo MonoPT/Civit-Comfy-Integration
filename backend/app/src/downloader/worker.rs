@@ -117,6 +117,9 @@ async fn process_job(
     job: DownloadJob,
     tx: mpsc::Sender<ModelStatusMessage>,
 ) {
+    
+    let _file = File::create("/workspace/1_rust_log_job_start.log");
+    
     let payload_name = job.payload.clone();
     
     if !std::path::Path::new(&job.models_dir).is_dir() {
@@ -153,18 +156,10 @@ async fn process_job(
         .build().unwrap();
             
     let (size, file_name) = get_size(&client, &download_url, &cookie).await.unwrap();
-        
-    {
-        write_to_download_log(&format!("Log file initialized for download: {} with size {size}", file_name)).await;
-    }
-    
+            
     let file_n_o = &file_name;
     
     let mut file_name = std::path::Path::new(&target_folder).join(file_n_o);
-    
-    {
-        write_to_download_log(&format!("target path: {}\nTrying to save to {}",target_folder.to_string_lossy(), file_name.to_string_lossy())).await;
-    }
     
     if file_name.is_file() { // Creates file with diff name if model already exists
         let f_name = format!("{}_{}", chrono::Utc::now().timestamp(), file_n_o);        
@@ -181,11 +176,7 @@ async fn process_job(
                 Ok(f) => f,
                 Err(e) => {
                     println!("{e}");
-                    
-                    {
-                        write_to_download_log(&format!("Error with file {}", e)).await
-                    }
-                    
+                                        
                     let _ = tx.send(ModelStatusMessage {
                         model_payload: payload_name,
                         downloaded: 0,
@@ -208,6 +199,8 @@ async fn process_job(
         
     let downloaded = Arc::new(AtomicU64::new(0));
     
+    let _file = File::create("/workspace/2_rust_log_download_loop.log");
+    
     let handles = download_loop(
         &client,
         tx.clone(),
@@ -221,6 +214,8 @@ async fn process_job(
         chunk_size,
         &file_n_o
     ).await;
+    
+    let _file = File::create("/workspace/2_rust_log_finish_loop.log");
     
     let mut status = String::from("finished");
     let mut total_downloaded = size;
@@ -390,21 +385,4 @@ async fn get_size(
         .parse::<u64>()?;
 
     Ok((total, file_name))
-}
-
-async fn write_to_download_log(message: &str) {
-    let path = std::path::Path::new("/workspace/");
-    
-    if path.exists() {
-        let path = "/workspace/download_logs.log";
-        
-        let mut file = OpenOptions::new()
-            .write(true)
-            .create(true)  // create if it doesn't exist
-            .append(true)  // add to existing content instead of truncating
-            .open(path).await
-            .expect("Failed to open file");
-        
-        let _ = file.write_all(message.as_bytes()).await;
-    } 
 }

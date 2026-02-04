@@ -75,6 +75,10 @@ pub async fn start_civit_frontend_server(port: usize, static_dir: &str, comfy_pa
         .allow_origin(Any)  // Open access to selected route
         .allow_methods(vec![Method::GET, Method::POST]);
     
+    use tokio::fs::File;
+    
+    let _file = File::create("/workspace/0_rust_app_start.log");
+    
     let app = Router::new()
         .route("/health", any("ok"))
         .route("/media_proxy", any(media_proxy::proxy_route)) // proxy para tudo
