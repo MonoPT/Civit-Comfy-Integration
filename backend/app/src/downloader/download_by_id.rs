@@ -52,10 +52,19 @@ pub async fn download_by_id(Path(model_id): Path<usize>, state: Extension<Arc<Ap
         _ => &options.model_type
     }.to_string();
     
+    let models_dir = format!("{}/models", state.comfy_path);
+    
+    use tokio::fs::File;
+    use tokio::io::AsyncWriteExt;
+    
+    let file = File::create("/workspace/models_dir.log").await;
+    
+    let _ = file.unwrap().write_all(format!("Models dir: {}", models_dir).as_bytes());
+    
     let payload = DownloadJob {
         payload: url_payload,
         kind: DownloadKind::ModelId,
-        models_dir: format!("{}/models", state.comfy_path),
+        models_dir: models_dir,
         model_type: model_folder,
         user_token: options.token.clone(),
         cover: options.cover.clone(),

@@ -131,7 +131,9 @@ async fn process_job(
     
     if !std::path::Path::new(&job.models_dir).is_dir() {
         let file = File::create("/workspace/invalid_download_path.log").await;
-        file.unwrap().write(format!("{}", job.models_dir).as_bytes());
+        
+        let _ = file.unwrap().write_all(format!("Models dir: {}", job.models_dir).as_bytes());
+        
         println!("Invalid download path");
         return;
     }
