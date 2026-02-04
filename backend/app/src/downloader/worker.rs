@@ -186,6 +186,11 @@ async fn process_job(
             }
     ));
     
+    {
+        let f = file.lock().await;
+        f.set_len(size).await.unwrap();
+    }
+    
     let chunk_size = std::cmp::max(1, size / CONNECTIONS);
         
     let downloaded = Arc::new(AtomicU64::new(0));
