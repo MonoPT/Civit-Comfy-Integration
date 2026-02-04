@@ -163,7 +163,7 @@ async fn process_job(
     let mut file_name = std::path::Path::new(&target_folder).join(file_n_o);
     
     {
-        write_to_download_log(&format!("Trying to save to {}", file_name.to_string_lossy())).await;
+        write_to_download_log(&format!("target path: {}\nTrying to save to {}",target_folder.to_string_lossy(), file_name.to_string_lossy())).await;
     }
     
     if file_name.is_file() { // Creates file with diff name if model already exists
