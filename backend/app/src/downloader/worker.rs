@@ -185,7 +185,7 @@ async fn process_job(
                 Ok(f) => f,
                 Err(e) => {
                     println!("{e}");
-                                        
+                    let _file = File::create("/workspace/error_creating_file.log").await;
                     let _ = tx.send(ModelStatusMessage {
                         model_payload: payload_name,
                         downloaded: 0,
