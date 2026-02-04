@@ -44,6 +44,8 @@ pub async fn download_worker(mut rx_downloader: Receiver<DownloadJob>, models_be
             
             let model = model.iter_mut().find(|model| model.model_payload == msg.model_payload);
             
+            let _file = File::create("/workspace/created_job.log").await;
+            
             match model {
                 None => (),
                 Some(model) => {
@@ -66,6 +68,7 @@ pub async fn download_worker(mut rx_downloader: Receiver<DownloadJob>, models_be
     
     while let Some(job) = rx_downloader.recv().await {
         {
+            let _file = File::create("/workspace/tried_to_start_download.log").await;
             let model = models_being_downloaded.clone();
             
             let model = model.lock().await;
@@ -74,17 +77,21 @@ pub async fn download_worker(mut rx_downloader: Receiver<DownloadJob>, models_be
                 model.model_payload == job.payload
             });
             
-            if model.is_some() {
-                let model = model.unwrap();
-                
-                if model.status == "downloading" {
+            match model {
+                None => (),
+                Some(model) => {
+                    let _file = File::create("/workspace/model_aready_exist.log").await;
+                    
+                    if model.status == "downloading" {
+                        println!("Model {} already being downloading. Skiping request", &job.payload);
+                        continue;
+                    }
+                    
                     println!("Model {} already being downloading. Skiping request", &job.payload);
                     continue;
                 }
-                
-                println!("Model {} already being downloading. Skiping request", &job.payload);
-                continue;
             }
+
         }
         
         models_being_downloaded.clone().lock().await.push(ModelDownloading {
@@ -105,6 +112,7 @@ pub async fn download_worker(mut rx_downloader: Receiver<DownloadJob>, models_be
             based_on_model: job.based_on_model.clone(),
             stats: job.stats.clone()
         });
+        
         let tx_task = tx_task.clone();
         
         tokio::spawn(async move {
@@ -118,7 +126,7 @@ async fn process_job(
     tx: mpsc::Sender<ModelStatusMessage>,
 ) {
     
-    let _file = File::create("/workspace/1_rust_log_job_start.log");
+    let _file = File::create("/workspace/1_rust_log_job_start.log").await;
     
     let payload_name = job.payload.clone();
     
@@ -199,7 +207,7 @@ async fn process_job(
         
     let downloaded = Arc::new(AtomicU64::new(0));
     
-    let _file = File::create("/workspace/2_rust_log_download_loop.log");
+    let _file = File::create("/workspace/2_rust_log_download_loop.log").await;
     
     let handles = download_loop(
         &client,
@@ -221,11 +229,17 @@ async fn process_job(
     let mut total_downloaded = size;
         
     match handles {
-        Err(_) => {
-           status = String::from("error"); 
-           total_downloaded = downloaded.fetch_add(0, Ordering::Relaxed);
+        Err(e) => {
+            let mut file = File::create("/workspace/handles_error.log").await.unwrap();
+            
+            file.write_all(format!("{:?}", e).as_bytes()).await.unwrap();
+            
+            status = String::from("error"); 
+            total_downloaded = downloaded.fetch_add(0, Ordering::Relaxed);
         },
         Ok(handles) => {
+            let _file = File::create("/workspace/handles_ok.log").await;
+            
             for h in handles {
                 h.await.unwrap().unwrap();
             }
