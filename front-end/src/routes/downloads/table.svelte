@@ -5,6 +5,7 @@
     import * as Dialog from "$lib/components/ui/dialog/index.js";
     import { Spinner } from "$lib/components/ui/spinner/index.js";
     
+    
     import byteSize from "byte-size";
     
     import { Plus } from "@lucide/svelte";
@@ -16,6 +17,7 @@
     //@ts-ignore
     import { toast } from "svelte-sonner";
     
+    let needle = $state("")
     let add_download_dialog = $state(false)
     let is_fetching_model_data = $state(false)
     
@@ -63,6 +65,9 @@
     {@render firstModelMessage()}
     {:else}
     <div class="flex items-center py-4">
+        <div class="mr-12 w-full">
+            <Input bind:value={needle} type="text" placeholder="Search by model name" style="max-width: 400px;"  />
+        </div>
         <div class="actions flex items-center ml-auto">
             <Button onclick={() => {add_download_dialog = false; add_download_dialog = true}} variant="outline"><Plus /> Download model</Button>
         </div>
@@ -80,8 +85,13 @@
         </Table.Header>-->
     <Table.Body>
         {#each downloads as download (download.id)}
-            <Table.Row>
-                <Table.Cell class="font-medium" style="width: 160px;"><img style="width: 100%;" class="block rounded-xs" src="{download.cover}" alt=""></Table.Cell>
+            <Table.Row style={ !download.base_model.toLowerCase().includes(needle.toLowerCase()) ? "position: absolute; scale: 0" : ""}>
+                <Table.Cell class="font-medium" style="width: 160px;">
+                    <!--<img style="width: 100%;" class="block rounded-xs" src="{download.cover}" alt="">-->
+                    <video poster={download.cover} autoplay style="width: 100%;" class="block rounded-xs" loop muted preload="auto" disablepictureinpicture>
+                        <source src="{download.cover}" type="video/webm">
+                    </video>
+                </Table.Cell>
                 <Table.Cell>
                     <div class="w-full h-full">
                       <h2 class="scroll-m-20 text-2xl font-semibold tracking-tight">{download.base_model}</h2>

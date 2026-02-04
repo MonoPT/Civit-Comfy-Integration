@@ -26,15 +26,14 @@
         month: "long",
         day: "numeric",
     };
-    
-    
+        
 </script>
 
 <Table.Root id="ModelVersionsTable">
     <Table.Header>
         <Table.Row >
             <Table.Head><Checkbox data-version-id="headerCheckbox" onclick={callback} /></Table.Head>
-            <Table.Head class="w-[100px]">Name</Table.Head>
+            <Table.Head class="w-25">Name</Table.Head>
             <Table.Head>Base Model</Table.Head>
             <Table.Head class="text-center">Files</Table.Head>
             <Table.Head>Stats</Table.Head>
