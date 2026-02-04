@@ -99,7 +99,7 @@ comfy_path = str(Path(f"{file_p}../../../").resolve())
 print(f"Static dir: {static_dir}")
 print(f"Detected comfy path: {comfy_path}")
 
-with open("/workspace/", 'w') as f:
+with open("/workspace/teste.log", 'w') as f:
     f.write("Initial content")  # Optional: write something
 
 subprocess.Popen(
