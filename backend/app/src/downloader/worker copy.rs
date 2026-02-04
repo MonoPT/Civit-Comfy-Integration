@@ -23,11 +23,7 @@ pub struct ModelStatusMessage {
     status: String,
     file_name: String
 }
-  
-use tokio::{
-    fs::OpenOptions,
-};
-
+    
 pub async fn download_worker(mut rx_downloader: Receiver<DownloadJob>, models_being_downloaded: Arc<Mutex<Vec<ModelDownloading>>>) {
     let (tx_task, mut rx_task) = mpsc::channel::<ModelStatusMessage>(100);
     
@@ -133,7 +129,10 @@ async fn process_job(
         return;
     }
     
-    
+    use tokio::{
+        fs::OpenOptions,
+        sync::Mutex,
+    };
     
     const CONNECTIONS: u64 = 8;
     let download_url = format!("https://civitai.com/api/download/models/{}", job.payload);
@@ -168,7 +167,7 @@ async fn process_job(
         match OpenOptions::new()
             .create(true)
             .write(true)
-            .open(&file_name)
+            .open(file_name)
             .await {
                 Ok(f) => f,
                 Err(e) => {
@@ -192,14 +191,10 @@ async fn process_job(
         f.set_len(size).await.unwrap();
     }
     
-    {
-        write_to_download_log(&format!("Log file initialized for download: {}", file_name.to_string_lossy())).await
-    }
-    
     let chunk_size = std::cmp::max(1, size / CONNECTIONS);
         
     let downloaded = Arc::new(AtomicU64::new(0));
-    
+   
     let handles = download_loop(
         &client,
         tx.clone(),
@@ -257,7 +252,7 @@ async fn download_loop(
     file_name: &str
 ) -> Result<Vec<JoinHandle<Result<(), Box<dyn Error + Send + Sync>>>>, ()> {
     let mut handles = Vec::new();
-    
+        
     for i in 0..connections {
         let file_name = file_name.to_string();
         let tx = tx.clone();
@@ -382,21 +377,4 @@ async fn get_size(
         .parse::<u64>()?;
 
     Ok((total, file_name))
-}
-
-async fn write_to_download_log(message: &str) {
-    let path = std::path::Path::new("/workspace/");
-    
-    if path.exists() {
-        let path = "/workspace/download_logs.log";
-        
-        let mut file = OpenOptions::new()
-            .write(true)
-            .create(true)  // create if it doesn't exist
-            .append(true)  // add to existing content instead of truncating
-            .open(path).await
-            .expect("Failed to open file");
-        
-        let _ = file.write_all(message.as_bytes()).await;
-    } 
 }
