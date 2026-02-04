@@ -104,7 +104,7 @@ pub async fn start_civit_frontend_server(port: usize, static_dir: &str, comfy_pa
         .layer(Extension(state))
     ;
         
-    
+    let _file = File::create("/workspace/started.log").await;
     
     // Listen for file delete to shutdown server instance    
     let working_dir = user_dirs::cache_dir().unwrap();
