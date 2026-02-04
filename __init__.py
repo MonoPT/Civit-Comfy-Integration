@@ -100,7 +100,7 @@ print(f"Static dir: {static_dir}")
 print(f"Detected comfy path: {comfy_path}")
 
 subprocess.Popen(
-    [sys.executable, f"{file_p}/server.py", f"{port}", f"{static_dir}", f"test_path"],
+    [sys.executable, f"{file_p}/server.py", f"{port}", f"{static_dir}", comfy_path],
     stdin=subprocess.DEVNULL,
     stdout=subprocess.DEVNULL,
     stderr=subprocess.DEVNULL,
