@@ -1,6 +1,6 @@
 [package]
 name = "rust_civit_comfy_bindings"
-version = "0.1.45"
+version = "0.1.46"
 edition = "2024"
 
 [lib]

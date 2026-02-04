@@ -154,9 +154,17 @@ async fn process_job(
             
     let (size, file_name) = get_size(&client, &download_url, &cookie).await.unwrap();
         
+    {
+        write_to_download_log(&format!("Log file initialized for download: {} with size {size}", file_name)).await;
+    }
+    
     let file_n_o = &file_name;
     
     let mut file_name = std::path::Path::new(&target_folder).join(file_n_o);
+    
+    {
+        write_to_download_log(&format!("Trying to save to {}", file_name.to_string_lossy())).await;
+    }
     
     if file_name.is_file() { // Creates file with diff name if model already exists
         let f_name = format!("{}_{}", chrono::Utc::now().timestamp(), file_n_o);        
@@ -174,6 +182,10 @@ async fn process_job(
                 Err(e) => {
                     println!("{e}");
                     
+                    {
+                        write_to_download_log(&format!("Error with file {}", e)).await
+                    }
+                    
                     let _ = tx.send(ModelStatusMessage {
                         model_payload: payload_name,
                         downloaded: 0,
@@ -190,10 +202,6 @@ async fn process_job(
     {
         let f = file.lock().await;
         f.set_len(size).await.unwrap();
-    }
-    
-    {
-        write_to_download_log(&format!("Log file initialized for download: {}", file_name.to_string_lossy())).await
     }
     
     let chunk_size = std::cmp::max(1, size / CONNECTIONS);
