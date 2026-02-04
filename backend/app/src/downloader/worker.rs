@@ -43,9 +43,7 @@ pub async fn download_worker(mut rx_downloader: Receiver<DownloadJob>, models_be
             let mut model = downloading_models.lock().await;
             
             let model = model.iter_mut().find(|model| model.model_payload == msg.model_payload);
-            
-            let _file = File::create("/workspace/created_job.log").await;
-            
+                        
             match model {
                 None => (),
                 Some(model) => {
@@ -78,9 +76,7 @@ pub async fn download_worker(mut rx_downloader: Receiver<DownloadJob>, models_be
             
             match model {
                 None => (),
-                Some(model) => {
-                    let _file = File::create("/workspace/model_aready_exist.log").await;
-                    
+                Some(model) => {                  
                     if model.status == "downloading" {
                         println!("Model {} already being downloading. Skiping request", &job.payload);
                         continue;
@@ -124,36 +120,21 @@ async fn process_job(
     job: DownloadJob,
     tx: mpsc::Sender<ModelStatusMessage>,
 ) {
-    
-    let _file = File::create("/workspace/1_rust_log_job_start.log").await;
-    
+        
     let payload_name = job.payload.clone();
     
     if !std::path::Path::new(&job.models_dir).is_dir() {
-        let file = File::create("/workspace/invalid_download_path.log").await;
-        
-        let mut file = file.unwrap();
-        
-        let _ = file.write_all(format!("Models dir: {}", job.models_dir).as_bytes()).await;
-        
         println!("Invalid download path");
         return;
     }
     
     let target_folder = std::path::Path::new(&job.models_dir).join(&job.model_type);
     
-    let e = tokio::fs::create_dir_all(&target_folder).await;
+    let _ = tokio::fs::create_dir_all(&target_folder).await;
     
     if !std::path::Path::new(&target_folder).is_dir() {
         
-        match e {
-            Ok(_) => (),
-            Err(e) => {
-                let file = File::create("/workspace/invalid_folder_error.log").await;
-                file.unwrap().write(format!("{:?}", e).as_bytes());
-            }
-        }
-        
+
         println!("Could not create target folder");
         return;
     }
@@ -197,7 +178,6 @@ async fn process_job(
                 Ok(f) => f,
                 Err(e) => {
                     println!("{e}");
-                    let _file = File::create("/workspace/error_creating_file.log").await;
                     let _ = tx.send(ModelStatusMessage {
                         model_payload: payload_name,
                         downloaded: 0,
@@ -219,9 +199,7 @@ async fn process_job(
     let chunk_size = std::cmp::max(1, size / CONNECTIONS);
         
     let downloaded = Arc::new(AtomicU64::new(0));
-    
-    let _file = File::create("/workspace/2_rust_log_download_loop.log").await;
-    
+        
     let handles = download_loop(
         &client,
         tx.clone(),
@@ -235,24 +213,16 @@ async fn process_job(
         chunk_size,
         &file_n_o
     ).await;
-    
-    let _file = File::create("/workspace/2_rust_log_finish_loop.log");
-    
+        
     let mut status = String::from("finished");
     let mut total_downloaded = size;
         
     match handles {
-        Err(e) => {
-            let mut file = File::create("/workspace/handles_error.log").await.unwrap();
-            
-            file.write_all(format!("{:?}", e).as_bytes()).await.unwrap();
-            
+        Err(_e) => {            
             status = String::from("error"); 
             total_downloaded = downloaded.fetch_add(0, Ordering::Relaxed);
         },
-        Ok(handles) => {
-            let _file = File::create("/workspace/handles_ok.log").await;
-            
+        Ok(handles) => {            
             for h in handles {
                 h.await.unwrap().unwrap();
             }

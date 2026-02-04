@@ -54,15 +54,6 @@ pub async fn download_by_id(Path(model_id): Path<usize>, state: Extension<Arc<Ap
     
     let models_dir = format!("{}/models", state.comfy_path);
     
-    
-    use std::fs::File;
-    use std::io::Write;
-
-    let mut file = File::create("/workspace/model_dir_setted.log").unwrap();
-    file.write_all(format!("Models dir: {models_dir}").as_bytes()).unwrap();
-    
-    //workspace/ComfyUI/models
-    
     let payload = DownloadJob {
         payload: url_payload,
         kind: DownloadKind::ModelId,
