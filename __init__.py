@@ -99,9 +99,6 @@ comfy_path = str(Path(f"{file_p}../../../").resolve())
 print(f"Static dir: {static_dir}")
 print(f"Detected comfy path: {comfy_path}")
 
-with open("/workspace/teste.log", 'w') as f:
-    f.write("Initial content")  # Optional: write something
-
 subprocess.Popen(
     [sys.executable, f"{file_p}/server.py", f"{port}", f"{static_dir}", f"test_path"],
     stdin=subprocess.DEVNULL,
