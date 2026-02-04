@@ -9,7 +9,6 @@
     import { Spinner } from "$lib/components/ui/spinner/index.js";
     import { Button } from "$lib/components/ui/button/index.js";
     import * as DropdownMenu from "$lib/components/ui/dropdown-menu/index.js";
-
     
     import { ThumbsUp, EllipsisVertical, Laugh, Heart, Frown, MessageSquare, ArrowDownToLine } from "@lucide/svelte";
     
@@ -73,20 +72,96 @@
         assets_list = [...assets_list, ...resp.assets]
       }
     }
+        
+    onMount(() => { // Tracks added items to DOM
+      const mansonary = document.getElementById("mansonary")!
+      
+      const config = { attributes: true, childList: true, subtree: true };
+      
+      const observer = new MutationObserver(onMansonaryMutation);
+      
+      observer.observe(mansonary, config);
+    })
+    
+    const intObsv = new IntersectionObserver(
+      (entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            const target = entry.target as HTMLElement;
+            
+            target.appendChild(createMedia(target))
+          } else {
+            entry.target.querySelector("video")?.remove()
+          }
+        });
+      },
+      {
+        root: null,
+        threshold: 0,
+        rootMargin: '2500px',
+      }
+    );
+    
+    function onMansonaryMutation(mutationList: MutationRecord[], observer: MutationObserver) {
+      mutationList.forEach((mut) => {
+        if(mut.addedNodes.length < 1) return;
+        
+        mut.addedNodes.forEach((node) => {
+          if (node.nodeName.startsWith("#")) return
+
+          const assetContainer = (node as HTMLElement).querySelector<HTMLElement>("[data-asset-container]")
+          
+          if (!assetContainer) return
+                   
+          intObsv.observe(assetContainer);
+        })
+      })
+    }
+    
+    function createMedia(asset: HTMLElement) {
+      const src = asset.getAttribute("data-media")!
+      
+      const videoElement = document.createElement("video")
+      videoElement.loop = true;
+      videoElement.autoplay = false;
+      videoElement.muted = true;
+      videoElement.poster = asset.getAttribute("data-cover")!
+      videoElement.disablePictureInPicture = true
+      videoElement.disableRemotePlayback = true
+      
+      const sourceWebm = document.createElement("source")
+      sourceWebm.src = `${src}.webm`
+      sourceWebm.type = "video/webm"
+      
+      const sourceMp4 = document.createElement("source")
+      sourceMp4.src = `${src}.mp4`
+      sourceMp4.type = "video/mp4"
+      
+      videoElement.appendChild(sourceWebm)
+      videoElement.appendChild(sourceMp4)
+      
+      videoElement.addEventListener("pointerenter", () => {
+        videoElement.play()
+      }, {once: true})
+      
+      return videoElement
+    }
+    
 </script>
 
 <MasonryGrid
-  frameWidth={400}
-  gap={10}
+    id="mansonary"
+    frameWidth={400}
+    gap={10}
 >
     {#each assets_list as asset}
         <Frame width={asset.ratio.w} height={asset.ratio.h}>
-            <div class="asset-container">
+            <div data-asset-container class="asset-container" data-cover={asset.optimized_poster_img_url} data-media={asset.optimized_asset_url}>
                 <Skeleton class="skeleteonLoader h-full w-full absolute top-0 left-0" />
-                <video loop autoplay muted preload="auto" poster={asset.optimized_poster_img_url} disablepictureinpicture>
+                <!--<video loop autoplay={false} muted preload="auto" poster={asset.optimized_poster_img_url} disablepictureinpicture>
                     <source src="{asset.optimized_asset_url}.webm" type="video/webm">
                     <source src="{asset.optimized_asset_url}.mp4" type="video/mp4">
-                </video>
+                </video>-->
                 <div class="overlay">
                     <div class="stats absolute bottom-1.5 left-1.5">
                         <Button variant="outline" size="sm">
@@ -174,7 +249,7 @@
         height: 100%;
     }
         
-    video {
+    :global(#mansonary video) {
         display: block;
         width: 100%;
         height: 100%;

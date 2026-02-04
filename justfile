@@ -3,6 +3,9 @@ set windows-shell := ["powershell.exe", "-NoLogo", "-Command"]
 dev:
     cd backend/civitComfyBindings/; maturin build
     cd backend/test_python_server; uv run main.py
+    
+dev-r:
+    cd backend/rust_dev_server/; cargo run
 
 dev-frontend:
     cd front-end; npm run dev
