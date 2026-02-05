@@ -91,6 +91,7 @@ pub async fn start_civit_frontend_server(port: usize, static_dir: &str, comfy_pa
         .merge(api::get_techniques::route())
         .merge(downloader::route())
         .merge(api::get_model::route())
+        .merge(api::create_collection::route())
         ;
         
     let app = Router::new()

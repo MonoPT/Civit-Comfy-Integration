@@ -5,7 +5,7 @@ use crate::api::user::Collection;
 
 use reqwest::header::HeaderMap;
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, Clone)]
 pub enum CollectionType {
     Image,
     Model,

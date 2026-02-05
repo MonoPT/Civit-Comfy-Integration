@@ -6,14 +6,19 @@
     
     import { toast } from "svelte-sonner";
 
+    import {Plus, ArrowLeft } from "@lucide/svelte"
+    
+    import { Input } from "$lib/components/ui/input/index.js";
     import { Checkbox } from "$lib/components/ui/checkbox/index.js";
     import { Label } from "$lib/components/ui/label/index.js";
+    import { Textarea } from "$lib/components/ui/textarea/index.js";
     
     import API from "$lib/api";
     import { user_token } from "$lib/state.svelte";
     
     let isOpen = $state(false);
     let isLoading = $state(true)
+    let isCreatingCollection = $state(true)
     
     let item_id_g = $state(0)
     let collection_type_g = $state("Model")
@@ -35,6 +40,9 @@
       
       collections = []
       in_collections = []
+      
+      collection_name = ""
+      collection_desc = ""
       
       await update_collections(item_id, collection_type_g)
       
@@ -76,6 +84,26 @@
       
       isLoading = false
     }
+    
+    let collection_name = $state("")
+    let collection_desc = $state("")
+    
+    async function createCollection() {
+      if (collection_name.trim().length < 1) return
+      
+      isLoading = true
+      
+      await fetch(API.create_collection(user_token.token, collection_name, collection_type_g, true, collection_desc))
+      
+      isCreatingCollection = false
+      
+      await update_collections(item_id_g, collection_type_g)
+      
+      collection_name = ""
+      collection_desc = ""
+      
+      isLoading = false
+    }
 </script>
 
 <Dialog.Root open={isOpen}>
@@ -83,16 +111,45 @@
         <Dialog.Header>
             <Dialog.Title>Manage Collections</Dialog.Title>
             <Dialog.Description>
-                Select which collections to add or remove
+                {#if !isCreatingCollection}
+                    <div class="flex items-center justify-between">
+                        <div>
+                            Select which collections to add or remove
+                        </div>
+                        <div>
+                            <Button variant="ghost" aria-label="Submit"
+                                onclick={() => isCreatingCollection = true}
+                            >
+                                <Plus />
+                                New collection
+                            </Button>
+                        </div>
+                    </div>
+                    {:else}
+                    <div class="flex items-center justify-between">
+                        <div>
+                            Create a new collection
+                        </div>
+                        <div>
+                            <Button variant="ghost" aria-label="Submit"
+                                onclick={() => isCreatingCollection = false}
+                            >
+                                <ArrowLeft />
+                                Back to selection
+                            </Button>
+                        </div>
+                    </div>
+                {/if}
+                
             </Dialog.Description>
         </Dialog.Header>
         <div class="grid gap-4">
-            {#if isLoading}
+            {#if isLoading && !isCreatingCollection}
                 <div class="flex flex-col items-center py-6">
                     <Spinner />
                     <h2 class="pt-2">Loading</h2>
                 </div>
-                {:else}
+                {:else if !isCreatingCollection}
                 <div class="flex flex-col gap-2 py-0.5" style="max-height: 50vh; overflow-y: auto;">
                     {#each collections as collection}
                         <div class="flex items-center gap-3">
@@ -102,18 +159,40 @@
                     {/each}
                 </div>
             {/if}
+            
+            {#if isCreatingCollection}
+                <form class="flex flex-col gap-2">
+                    <Input bind:value={collection_name} required placeholder="Name" name="name" class="w-full" />
+                    <Textarea bind:value={collection_desc} placeholder="Description" />
+                </form>
+            {/if}
         </div>
         <Dialog.Footer>
             <Dialog.Close class={buttonVariants({ variant: "outline" })}>Cancel</Dialog.Close>
-            <Button disabled={isLoading} onclick={handle_submit}>
-                {#if isLoading}
-                    <Spinner />
-                    Loading
-                    {:else}
-                    Save changes
-                {/if}
-                
-            </Button>
+            
+            {#if !isCreatingCollection}
+                <Button disabled={isLoading} onclick={handle_submit}>
+                    {#if isLoading}
+                        <Spinner />
+                        Loading
+                        {:else}
+                        Save changes
+                    {/if}
+                </Button>
+                {:else}
+                <Button disabled={isLoading}
+                    onclick={createCollection}
+                >
+                    {#if isLoading}
+                        <Spinner />
+                        Loading
+                        {:else}
+                        Create
+                    {/if}
+                </Button>
+            {/if}
+            
+            
         </Dialog.Footer>
     </Dialog.Content>
 </Dialog.Root>

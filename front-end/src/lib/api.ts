@@ -82,4 +82,8 @@ export default class API {
   static list_downloads(token: string) {
     return `${this.endpoint}/downloads?token=${token}"`
   }
+  
+  static create_collection(token: string, collection_name: string, collection_type: string, nsfw: boolean, description: string) {
+    return `${this.endpoint}/create_collection?token=${token}&collection_name=${collection_name}&collection_type=${collection_type}&nsfw=${nsfw}&description=${description}"`
+  }
 }
