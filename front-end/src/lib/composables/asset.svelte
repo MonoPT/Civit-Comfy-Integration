@@ -5,6 +5,7 @@
     import { Button } from "$lib/components/ui/button/index.js";
     import * as DropdownMenu from "$lib/components/ui/dropdown-menu/index.js";
     import { Spinner } from "$lib/components/ui/spinner/index.js";
+    import * as Select from "$lib/components/ui/select/index.js";
     
     let elRef: HTMLElement;
     
@@ -15,6 +16,7 @@
     
     let favoriteIsLoading = $state(true)
     let isFavorite = $state(false)
+    let inCollections: any[] = $state([])
     
     async function favorite_media_l() {
       favoriteIsLoading = true
@@ -23,19 +25,22 @@
       
       favoriteIsLoading = false
       isFavorite = resp.isFavorite
+      inCollections = resp.media_in_collections
     }
     
     onMount(() => elRef.addEventListener("pointerover", async (e) => {
       const data = await update_collections(asset.id)
       
       favoriteIsLoading = false
-      
+                  
       isFavorite = data.isFavorite
+      inCollections = data.media_in_collections
+      
     }, {once: true}))
 </script>
 
 <!-- svelte-ignore a11y_click_events_have_key_events -->
-<div role="button" tabindex="0" data-asset-container  bind:this={elRef}
+<div role="button" tabindex="0" data-asset-container  bind:this={elRef} style="outline: none !important;"
     onclick={(e) => {
       if ((e.target! as HTMLElement).closest("[data-stats]")) return
       
