@@ -201,7 +201,14 @@
                 {/if}
              </Button>
              
-             <Button variant="ghost" size="icon" aria-label="Add/Remove collection">
+             <Button variant="ghost" size="icon" aria-label="Add/Remove collection"
+                 onclick={() => window.dispatchEvent(new CustomEvent("openCollectionManager", {
+                   detail: {
+                     item_id: data.id,
+                     collection_type: "Image"
+                   }
+                 }))}
+             >
                  <Bookmark/>
              </Button>
              

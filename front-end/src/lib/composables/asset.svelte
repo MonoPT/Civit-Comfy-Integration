@@ -78,7 +78,14 @@
                        <Heart fill={isFavorite ? "#fff" : ""} />
                    {/if}
                 </Button>
-                <Button type="button" variant="ghost" size="icon" aria-label="Collections">
+                <Button type="button" variant="ghost" size="icon" aria-label="Collections"
+                    onclick={() => window.dispatchEvent(new CustomEvent("openCollectionManager", {
+                      detail: {
+                        item_id: asset.id,
+                        collection_type: "Image"
+                      }
+                    }))}
+                >
                     <Bookmark />
                 </Button>
             </div>

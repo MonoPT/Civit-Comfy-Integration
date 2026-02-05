@@ -35,7 +35,9 @@
     })
     
 	let { children } = $props();
-    import * as Select from "$lib/components/ui/select/index.js";
+    
+	import CollectionManager from "$lib/composables/collections_manager.svelte"
+	
 </script>
 
 <svelte:head>
@@ -46,6 +48,7 @@
 <ModeWatcher />
 <AssetPreview />
 <ModelDownloadDialog />
+<CollectionManager />
 
 {#if Object.keys(userState).length === 0 || loading_user.loading}
     <Login />
