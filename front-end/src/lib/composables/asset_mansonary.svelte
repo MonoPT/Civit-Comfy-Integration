@@ -145,8 +145,7 @@
       }, {once: true})
       
       return videoElement
-    }
-    
+    }    
 </script>
 
 <MasonryGrid
@@ -156,7 +155,12 @@
 >
     {#each assets_list as asset}
         <Frame width={asset.ratio.w} height={asset.ratio.h}>
-            <div data-asset-container class="asset-container" data-cover={asset.optimized_poster_img_url} data-media={asset.optimized_asset_url}>
+            <div data-asset-container 
+                onclick={() => window.dispatchEvent(new CustomEvent("ViewMedia", {
+                  detail: asset
+                }))}
+                class="asset-container" data-cover={asset.optimized_poster_img_url} data-media={asset.optimized_asset_url}
+            >
                 <Skeleton class="skeleteonLoader h-full w-full absolute top-0 left-0" />
                 <!--<video loop autoplay={false} muted preload="auto" poster={asset.optimized_poster_img_url} disablepictureinpicture>
                     <source src="{asset.optimized_asset_url}.webm" type="video/webm">

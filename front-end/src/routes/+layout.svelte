@@ -7,6 +7,7 @@
 		
 	import ModelDownloadDialog from "$lib/composables/model_download_dialogue/dialogue.svelte"
 	
+	import AssetPreview from "$lib/composables/asset_preview/preview.svelte"
 	import Login from "$lib/components/login.svelte"
 	import { userState, getCookie, loginUser, loading_user } from '../lib/state.svelte.ts';
     import { onMount } from 'svelte';
@@ -43,7 +44,9 @@
 
 <Toaster />
 <ModeWatcher />
+<AssetPreview />
 <ModelDownloadDialog />
+
 
 {#if Object.keys(userState).length === 0 || loading_user.loading}
     <Login />

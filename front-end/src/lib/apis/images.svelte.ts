@@ -80,7 +80,9 @@ export default class load_mansonary {
       })
       load_mansonary.cursor = (res[1] as string).replaceAll("\"", "")
             
-      return {status: response.status, assets: assets}
+      //console.log(assets)
+      
+      return { status: response.status, assets: assets }
     }
     
     return {status: response.status, assets: []}
