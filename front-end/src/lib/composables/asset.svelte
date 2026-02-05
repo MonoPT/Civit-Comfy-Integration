@@ -8,7 +8,7 @@
     
     let elRef: HTMLElement;
     
-    import { ThumbsUp, EllipsisVertical, Laugh, Heart, Frown, MessageSquare, ArrowDownToLine } from "@lucide/svelte";
+    import { Bookmark, ThumbsUp, EllipsisVertical, Laugh, Heart, Frown, MessageSquare, ArrowDownToLine } from "@lucide/svelte";
     
     import {update_collections, favorite_media} from "$lib/AssetsUtils"
     import { onMount } from "svelte";
@@ -25,7 +25,7 @@
       isFavorite = resp.isFavorite
     }
     
-    onMount(() => elRef.addEventListener("pointerover", async () => {
+    onMount(() => elRef.addEventListener("pointerover", async (e) => {
       const data = await update_collections(asset.id)
       
       favoriteIsLoading = false
@@ -34,7 +34,8 @@
     }, {once: true}))
 </script>
 
-<a href="?" data-asset-container  bind:this={elRef}
+<!-- svelte-ignore a11y_click_events_have_key_events -->
+<div role="button" tabindex="0" data-asset-container  bind:this={elRef}
     onclick={(e) => {
       if ((e.target! as HTMLElement).closest("[data-stats]")) return
       
@@ -65,17 +66,20 @@
             )}
             
             <div class="ml-auto">
-                <Button disabled={favoriteIsLoading} onclick={favorite_media_l} variant="ghost" size="icon" aria-label="Favorite">
+                <Button type="button" disabled={favoriteIsLoading} onclick={favorite_media_l} variant="ghost" size="icon" aria-label="Favorite">
                    {#if favoriteIsLoading}
                        <Spinner />
                        {:else}
                        <Heart fill={isFavorite ? "#fff" : ""} />
                    {/if}
                 </Button>
+                <Button type="button" variant="ghost" size="icon" aria-label="Collections">
+                    <Bookmark />
+                </Button>
             </div>
         </div>
     </div>
-</a>
+</div>
 
 {#snippet reactionsDropdown(like: number, laugh: number, heart: number, cry: number, comment: number, collected: number)}
     <DropdownMenu.Root>
