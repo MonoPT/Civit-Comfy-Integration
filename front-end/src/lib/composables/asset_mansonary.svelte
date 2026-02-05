@@ -5,12 +5,9 @@
     
     import { type FilterOption, type Filter } from "$lib/filter";
     
-    import { Skeleton } from "$lib/components/ui/skeleton/index.js";
     import { Spinner } from "$lib/components/ui/spinner/index.js";
-    import { Button } from "$lib/components/ui/button/index.js";
-    import * as DropdownMenu from "$lib/components/ui/dropdown-menu/index.js";
-    
-    import { ThumbsUp, EllipsisVertical, Laugh, Heart, Frown, MessageSquare, ArrowDownToLine } from "@lucide/svelte";
+        
+    import Asset from "./asset.svelte"
     
     let assets_list: any[] = $state([])
     let applied_filters: Filter[] = []
@@ -155,87 +152,10 @@
 >
     {#each assets_list as asset}
         <Frame width={asset.ratio.w} height={asset.ratio.h}>
-            <div data-asset-container 
-                onclick={() => window.dispatchEvent(new CustomEvent("ViewMedia", {
-                  detail: asset
-                }))}
-                class="asset-container" data-cover={asset.optimized_poster_img_url} data-media={asset.optimized_asset_url}
-            >
-                <Skeleton class="skeleteonLoader h-full w-full absolute top-0 left-0" />
-                <!--<video loop autoplay={false} muted preload="auto" poster={asset.optimized_poster_img_url} disablepictureinpicture>
-                    <source src="{asset.optimized_asset_url}.webm" type="video/webm">
-                    <source src="{asset.optimized_asset_url}.mp4" type="video/mp4">
-                </video>-->
-                <div class="overlay">
-                    <div class="stats absolute bottom-1.5 left-1.5">
-                        <Button variant="outline" size="sm">
-                          <ThumbsUp  /> {asset.stats.likeCountAllTime}
-                        </Button>
-                        {@render reactionsDropdown(
-                          asset.stats.likeCountAllTime, 
-                          asset.stats.laughCountAllTime,
-                          asset.stats.heartCountAllTime,
-                          asset.stats.cryCountAllTime,
-                          asset.stats.commentCountAllTime,
-                          asset.stats.collectedCountAllTime
-                        )}
-                    </div>
-                </div>
-            </div>
+            <Asset asset={asset} />
         </Frame>
     {/each}
 </MasonryGrid>
-
-{#snippet reactionsDropdown(like: number, laugh: number, heart: number, cry: number, comment: number, collected: number)}
-<DropdownMenu.Root>
-  <DropdownMenu.Trigger>
-    {#snippet child({ props })}
-      <Button {...props} variant="outline" size="sm"><EllipsisVertical  /></Button>
-    {/snippet}
-  </DropdownMenu.Trigger>
-  <DropdownMenu.Content class="w-max min-w-max bg-transparent backdrop-blur-sm">
-    <DropdownMenu.Group class="w-max flex flex-col gap-1.5">
-      <DropdownMenu.CheckboxItem class="p-0 w-full">
-          <Button class="w-1/1 bg-transparent" variant="ghost" size="sm">
-            <ThumbsUp  /> {like}
-          </Button>
-      </DropdownMenu.CheckboxItem>
-      
-      <DropdownMenu.CheckboxItem class="p-0 w-full">
-          <Button class="w-1/1 bg-transparent" variant="ghost" size="sm">
-            <Laugh  /> {laugh}
-          </Button>
-      </DropdownMenu.CheckboxItem>
-      
-      <DropdownMenu.CheckboxItem class="p-0 w-full">
-          <Button class="w-1/1 bg-transparent" variant="ghost" size="sm">
-            <Heart   /> {heart} 
-          </Button>
-      </DropdownMenu.CheckboxItem>
-      
-      <DropdownMenu.CheckboxItem class="p-0 w-full">
-          <Button class="w-1/1 bg-transparent" variant="ghost" size="sm">
-            <Frown  /> {cry} 
-          </Button>
-      </DropdownMenu.CheckboxItem>
-      
-      <DropdownMenu.CheckboxItem class="p-0 w-full" style="pointer-events: none;">
-          <Button class="w-1/1 bg-transparent" variant="ghost" size="sm">
-            <MessageSquare  /> {comment} 
-          </Button>
-      </DropdownMenu.CheckboxItem>
-      
-      <DropdownMenu.CheckboxItem class="p-0 w-full" style="pointer-events: none;">
-          <Button class="w-1/1 bg-transparent" variant="ghost" size="sm">
-            <ArrowDownToLine /> {collected}
-          </Button>
-      </DropdownMenu.CheckboxItem>
-      
-    </DropdownMenu.Group>
-  </DropdownMenu.Content>
-</DropdownMenu.Root>
-{/snippet}
-
 
 
 {#if show_loading_indicator}
@@ -244,61 +164,12 @@
     </div>
 {/if}
 
-<style>
-    .asset-container {
-        border-radius: 5px;
-        overflow: hidden;
-        position: relative;
-        width: 100%;
-        height: 100%;
-    }
-        
+<style>   
     :global(#mansonary video) {
         display: block;
         width: 100%;
         height: 100%;
         z-index: 1;
         position: relative;
-    }
-    
-    .overlay {
-        position: absolute;
-        z-index: 2;
-        width: 100%;
-        height: 100%;
-        top: 0;
-        left: 0;
-        pointer-events: none;
-        
-        > * {
-            pointer-events: all;
-        }
-        
-        .stats {
-            opacity: 0;
-            transition: .12s;
-            z-index: 1;
-        }
-        
-        &::after {
-            content: '';
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(0deg, var(--background) 4% ,color-mix(in lab, var(--background) 50%, transparent 70%) 30%, transparent 100%);
-            transition: .12s;
-            opacity: 0;
-            z-index: 0;
-        }
-    }
-    
-    .asset-container:hover .overlay {
-        &::after {
-            opacity: 1;
-        }
-        
-        .stats {
-            opacity: 1;
-        }
     }
 </style>

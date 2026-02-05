@@ -97,22 +97,60 @@
     )
     
     let isOpen = $state(false)
+    let favoriteIsLoading = $state(true)
+    
+    let collections = $state<any[]>([])
+    let media_in_collections = $state<any[]>([])
+    let isFavorite = $state(false)
     
     onMount(() => {
-      window.addEventListener("ViewMedia", (e) => {
+      window.addEventListener("ViewMedia", async (e) => {
         isOpen = false
+        isFavorite = false
         isOpen = true
+        media_in_collections = []
         
         //@ts-ignore
         data = e.detail
+        
+        update_collections_l()
       })
     })
     
+    async function update_collections_l() {
+      favoriteIsLoading = true;;
+      const media_id = data.id;
+      
+      let resp = await update_collections(media_id)
+          
+      favoriteIsLoading = false
+      
+      collections = resp.collections
+      isFavorite = resp.isFavorite
+      media_in_collections = resp.media_in_collections
+    }
+    
     import * as Item from "$lib/components/ui/item/index.js";
     import { Button } from "$lib/components/ui/button/index.js";
+    import { Spinner } from "$lib/components/ui/spinner/index.js";
     
     import { Heart, Bookmark, ArrowDownToLine } from "@lucide/svelte";
     import { onMount } from "svelte";
+    
+    import {update_collections, favorite_media} from "$lib/AssetsUtils"
+    
+    async function favorite_media_l() {
+      favoriteIsLoading = true
+      const media_id = data.id;
+      
+      const resp = await favorite_media(media_id, isFavorite)
+      
+      favoriteIsLoading = false
+      
+      collections = resp.collections
+      isFavorite = resp.isFavorite
+      media_in_collections = resp.media_in_collections
+    }
 </script>
 
 <Dialog.Root open={isOpen}>
@@ -155,8 +193,12 @@
     <Item.Root style="background: var(--background); width: 100%; height: max-content;">
      <Item.Content>
          <div class="flex items-center gap-1.5">
-             <Button variant="ghost" size="icon" aria-label="Favorite">
-                 <Heart/>
+             <Button disabled={favoriteIsLoading} onclick={favorite_media_l} variant="ghost" size="icon" aria-label="Favorite">
+                {#if favoriteIsLoading}
+                    <Spinner />
+                    {:else}
+                    <Heart fill={isFavorite ? "#fff" : ""} />
+                {/if}
              </Button>
              
              <Button variant="ghost" size="icon" aria-label="Add/Remove collection">
