@@ -99,8 +99,6 @@
     let isOpen = $state(false)
     let favoriteIsLoading = $state(true)
     
-    let collections = $state<any[]>([])
-    let media_in_collections = $state<any[]>([])
     let isFavorite = $state(false)
     
     onMount(() => {
@@ -108,7 +106,6 @@
         isOpen = false
         isFavorite = false
         isOpen = true
-        media_in_collections = []
         
         //@ts-ignore
         data = e.detail
@@ -125,16 +122,14 @@
           
       favoriteIsLoading = false
       
-      collections = resp.collections
       isFavorite = resp.isFavorite
-      media_in_collections = resp.media_in_collections
     }
     
     import * as Item from "$lib/components/ui/item/index.js";
     import { Button } from "$lib/components/ui/button/index.js";
     import { Spinner } from "$lib/components/ui/spinner/index.js";
     
-    import { Heart, Bookmark, ArrowDownToLine } from "@lucide/svelte";
+    import { Heart, Bookmark, ArrowDownToLine, X } from "@lucide/svelte";
     import { onMount } from "svelte";
     
     import {update_collections, favorite_media} from "$lib/AssetsUtils"
@@ -147,9 +142,7 @@
       
       favoriteIsLoading = false
       
-      collections = resp.collections
       isFavorite = resp.isFavorite
-      media_in_collections = resp.media_in_collections
     }
 </script>
 
@@ -214,6 +207,10 @@
              
              <Button variant="ghost" size="icon" aria-label="Download">
                  <ArrowDownToLine />
+             </Button>
+             
+             <Button variant="ghost" size="icon" aria-label="Close" class="ml-auto" onclick={() => isOpen = false}>
+                 <X />
              </Button>
          </div>
      </Item.Content>
