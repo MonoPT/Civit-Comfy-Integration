@@ -18,7 +18,7 @@
     
     let isOpen = $state(false);
     let isLoading = $state(true)
-    let isCreatingCollection = $state(true)
+    let isCreatingCollection = $state(false)
     
     let item_id_g = $state(0)
     let collection_type_g = $state("Model")
@@ -43,6 +43,7 @@
       
       collection_name = ""
       collection_desc = ""
+      collection_constains_mature_content = false
       
       await update_collections(item_id, collection_type_g)
       
@@ -87,13 +88,14 @@
     
     let collection_name = $state("")
     let collection_desc = $state("")
+    let collection_constains_mature_content = $state(false)
     
     async function createCollection() {
       if (collection_name.trim().length < 1) return
       
       isLoading = true
       
-      await fetch(API.create_collection(user_token.token, collection_name, collection_type_g, true, collection_desc))
+      await fetch(API.create_collection(user_token.token, collection_name, collection_type_g, collection_constains_mature_content, collection_desc))
       
       isCreatingCollection = false
       
@@ -101,6 +103,7 @@
       
       collection_name = ""
       collection_desc = ""
+      collection_constains_mature_content = false
       
       isLoading = false
     }
@@ -153,8 +156,8 @@
                 <div class="flex flex-col gap-2 py-0.5" style="max-height: 50vh; overflow-y: auto;">
                     {#each collections as collection}
                         <div class="flex items-center gap-3">
-                        <Checkbox data-collection-item={collection.id} checked={in_collections.find((coll) => coll.collectionId === collection.id) ? true : false} value={collection.id} id="coll-item-{collection.id}" />
-                        <Label for="coll-item-{collection.id}" class="font-normal">{collection.name}</Label>
+                            <Checkbox data-collection-item={collection.id} checked={in_collections.find((coll) => coll.collectionId === collection.id) ? true : false} value={collection.id} id="coll-item-{collection.id}" />
+                            <Label for="coll-item-{collection.id}" class="font-normal">{collection.name}</Label>
                         </div>
                     {/each}
                 </div>
@@ -164,6 +167,11 @@
                 <form class="flex flex-col gap-2">
                     <Input bind:value={collection_name} required placeholder="Name" name="name" class="w-full" />
                     <Textarea bind:value={collection_desc} placeholder="Description" />
+                    
+                    <div class="flex items-center gap-3 pt-2">
+                        <Checkbox bind:checked={collection_constains_mature_content} id="coll-item-create"/>
+                        <Label for="coll-item-create" class="font-normal">This collection contains mature content</Label>
+                    </div>
                 </form>
             {/if}
         </div>
