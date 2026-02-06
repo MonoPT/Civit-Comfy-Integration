@@ -12,7 +12,7 @@
 </script>
 
 <div class="filterWrapper">
-    <DropdownMenu.Root  >
+    <DropdownMenu.Root>
      <DropdownMenu.Trigger><Button variant="ghost" class="font-normal"><CalendarArrowUp /> {filters_state.period.selected.name}</Button></DropdownMenu.Trigger>
      <DropdownMenu.Content>
       <DropdownMenu.Group>

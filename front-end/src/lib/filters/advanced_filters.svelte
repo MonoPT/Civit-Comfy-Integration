@@ -101,7 +101,7 @@
           </div>
         <Select.Group>
           {#each base_model.filter((model) => searchModels.trim().length > 0 ? model.toLowerCase().includes(searchModels.toLowerCase()) : true) as model}
-               <Select.Item value={model}> {model}</Select.Item>
+               <Select.Item data-select-filter="model-${model}" value={model}> {model}</Select.Item>
           {/each}
         </Select.Group>
       </Select.Content>
