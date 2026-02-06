@@ -11,3 +11,4 @@ pub mod get_tools;
 pub mod get_techniques;
 pub mod get_model;
 pub mod create_collection;
+pub mod get_generation_data;

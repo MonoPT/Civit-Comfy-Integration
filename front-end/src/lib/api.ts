@@ -86,4 +86,8 @@ export default class API {
   static create_collection(token: string, collection_name: string, collection_type: string, nsfw: boolean, description: string) {
     return `${this.endpoint}/create_collection?token=${token}&collection_name=${collection_name}&collection_type=${collection_type}&nsfw=${nsfw}&description=${description}"`
   }
+  
+  static get_gen_data(token: string, media_id: number) {
+    return `${this.endpoint}/get_generation_data/${media_id}?token=${token}"`
+  }
 }

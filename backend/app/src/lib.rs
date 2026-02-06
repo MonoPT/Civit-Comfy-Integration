@@ -92,7 +92,8 @@ pub async fn start_civit_frontend_server(port: usize, static_dir: &str, comfy_pa
         .merge(downloader::route())
         .merge(api::get_model::route())
         .merge(api::create_collection::route())
-        ;
+        .merge(api::get_generation_data::route())
+    ;
         
     let app = Router::new()
         .nest("/civit", app)
