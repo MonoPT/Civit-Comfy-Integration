@@ -1,6 +1,7 @@
 <script lang="ts">
     import * as Dialog from "$lib/components/ui/dialog/index.js";
     import { Badge } from "$lib/components/ui/badge/index.js";
+    import * as Accordion from "$lib/components/ui/accordion/index.js";
     
     let data = $state<null | any>(
       /*{
@@ -217,6 +218,14 @@
                line-clamp: 1; 
        -webkit-box-orient: vertical;
     }
+    
+    .clampText-4 {
+       overflow: hidden;
+       display: -webkit-box;
+       -webkit-line-clamp: 4; /* number of lines to show */
+               line-clamp: 4; 
+       -webkit-box-orient: vertical;
+    }
 </style>
 
 {#snippet quickActions()}
@@ -256,40 +265,42 @@
 {/snippet}
 
 {#snippet proccess()}
-    <Item.Root class="block" style="background: var(--background); width: 100%; height: max-content;">
-     <Item.Content>
-         <div class="flex flex-col gap-1.5">
-            <div class="flex gap-2 items-center">
-                <Workflow />
-                <h2 class="text-2xl font-semibold">Proccess</h2>
-            </div>
-             
-            {#if gen_data.tools.length > 0}
-                <div class="pt-2">
-                    <h3 class="font-semibold">Tools</h3>
-                    <div class="flex flex-wrap gap-1.5 pt-1.5">
-                        {#each gen_data.tools as tools}
-                            <Badge variant="outline">{tools.name}</Badge>
-                        {/each}
-                    </div>
+    {#if gen_data.tools.length > 0 || gen_data.techniques.length > 0}
+        <Item.Root class="block" style="background: var(--background); width: 100%; height: max-content;">
+        <Item.Content>
+            <div class="flex flex-col gap-1.5">
+                <div class="flex gap-2 items-center">
+                    <Workflow />
+                    <h2 class="text-2xl font-semibold">Proccess</h2>
                 </div>
-            {/if}
-            
-             
-            {#if gen_data.techniques.length > 0}
-                <div class="pt-2">
+                
+                {#if gen_data.tools.length > 0}
+                    <div class="pt-2">
+                        <h3 class="font-semibold">Tools</h3>
+                        <div class="flex flex-wrap gap-1.5 pt-1.5">
+                            {#each gen_data.tools as tools}
+                                <Badge variant="outline">{tools.name}</Badge>
+                            {/each}
+                        </div>
+                    </div>
+                {/if}
+                
+                
+                {#if gen_data.techniques.length > 0}
+                    <div class="pt-2">
                         <h3 class="font-semibold">Techniques</h3>
                         <div class="flex flex-wrap gap-1.5 pt-1.5">
                             {#each gen_data.techniques as techni}
                                 <Badge variant="outline">{techni.name}</Badge>
                             {/each}
                         </div>
-                </div>
-            {/if}
-         </div>
-     </Item.Content>
-     <Item.Actions />
-    </Item.Root>
+                    </div>
+                {/if}
+            </div>
+        </Item.Content>
+        <Item.Actions />
+        </Item.Root>
+    {/if}
 {/snippet}
 
 {#snippet generation_data()}
@@ -307,11 +318,35 @@
                     <div class="flex flex-wrap gap-1.5 pt-1.5">
                         {#each gen_data.resources as resource}
                             <a href="#?{resource.modelId}" class="pt-1.5 w-full" style="display: grid;gap: 1rem ;grid-template-columns: 1fr auto;">
-                                <div class="clampText">{resource.modelName}</div> 
+                                <div class="clampText underline">{resource.modelName}</div> 
                                 <Badge variant="outline" class="bg-sky-400 text-white dark:bg-sky-600">{resource.modelType}</Badge>
                             </a>
                         {/each}
                     </div>
+                </div>
+            {/if}
+            
+            {#if gen_data.meta?.prompt || gen_data.meta?.negativePrompt}
+                <div class="pt-2">
+                    <Accordion.Root type="multiple" class="w-full">
+                        {#if gen_data.meta.prompt}
+                            <Accordion.Item>
+                                <Accordion.Trigger>Prompt</Accordion.Trigger>
+                                <Accordion.Content class="flex flex-col gap-4 text-balance">
+                                    <p class="text-muted-foreground clampText-4">{gen_data.meta.prompt}</p>
+                                </Accordion.Content>
+                            </Accordion.Item>
+                        {/if}
+                        
+                        {#if gen_data.meta.negativePrompt}
+                            <Accordion.Item>
+                                <Accordion.Trigger>Negative prompt</Accordion.Trigger>
+                                <Accordion.Content class="flex flex-col gap-4 text-balance">
+                                    <p class="text-muted-foreground clampText-4">{gen_data.meta.negativePrompt}</p>
+                                </Accordion.Content>
+                            </Accordion.Item>
+                        {/if}
+                    </Accordion.Root>
                 </div>
             {/if}
          </div>
