@@ -25,7 +25,7 @@
         //@ts-ignore
         data = e.detail
         
-        console.log(data)
+        //console.log(data)
         
         //@ts-ignore
         const media_id = e.detail.id

@@ -22,6 +22,10 @@
   let searchTools = $state("")
   let searchTechniques = $state("")
   
+  let selectedModels = $state([])
+  let selectedTechniques = $state([])
+  let selectedTools = $state([])
+  
   onMount(async () => {
     fetch(API.get_base_models(user_token.token)).then(async (response) => {
       if (response.status !== 200) return
@@ -90,8 +94,9 @@
  </DropdownMenu.Content>
 </DropdownMenu.Root>
 
+
 {#snippet selectModel()}
-    <Select.Root type="multiple" onValueChange={handle_select_change_base_model}>
+    <Select.Root bind:value={selectedModels} type="multiple" onValueChange={handle_select_change_base_model}>
       <Select.Trigger class="w-full"><Box /> Base Model ({
           selected_base_models.split(",").filter((str) => str.trim().length > 0).length > 0 ? selected_base_models.split(",").filter((str) => str.trim().length > 0).length : "all"
         })</Select.Trigger>
@@ -101,7 +106,7 @@
           </div>
         <Select.Group>
           {#each base_model.filter((model) => searchModels.trim().length > 0 ? model.toLowerCase().includes(searchModels.toLowerCase()) : true) as model}
-               <Select.Item data-select-filter="model-${model}" value={model}> {model}</Select.Item>
+               <Select.Item value={model}> {model}</Select.Item>
           {/each}
         </Select.Group>
       </Select.Content>
@@ -109,7 +114,7 @@
 {/snippet}
 
 {#snippet selectTools()}
-    <Select.Root type="multiple" onValueChange={handle_select_change_tool}>
+    <Select.Root bind:value={selectedTools} type="multiple" onValueChange={handle_select_change_tool}>
       <Select.Trigger class="w-full"><PencilRuler /> Tools ({
           selected_tools.split(",").filter((str) => str.trim().length > 0).length > 0 ? selected_tools.split(",").filter((str) => str.trim().length > 0).length : "all"
         })</Select.Trigger>
@@ -127,7 +132,7 @@
 {/snippet}
 
 {#snippet selectTechniques()}
-    <Select.Root type="multiple" onValueChange={handle_select_change_technique}>
+    <Select.Root bind:value={selectedTechniques} type="multiple" onValueChange={handle_select_change_technique}>
       <Select.Trigger class="w-full"><Brush /> Techniques ({
           selected_techniques.split(",").filter((str) => str.trim().length > 0).length > 0 ? selected_techniques.split(",").filter((str) => str.trim().length > 0).length : "all"
         })</Select.Trigger>
