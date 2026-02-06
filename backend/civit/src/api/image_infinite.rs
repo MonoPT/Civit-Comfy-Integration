@@ -25,7 +25,7 @@ pub struct ImagesInfiniteLoadOptions {
     hidden: bool,
     pub remixesOnly: bool,
     pub nonRemixesOnly: bool,
-    requiringMeta: bool,
+    pub requiringMeta: bool,
     useIndex: bool,
     pub browsingLevel: usize,
     include: Vec<String>,
@@ -95,7 +95,7 @@ impl Civit {
             "hidden": false,
             "remixesOnly": options.remixesOnly,
             "nonRemixesOnly": options.nonRemixesOnly,
-            "requiringMeta": false,
+            "requiringMeta": options.requiringMeta,
             "useIndex": true,
             "browsingLevel": options.browsingLevel, // 31 - include nsfw ; 1 - exclude nsfw
             "include": [],

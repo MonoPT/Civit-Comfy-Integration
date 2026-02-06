@@ -4,6 +4,9 @@
   import * as Select from "$lib/components/ui/select/index.js";
   import { Input } from "$lib/components/ui/input/index.js";
   
+  import { Checkbox } from "$lib/components/ui/checkbox/index.js";
+  import { Label } from "$lib/components/ui/label/index.js";
+  
   import { type FilterOption } from "$lib/filter";
   import { ListFilter, Box, Brush, PencilRuler  } from "@lucide/svelte";
   
@@ -73,6 +76,25 @@
     selected_techniques = values.join(",")
   }
   
+  const modifiers_state = $state<{[key: string]: boolean}>({
+    requiringMeta: false,
+    metadataOnly: false,
+    madeOnsite: false,
+    originalsOnly: false,
+    remixesOnly: false
+  })
+  
+  const update_modifiers = async (modifier: string) => {
+    await new Promise(resolve => setTimeout(resolve, 5));
+    
+    const current_val = document.querySelector(`[data-filter-modifier="${modifier}"]`)!.getAttribute("data-state") === "checked" ? true : false
+            
+    filters_state[modifier].selected = {name: "", value: current_val}
+    modifiers_state[modifier] = current_val
+  }
+  
+  
+  
 </script>
  
 <DropdownMenu.Root>
@@ -89,11 +111,37 @@
         {@render selectModel()}
         {@render selectTools()}
         {@render selectTechniques()}
+        {@render modifiers()}
     </div>
   </DropdownMenu.Group>
  </DropdownMenu.Content>
 </DropdownMenu.Root>
 
+{#snippet modifiers()}
+    <div class="flex flex-col gap-1.5">
+        <Label class="font-semibold pt-2">Modifiers</Label>
+        <div class="flex items-center gap-3">
+            <Checkbox checked={modifiers_state.metadataOnly} data-filter-modifier="metadataOnly" onclick={() => update_modifiers("metadataOnly")} id="filter-advanced-mo" />
+            <Label class="font-normal" for="filter-advanced-mo">Metadata only</Label>
+        </div>
+        <div class="flex items-center gap-3">
+            <Checkbox checked={modifiers_state.requiringMeta} data-filter-modifier="requiringMeta" onclick={() => update_modifiers("requiringMeta")} id="filter-advanced-rm" />
+            <Label class="font-normal" for="filter-advanced-rm">Requiring metadata</Label>
+        </div>
+        <div class="flex items-center gap-3">
+            <Checkbox checked={modifiers_state.madeOnsite} data-filter-modifier="madeOnsite" onclick={() => update_modifiers("madeOnsite")} id="filter-advanced-mos" />
+            <Label class="font-normal" for="filter-advanced-mos">Made on site</Label>
+        </div>
+        <div class="flex items-center gap-3">
+            <Checkbox checked={modifiers_state.originalsOnly} data-filter-modifier="originalsOnly" onclick={() => update_modifiers("originalsOnly")} id="filter-advanced-oo" />
+            <Label class="font-normal" for="filter-advanced-oo">Originals only</Label>
+        </div>
+        <div class="flex items-center gap-3">
+            <Checkbox checked={modifiers_state.remixesOnly} data-filter-modifier="remixesOnly" onclick={() => update_modifiers("remixesOnly")} id="filter-advanced-ro" />
+            <Label class="font-normal" for="filter-advanced-ro">Remixes only</Label>
+        </div>
+    </div>
+{/snippet}
 
 {#snippet selectModel()}
     <Select.Root bind:value={selectedModels} type="multiple" onValueChange={handle_select_change_base_model}>

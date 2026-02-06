@@ -1,6 +1,6 @@
 <script lang="ts" module>    
   
-  import {Star, Image, Video, ArrowDownToLine } from "@lucide/svelte"
+  import {Star, Image, Video, ArrowDownToLine, Box } from "@lucide/svelte"
   
   const data = {
     downloads: [
@@ -45,6 +45,11 @@
         title: "Videos",
         url: "/civit/video",
         icon: Video,
+      },
+      {
+        title: "Models",
+        url: "/civit/models",
+        icon: Box,
       },
     ],
   };

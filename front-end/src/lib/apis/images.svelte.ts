@@ -29,6 +29,7 @@ export default class load_mansonary {
       madeOnsite: "false",
       originalsOnly: "false",
       remixesOnly: "false",
+      metadataOnly: "false", 
       tags: "",
       tools: ""
     }

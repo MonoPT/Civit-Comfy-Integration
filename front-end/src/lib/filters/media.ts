@@ -38,5 +38,25 @@ export let media_filters = {
   techniques: {
     selected: { name: "", value: "" },
     options: []
-  }
+  },
+  requiringMeta: { 
+    selected: { name: "", value: "false" },
+    options: []
+  },
+  metadataOnly: {
+    selected: { name: "", value: "false" },
+    options: []
+  },
+  madeOnsite: {
+    selected: { name: "", value: "false" },
+    options: []
+  },
+  originalsOnly: {
+    selected: { name: "", value: "false" },
+    options: []
+  },
+  remixesOnly: {
+    selected: { name: "", value: "false" },
+    options: []
+  },
 }

@@ -35,7 +35,9 @@ pub struct InfiniteImagesDataReq {
     originals_only: bool,   
     #[serde(rename = "remixesOnly")]
     remixes_only: bool,
-    tags: String
+    tags: String,
+    #[serde(rename = "metadataOnly")]
+    with_meta: bool,
 }
 
 
@@ -68,7 +70,8 @@ pub async fn infinite_images(data: Query<InfiniteImagesDataReq>) -> Response {
     options.base_models = base_models;
     options.techniques = techniques;
     options.tools = tools;
-    options.withMeta = data.requiring_meta;
+    options.withMeta = data.with_meta;
+    options.requiringMeta = data.requiring_meta;
     options.remixesOnly = data.remixes_only;
     options.nonRemixesOnly = data.originals_only;
     options.fromPlatform = data.made_onsite;
