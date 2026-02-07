@@ -19,6 +19,7 @@ pub use image_infinite::ImagesInfiniteLoadOptions;
 pub use creator::Creator;
 pub use generation_data::GenerationData;
 pub use collections::CollectionType;
+pub use model_infinite::ModelInfiniteLoadOptions;
 
 pub use crate::api::user::{UserData, Collection};
 

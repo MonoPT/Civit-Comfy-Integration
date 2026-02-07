@@ -45,7 +45,6 @@ pub async fn infinite_images(data: Query<InfiniteImagesDataReq>) -> Response {
     let token = &data.token;
     
     let mut civit = Civit::new()
-        .update_api_key("api key")
         .set_auth_token(token);
             
     let cursor = match data.cursor.as_str() {

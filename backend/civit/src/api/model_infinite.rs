@@ -32,33 +32,24 @@ impl Civit {
         let mut params = json!({
           "json": {
             "cursor": options.cursor,
-            /* 
-            "period": options.period,
+            "period": "AllTime",
             "periodMode": "published",
-            "sort": options.sort,
-            "types": options.types,
-            "withMeta": options.withMeta,
-            "baseModels": options.base_models,
-            "techniques": options.techniques,
-            "tools": options.tools,
-            "fromPlatform": options.fromPlatform,
-            "hideAutoResources": false,
-            "hideManualResources": false,
-            "notPublished": false,
-            "scheduled": false,
-            "hidden": false,
-            "remixesOnly": options.remixesOnly,
-            "nonRemixesOnly": options.nonRemixesOnly,
-            "requiringMeta": options.requiringMeta,
-            "useIndex": true,
-            "browsingLevel": options.browsingLevel, // 31 - include nsfw ; 1 - exclude nsfw
-            "include": [],
-            "tags" : options.tags,
+            "sort": "Most Downloaded",
+            "fromPlatform": false,
+            "followed": false,
+            "isFeatured": false,
+            //"checkpointType": ["Trained", "Merge"],
+            "types": [],
+            "fileFormats": [],
+            //"earlyAccess": false,
+            "pending": false,
+            "browsingLevel": 31,
             "excludedTagIds": [],
+            "tags": [],
             "disablePoi": true,
             "disableMinor": true,
-            
-            "authed": true*/
+            "authed": true,
+            "supportsGeneration": true,
           }
         });
            
@@ -68,7 +59,7 @@ impl Civit {
             params["meta"] = serde_json::from_str(r#"{ "values": { "cursor": ["undefined"] } }"#).unwrap();
         }
                         
-        let response = &self.client.get(format!("https://civitai.com/api/trpc/image.getInfinite?input={}", params.to_string()))
+        let response = &self.client.get(format!("https://civitai.com/api/trpc/model.getAll?input={}", params.to_string()))
             .headers(headers)
             .send().await.unwrap().text().await.unwrap_or_default();
 
@@ -82,11 +73,15 @@ impl Civit {
         }
         
         let json_val = json_val.unwrap();
-        
-        
-        
+                      
         let next_cursor = json_val.get("nextCursor").unwrap_or_default().to_string();
-        let items: Vec<ModelResponse> = serde_json::from_value(json_val.get("items").unwrap_or(&Value::Null).clone()).unwrap_or_default();
+        let items: Vec<ModelResponse> = match serde_json::from_value(json_val.get("items").unwrap_or(&Value::Null).clone()) {
+            Ok(d) => d,
+            Err(e) => {
+                dbg!(e);
+                vec![]
+            }
+        };
         
         Ok((items, next_cursor))
     }
@@ -94,36 +89,118 @@ impl Civit {
 
 #[derive(Deserialize, Debug, Serialize)]
 pub struct ModelResponse {
-    
+    id: usize,
+    name: String,
+    #[serde(rename = "type")]
+    model_type: String,
+    minor: bool,
+    #[serde(rename = "sfwOnly")]
+    sfw_only: bool,
+    poi: bool,
+    nsfw: bool,
+    #[serde(rename = "nsfwLevel", default)]
+    nsfw_level: usize,
+    status: String,
+    #[serde(rename = "createdAt")]
+    created_at: Option<chrono::DateTime<chrono::Utc>>,
+    #[serde(rename = "lastVersionAt")]
+    last_version_at: Option<chrono::DateTime<chrono::Utc>>,
+    #[serde(rename = "publishedAt")]
+    published_at: Option<chrono::DateTime<chrono::Utc>>,
+    locked: bool,
+    #[serde(rename = "earlyAccessDeadline")]
+    early_access_deadline: Option<chrono::DateTime<chrono::Utc>>,
+    availability: String,
+    tags: Vec<usize>,
+    hashes: Vec<String>,
+    rank: Rank,
+    version: Version,
+    #[serde(rename = "userId")]
+    user_id: i32,
+    user: User,
+    images: Vec<Image>,
+    #[serde(rename = "canGenerate")]
+    can_generate: bool
+}
+
+#[derive(Deserialize, Debug, Serialize)]
+pub struct Image {
+    id: usize,
+    #[serde(rename = "userId")]
+    user_id: i32,
+    name: Option<String>,
+    url: String,
+    #[serde(rename = "nsfwLevel")]
+    nsfw_level: usize,
+    width: usize,
+    height: usize,
+    hash: String,
+    #[serde(rename = "type")]
+    asset_type: String,
+    minor: bool,
+    poi: bool,
+    #[serde(rename = "modelVersionId")]
+    model_version_id: usize,
+    availability: String,
+    #[serde(rename = "hasMeta")]
+    has_meta: bool,
+    #[serde(rename = "hasPositivePrompt")]
+    has_positive_prompt: bool,
+    #[serde(rename = "onSite")]
+    on_site: bool,
+    #[serde(rename = "remixOfId")]
+    remix_of_id: Option<usize>,
+    tags: Vec<usize>
 }
 
 #[derive(Deserialize, Debug, Serialize)]
 pub struct User {
-    id: usize,
+    id: i32,
     username: Option<String>,
     image: Option<String>,
-    deletedAt: Option<String>,
-    profilePicture: Option<String>
+    #[serde(rename = "deletedAt")]
+    deleted_at: Option<chrono::DateTime<chrono::Utc>>,
 }
 
 #[derive(Deserialize, Debug, Serialize)]
-struct Stats {
-    #[serde(rename = "likeCountAllTime")]
-    like: usize,
-    #[serde(rename = "laughCountAllTime")]
-    laugh: usize,
-    #[serde(rename = "heartCountAllTime")]
-    heart: usize,
-    #[serde(rename = "cryCountAllTime")]
-    cry: usize,
-    #[serde(rename = "commentCountAllTime")]
-    comment: usize,
-    #[serde(rename = "collectedCountAllTime")]
-    collected: usize,
-    #[serde(rename = "tippedAmountCountAllTime")]
+struct Rank {
+    #[serde(rename = "downloadCount")]
+    download_count: usize,
+    #[serde(rename = "thumbsUpCount")]
+    thumbs_up_count: usize,
+    #[serde(rename = "thumbsDownCount")]
+    thumbs_down_count: usize,
+    #[serde(rename = "commentCount")]
+    comment_count: usize,
+    #[serde(rename = "collectedCount")]
+    collected_count: usize,
+    #[serde(rename = "tippedAmountCount")]
     tipped_amount_count: usize,
-    #[serde(rename = "dislikeCountAllTime")]
-    disliked: usize,
-    #[serde(rename = "viewCountAllTime")]
-    view: usize,
+}
+
+#[derive(Deserialize, Debug, Serialize)]
+struct Version {
+    id: usize,
+    index: usize,
+    name: String,
+    #[serde(rename = "earlyAccessTimeFrame")]
+    early_access_time_frame: usize,
+    #[serde(rename = "baseModel")]
+    base_model: String,
+    #[serde(rename = "baseModelType")]
+    base_model_type: String,
+    #[serde(rename = "createdAt")]
+    created_at: Option<chrono::DateTime<chrono::Utc>>,
+    #[serde(rename = "publishedAt")]
+    published_at: Option<chrono::DateTime<chrono::Utc>>,
+    status: String,
+    availability: String,
+    #[serde(rename = "nsfwLevel")]
+    nsfw_level: usize,
+    description: Option<String>,
+    #[serde(rename = "trainedWords")]
+    trained_words: Vec<String>,
+    #[serde(rename = "vaeId")]
+    vae_id: Option<usize>,
+    covered: bool
 }
