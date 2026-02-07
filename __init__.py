@@ -4,15 +4,18 @@ import nodes
 from comfy_config import config_parser
 
 from .manage_deps import ensure_dependency
+from importlib.metadata import version
 
 custom_node_dir = os.path.dirname(os.path.realpath(__file__))
 print("==========================")
 
+# Install and update dependencies
+ensure_dependency("rust_civit_comfy_bindings")
+
 project_config = config_parser.extract_node_configuration(custom_node_dir)
 
-print(project_config.project.name)
-
-print("==========================")
+print("##", project_config.project.name)
+print("rust-civit-comfy-bindings version is: ", version("rust-civit-comfy-bindings"))
 
 js_dir = os.path.join(os.path.dirname(os.path.realpath(__file__)), "js")
 
@@ -25,13 +28,6 @@ from aiohttp import web
 import aiohttp
 
 routes = PromptServer.instance.routes
-
-# Install and update dependencies
-ensure_dependency("rust_civit_comfy_bindings")
-
-from importlib.metadata import version
-
-print("rust-civit-comfy-bindings version is: ", version("rust-civit-comfy-bindings"))
 
 import socketserver
 import socket
@@ -98,6 +94,8 @@ comfy_path = str(Path(f"{file_p}../../../").resolve())
 
 print(f"Static dir: {static_dir}")
 print(f"Detected comfy path: {comfy_path}")
+
+print("==========================")
 
 subprocess.Popen(
     [sys.executable, f"{file_p}/server.py", f"{port}", {static_dir}, comfy_path],
