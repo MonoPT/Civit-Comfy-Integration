@@ -78,26 +78,30 @@
                 >
                 <Table.Cell class="flex">
                     <div class="ml-auto relative block">
-                        <Button
-                            variant="ghost"
-                            size="icon"
-                            aria-label="Submit"
-                            onclick={(e) => {
-                                (e.target as HTMLElement)!
-                                    .closest<HTMLElement>("tr")!
-                                    .nextElementSibling!.querySelector<HTMLElement>(
-                                        ".trigger",
-                                    )!
-                                    .click();
-                            }}
-                        >
-                            <ChevronDown />
-                        </Button>
+                        <div style="min-height: 2rem;">
+                          {#if ModelV.description && (ModelV.description.trim() as string).length > 0}
+                              <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  aria-label="Submit"
+                                  onclick={(e) => {
+                                      (e.target as HTMLElement)!
+                                          .closest<HTMLElement>("tr")!
+                                          .nextElementSibling!.querySelector<HTMLElement>(
+                                              ".trigger",
+                                          )!
+                                          .click();
+                                  }}
+                              >
+                                  <ChevronDown />
+                              </Button>                            
+                          {/if}
+                        </div>
                     </div>
                 </Table.Cell>
             </Table.Row>
             <Table.Row class="modelTableRow">
-                <Table.Cell class="modelTableCell" colspan={8}>
+                <Table.Cell class="modelTableCell" colspan={9}>
                     <Accordion.Root type="single">
                         <Accordion.Item value="item-1" data-state="open">
                             <div

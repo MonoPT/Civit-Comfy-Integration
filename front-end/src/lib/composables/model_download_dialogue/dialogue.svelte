@@ -31,6 +31,7 @@
                 
         data = ModelData
         dialogueState = true
+        needle = ""
         
         handleTableStateChange({target: null} as Event);
       })      
