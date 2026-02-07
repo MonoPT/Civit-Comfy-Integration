@@ -21,17 +21,16 @@ export default class load_models {
       period: "Month",
       sort: "Most Reactions",
       baseModel: "",
-      mediaType: "Image",
       cursor: load_models.cursor,
       browsingLevel: "31",
-      techniques: "",
-      requiringMeta: "false",
-      madeOnsite: "false",
-      originalsOnly: "false",
-      remixesOnly: "false",
-      metadataOnly: "false", 
       tags: "",
-      tools: ""
+      types: "",
+      earlyAccess: "false",
+      supportsGeneration: "false",
+      fromPlatform: "false",
+      isFeatured: "false",
+      checkpointType: "",
+      fileFormat: ""
     }
     
     for (const key in override) {
@@ -52,6 +51,7 @@ export default class load_models {
   
   static async fetch_assets(override: Filter[] = []): Promise<return_assets> {
     let payload = load_models.default_payload(override)
+        
     let endpoint = API.infinite_models(user_token.token, new URLSearchParams(payload).toString())
         
     let response = await fetch(endpoint)
@@ -112,7 +112,6 @@ function find_aspect_hor(images: any[]) {
   
   if (!img) {
     img = images[0]
-    console.log("does not have")
   }
   
   return img

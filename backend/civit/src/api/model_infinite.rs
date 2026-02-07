@@ -7,14 +7,42 @@ use reqwest::{header::HeaderMap};
 use serde_json::Value;
 
 #[derive(Debug, Serialize, Deserialize)]
+pub enum CheckpointType {
+    Trained,
+    Merge
+}
+
+#[derive(Debug, Serialize, Deserialize)]
 pub struct ModelInfiniteLoadOptions {
     pub cursor: Option<String>,
+    pub period: String,
+    pub sort: String,
+    pub browsing_level: usize,
+    pub base_models: Vec<String>,
+    pub model_types: Vec<String>,
+    pub early_access: bool,
+    pub supports_generation: bool,
+    pub from_platform: bool,
+    pub is_featured: bool,
+    pub checkpoint_type: Option<CheckpointType>,
+    pub file_formats: Vec<String>
 }
 
 impl Default for ModelInfiniteLoadOptions {
     fn default() -> Self {
         ModelInfiniteLoadOptions {
-            cursor: None
+            cursor: None,
+            period: "AllTime".to_string(),
+            sort: "Most Downloaded".to_string(),
+            browsing_level: 31,
+            base_models: vec![],
+            model_types: vec![],
+            early_access: false,
+            supports_generation: false,
+            from_platform: false,
+            is_featured: false,
+            checkpoint_type: None,
+            file_formats: vec![]
         }
     }
 }
@@ -32,27 +60,54 @@ impl Civit {
         let mut params = json!({
           "json": {
             "cursor": options.cursor,
-            "period": "AllTime",
+            "period": options.period,
             "periodMode": "published",
-            "sort": "Most Downloaded",
-            "fromPlatform": false,
+            "sort": options.sort,
             "followed": false,
-            "isFeatured": false,
-            //"checkpointType": ["Trained", "Merge"],
-            "types": [],
-            "fileFormats": [],
-            //"earlyAccess": false,
+            "types": options.model_types,
+            "fileFormats": options.file_formats,
             "pending": false,
-            "browsingLevel": 31,
+            "browsingLevel": options.browsing_level,
             "excludedTagIds": [],
             "tags": [],
             "disablePoi": true,
             "disableMinor": true,
             "authed": true,
-            "supportsGeneration": true,
           }
         });
            
+        let json_params = params["json"].as_object_mut().unwrap();
+        
+        if options.base_models.len() > 0 {
+            json_params.insert("baseModels".to_string(), options.base_models.into());
+        }
+        
+        if options.early_access {
+            json_params.insert("earlyAccess".to_string(), true.into());
+        }
+        
+        if options.supports_generation {
+            json_params.insert("supportsGeneration".to_string(), true.into());
+        }
+        
+        if options.is_featured {
+            json_params.insert("isFeatured".to_string(), true.into());
+        }
+        
+        if options.from_platform {
+            json_params.insert("fromPlatform".to_string(), true.into());
+        }
+        
+        match options.checkpoint_type {
+            None => (),
+            Some(ct) => {
+                match ct {
+                    CheckpointType::Merge => json_params.insert("checkpointType".to_string(), "Merge".into()),
+                    CheckpointType::Trained => json_params.insert("checkpointType".to_string(), "Trained".into())
+                };
+            }
+        }
+                
         //println!("{}\n\n", params);
         
         if options.cursor.is_none() {
