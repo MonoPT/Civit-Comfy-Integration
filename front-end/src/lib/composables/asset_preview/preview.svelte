@@ -3,9 +3,12 @@
     import { Badge } from "$lib/components/ui/badge/index.js";
     import * as Accordion from "$lib/components/ui/accordion/index.js";
     
+    import ComfyIcon from "$lib/assets/comfyui-color.svg"
+    
     let data = $state<null | any>(null)
     
     let gen_data = $state<null | any>(null)
+    let hasComfyData = $state(false)
     
     let isOpen = $state(false)
     let favoriteIsLoading = $state(true)
@@ -19,7 +22,7 @@
         isOpen = false
         isFavorite = false
         isOpen = true
-        
+        hasComfyData = false
         gen_data = null
         
         //@ts-ignore
@@ -37,8 +40,13 @@
         if (resp.status !== 200) return
         
         const d = await resp.json()
-                
+                     
         gen_data = d
+        
+        if (gen_data.meta.comfy !== undefined) {
+          hasComfyData = true
+        }
+        
       })
     })
     
@@ -73,6 +81,16 @@
       favoriteIsLoading = false
       
       isFavorite = resp.isFavorite
+    }
+    
+    function send_worfklow_to_comfy() {
+      const comfyMetaData = gen_data.meta.comfy
+      
+      if (comfyMetaData === undefined) return
+      
+      const payload = JSON.parse(JSON.stringify(comfyMetaData)); // Cant serialize svelte state. So this fix is necessary
+      
+      window.parent.postMessage(payload, "*")
     }
 </script>
 
@@ -157,6 +175,13 @@
              >
                  <Bookmark/>
              </Button>
+             
+             {#if hasComfyData}
+                 <Button onclick={send_worfklow_to_comfy} variant="ghost" size="icon" aria-label="Open in ComfyUI">
+                     <img src={ComfyIcon} alt="">
+                 </Button>
+             {/if}
+             
              
              <Button variant="ghost" size="icon" aria-label="Download">
                  <ArrowDownToLine />

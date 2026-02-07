@@ -1,12 +1,13 @@
 import { app as i } from "../../../scripts/app.js";
-const l = /*html*/`<div id="Civit-POPUP">
+const l = /*html*/`
+<div id="Civit-POPUP">
     <div class="container p-dialog">
         <button
             onclick="window.dispatchEvent(new CustomEvent('CloseCivitExplorer'))"
             type="button"
             data-pc-name="button"
             data-p-disabled="false"
-            class="flex items-center justify-center shrink-0 outline-hidden rounded-lg cursor-pointer disabled:opacity-50 disabled:pointer-events-none p-0 size-10 text-sm bg-white border-none text-neutral-950 dark-theme:bg-zinc-700 dark-theme:text-white absolute top-4 right-6 z-10 transition-opacity duration-200"
+            class="flex items-center justify-center shrink-0 outline-hidden rounded-lg cursor-pointer disabled:opacity-50 disabled:pointer-events-none p-0 size-10 text-sm bg-background border-none text-white dark-theme:bg-zinc-700 dark-theme:text-white absolute bottom-4 right-6 z-10 transition-opacity duration-200"
             pc66=""
             data-pc-section="root"
         >
@@ -81,7 +82,7 @@ i.extensionManager.registerSidebarTab({
 
 // Populate template
 let s = document.createElement("div");
-s.innerHTML = l.replace("{{Server_address}}", "/civit/?v=1.0");
+s.innerHTML = l.replace("{{Server_address}}", "/civit/?v=1.0&civitExplorer");
 
 
 /// Wait until it can mount the app
@@ -112,8 +113,24 @@ const p = (e, n) => {
   document.contains(document.querySelector("#CIVIT-EXPLORER-MARKER")) && (document.querySelector(`${d} .CivitExplorer-tab-button`).click(), document.querySelector("#Civit-POPUP").classList.add("active"));
 };
 
+
 // Close button
-window.addEventListener("CloseCivitExplorer", () => {
+function closeCivitDialog() {
   document.querySelector("#Civit-POPUP").classList.remove("active");
+}
+
+window.addEventListener("CloseCivitExplorer", () => {
+  closeCivitDialog()
 });
-//console.log(i.extensionManager.setting);
+
+
+//Receive messages from civit iframe
+
+window.addEventListener("message", (event) => {
+  const data = event.data
+  
+  if (data.workflow === undefined) return
+  
+  comfyAPI.app.app.loadGraphData(data.workflow)
+  closeCivitDialog()
+});
