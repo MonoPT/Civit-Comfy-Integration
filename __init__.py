@@ -98,7 +98,7 @@ print(f"Detected comfy path: {comfy_path}")
 print("==========================")
 
 subprocess.Popen(
-    [sys.executable, f"{file_p}/server.py", f"{port}", {static_dir}, comfy_path],
+    [sys.executable, f"{file_p}/server.py", f"{port}", static_dir, comfy_path],
     stdin=subprocess.DEVNULL,
     stdout=subprocess.DEVNULL,
     stderr=subprocess.DEVNULL,

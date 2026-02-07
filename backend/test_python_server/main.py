@@ -1,11 +1,24 @@
 import os
-from src.manage_deps import ensure_dependency
+
+import subprocess
+from pathlib import Path
+import importlib.util
 
 __FILE__ = os.path.dirname(os.path.abspath(__file__))
 
-pkg = "rust_civit_comfy_bindings-0.1.31-cp312-cp312-win_amd64.whl"
+module_path = Path(f"{__FILE__}/../../manage_deps.py")
 
-ensure_dependency(f"../target/wheels/")
+print(module_path)
+
+requireDep = importlib.util.spec_from_file_location(
+    "my_module",
+    module_path
+)
+
+module = importlib.util.module_from_spec(requireDep)
+requireDep.loader.exec_module(module)
+
+module.ensure_dependency("rust_civit_comfy_bindings")
 
 from rust_civit_comfy_bindings import sum_as_string, start_server
 
@@ -31,17 +44,20 @@ comfy_path = Path(f"C:/ComfyUI").resolve()
 print(f"Comfy path: {comfy_path}. Dont forget to update this if yours is different")
 
 def main():
-    server = Process(
-        target=start_server,
-        args=(port,static_dir,str(comfy_path),),
-        daemon=True
+    import sys
+    
+    subprocess.Popen(
+        [sys.executable, f"{__FILE__}/../../server.py", f"{port}", static_dir, comfy_path],
+        stdin=subprocess.DEVNULL,
+        stdout=None,
+        stderr=None,
+        close_fds=True
     )
-    server.start()
-        
+    
+    print("Running server on another process with port:", port)
+    
     while True:
         ""
         
-    print("Running server on another process with port:", port)
-
 if __name__ == "__main__":
     main()
