@@ -5,10 +5,11 @@
     import { Button } from "$lib/components/ui/button/index.js";
     import * as DropdownMenu from "$lib/components/ui/dropdown-menu/index.js";
     import { Spinner } from "$lib/components/ui/spinner/index.js";
+    import { Badge } from "$lib/components/ui/badge/index.js";
     
     let elRef: HTMLElement;
     
-    import { Bookmark, ThumbsUp, EllipsisVertical, Laugh, Heart, Frown, MessageSquare, ArrowDownToLine } from "@lucide/svelte";
+    import { Bookmark, ThumbsUp, EllipsisVertical,Library, ThumbsDown, Zap, Heart, MessageSquare, ArrowDownToLine } from "@lucide/svelte";
     
     import {update_collections, favorite_media} from "$lib/AssetsUtils"
     import { onMount } from "svelte";
@@ -36,6 +37,12 @@
       inCollections = data.media_in_collections
       
     }, {once: true}))
+    
+    const formatter = new Intl.NumberFormat('en-UK', {
+      useGrouping: true,
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 2,
+    });
 </script>
 
 <!-- svelte-ignore a11y_click_events_have_key_events -->
@@ -57,47 +64,55 @@
         <source src="{asset.optimized_asset_url}.webm" type="video/webm">
         <source src="{asset.optimized_asset_url}.mp4" type="video/mp4">
     </video>-->
-    <div class="overlay">
-        
-        <div data-stats class="stats absolute bottom-1.5 left-1.5 flex items-center gap-2 w-full px-2">
-            <!-- 
-            <Button variant="outline" size="sm">
-              <ThumbsUp  /> {asset.stats.likeCountAllTime}
+    <div class="overlay ">
+        <div data-stats class="stats absolute top-1.5 flex items-center gap-2 w-full px-2">
+            
+            <Button variant="outline" size="sm" class="text-sm">
+              <ThumbsUp /> {formatter.format(asset.rank.thumbsUpCount).replaceAll(",", ' ')}
             </Button>
             
-            {@render reactionsDropdown(
-              asset.stats.likeCountAllTime, 
-              asset.stats.laughCountAllTime,
-              asset.stats.heartCountAllTime,
-              asset.stats.cryCountAllTime,
-              asset.stats.commentCountAllTime,
-              asset.stats.collectedCountAllTime
-              )}-->
+            <Button variant="outline" size="sm" class="text-sm">
+              <ArrowDownToLine /> {formatter.format(asset.rank.downloadCount).replaceAll(",", ' ')}
+            </Button>
             
-            <div class="ml-auto">
-                <Button type="button" disabled={favoriteIsLoading} onclick={favorite_media_l} variant="ghost" size="icon" aria-label="Favorite">
-                   {#if favoriteIsLoading}
-                       <Spinner />
-                       {:else}
-                       <Heart fill={isFavorite ? "#fff" : ""} />
-                   {/if}
-                </Button>
-                <Button type="button" variant="ghost" size="icon" aria-label="Collections"
-                    onclick={() => window.dispatchEvent(new CustomEvent("openCollectionManager", {
-                      detail: {
-                        item_id: asset.id,
-                        collection_type: "Model"
-                      }
-                    }))}
-                >
-                    <Bookmark />
-                </Button>
+            
+            {@render reactionsDropdown(
+              asset.rank.thumbsDownCount,
+              asset.rank.commentCount,
+              asset.rank.collectedCount,
+              asset.rank.tippedAmountCount,
+            )}
+        </div>
+        
+        <div class="absolute bottom-5 flex flex-col gap-0 w-full px-2 z-12">
+            <div class="name font-semibold clampText">{asset.name}</div>
+            <div class="name font-normal flex items-center w-full">
+                <div><Badge variant="outline">{asset.type}</Badge></div>
+                <div class="ml-auto" data-actions>
+                    <Button type="button" disabled={favoriteIsLoading} onclick={favorite_media_l} variant="ghost" size="icon" aria-label="Favorite">
+                       {#if favoriteIsLoading}
+                           <Spinner />
+                           {:else}
+                           <Heart fill={isFavorite ? "#fff" : "transparent"} />
+                       {/if}
+                    </Button>
+                    <Button type="button" variant="ghost" size="icon" aria-label="Collections"
+                        onclick={() => window.dispatchEvent(new CustomEvent("openCollectionManager", {
+                          detail: {
+                            item_id: asset.id,
+                            collection_type: "Model"
+                          }
+                        }))}
+                    >
+                        <Bookmark />
+                    </Button>
+                </div>
             </div>
         </div>
     </div>
 </div>
 
-{#snippet reactionsDropdown(like: number, laugh: number, heart: number, cry: number, comment: number, collected: number)}
+{#snippet reactionsDropdown(downvote: number, comment: number, collected: number, tipped: number)}
     <DropdownMenu.Root>
     <DropdownMenu.Trigger>
         {#snippet child({ props })}
@@ -106,39 +121,28 @@
     </DropdownMenu.Trigger>
     <DropdownMenu.Content class="w-max min-w-max bg-transparent backdrop-blur-sm">
         <DropdownMenu.Group class="w-max flex flex-col gap-1.5">
+            
         <DropdownMenu.CheckboxItem class="p-0 w-full">
             <Button class="w-1/1 bg-transparent" variant="ghost" size="sm">
-                <ThumbsUp  /> {like}
-            </Button>
-        </DropdownMenu.CheckboxItem>
-        
-        <DropdownMenu.CheckboxItem class="p-0 w-full">
-            <Button class="w-1/1 bg-transparent" variant="ghost" size="sm">
-                <Laugh  /> {laugh}
-            </Button>
-        </DropdownMenu.CheckboxItem>
-        
-        <DropdownMenu.CheckboxItem class="p-0 w-full">
-            <Button class="w-1/1 bg-transparent" variant="ghost" size="sm">
-                <Heart   /> {heart} 
-            </Button>
-        </DropdownMenu.CheckboxItem>
-        
-        <DropdownMenu.CheckboxItem class="p-0 w-full">
-            <Button class="w-1/1 bg-transparent" variant="ghost" size="sm">
-                <Frown  /> {cry} 
+                <ThumbsDown  /> {formatter.format(downvote).replaceAll(",", ' ')}
             </Button>
         </DropdownMenu.CheckboxItem>
         
         <DropdownMenu.CheckboxItem class="p-0 w-full" style="pointer-events: none;">
             <Button class="w-1/1 bg-transparent" variant="ghost" size="sm">
-                <MessageSquare  /> {comment} 
+                <MessageSquare  /> {formatter.format(comment).replaceAll(",", ' ')}
             </Button>
         </DropdownMenu.CheckboxItem>
         
         <DropdownMenu.CheckboxItem class="p-0 w-full" style="pointer-events: none;">
             <Button class="w-1/1 bg-transparent" variant="ghost" size="sm">
-                <ArrowDownToLine /> {collected}
+                <Library  /> {formatter.format(collected).replaceAll(",", ' ')}
+            </Button>
+        </DropdownMenu.CheckboxItem>
+        
+        <DropdownMenu.CheckboxItem class="p-0 w-full" style="pointer-events: none;">
+            <Button class="w-1/1 bg-transparent" variant="ghost" size="sm">
+                <Zap  /> {formatter.format(tipped).replaceAll(",", ' ')}
             </Button>
         </DropdownMenu.CheckboxItem>
         
@@ -157,6 +161,8 @@
     }
             
     .overlay {
+        --bgGT: linear-gradient(to top, color-mix(in lab, var(--background) 50%, transparent 50%) 15% ,color-mix(in lab, var(--background) 50%, transparent 70%) 30%, transparent 100%);
+        
         position: absolute;
         z-index: 2;
         width: 100%;
@@ -164,6 +170,7 @@
         top: 0;
         left: 0;
         pointer-events: none;
+        background: var(--bgGT);
         
         > * {
             pointer-events: all;
@@ -180,7 +187,8 @@
             position: absolute;
             width: 100%;
             height: 100%;
-            background: linear-gradient(0deg, var(--background) 4% ,color-mix(in lab, var(--background) 50%, transparent 70%) 30%, transparent 100%);
+            background: linear-gradient(to bottom, color-mix(in lab, var(--background) 80%, transparent 20%) 15% ,color-mix(in lab, var(--background) 50%, transparent 70%) 30%, transparent 100%),
+            var(--bgGT);
             transition: .12s;
             opacity: 0;
             z-index: 0;
@@ -195,5 +203,21 @@
         .stats {
             opacity: 1;
         }
+    }
+    
+    [data-actions] {
+        transition: .12s;
+    }
+    
+    .asset-container:not(:hover) [data-actions] {
+        opacity: 0 !important;
+    }
+    
+    .clampText {
+       overflow: hidden;
+       display: -webkit-box;
+       -webkit-line-clamp: 2; /* number of lines to show */
+               line-clamp: 2; 
+       -webkit-box-orient: vertical;
     }
 </style>

@@ -75,7 +75,7 @@
                    {#if favoriteIsLoading}
                        <Spinner />
                        {:else}
-                       <Heart fill={isFavorite ? "#fff" : ""} />
+                       <Heart fill={isFavorite ? "#fff" : "transparent"} />
                    {/if}
                 </Button>
                 <Button type="button" variant="ghost" size="icon" aria-label="Collections"
