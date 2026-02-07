@@ -17,38 +17,35 @@
     
     import {Workflow, Cog} from "@lucide/svelte"
     
-    onMount(() => {
-      window.addEventListener("ViewMedia", async (e) => {
-        isOpen = false
-        isFavorite = false
-        isOpen = true
-        hasComfyData = false
-        gen_data = null
-        
-        //@ts-ignore
-        data = e.detail
-        
-        //console.log(data)
-        
-        //@ts-ignore
-        const media_id = e.detail.id
-        
-        update_collections_l()
-        
-        let resp = await fetch(API.get_gen_data(user_token.token, media_id))
-        
-        if (resp.status !== 200) return
-        
-        const d = await resp.json()
-                     
-        gen_data = d
-        
-        if (gen_data.meta.comfy !== undefined) {
-          hasComfyData = true
-        }
-        
-      })
-    })
+    onMount(() => window.addEventListener("ViewMedia", loadAssetData))
+    onDestroy(() => window.removeEventListener("ViewMedia", loadAssetData))
+    
+    async function loadAssetData(e: Event) {
+      data = (e as CustomEvent).detail
+      
+      isOpen = false
+      isFavorite = false
+      isOpen = true
+      hasComfyData = false
+      gen_data = null
+      
+      //@ts-ignore
+      const media_id = data.id
+      
+      update_collections_l()
+      
+      let resp = await fetch(API.get_gen_data(user_token.token, media_id))
+      
+      if (resp.status !== 200) return
+      
+      const d = await resp.json()
+                   
+      gen_data = d
+      
+      if (gen_data.meta.comfy !== undefined) {
+        hasComfyData = true
+      }
+    }
     
     async function update_collections_l() {
       favoriteIsLoading = true;;
@@ -66,7 +63,7 @@
     import { Spinner } from "$lib/components/ui/spinner/index.js";
     
     import { Heart, Bookmark, ArrowDownToLine, X } from "@lucide/svelte";
-    import { onMount } from "svelte";
+    import { onDestroy, onMount } from "svelte";
     
     import {update_collections, favorite_media} from "$lib/AssetsUtils"
     import API from "$lib/api";
