@@ -15,7 +15,7 @@ if (dev) {
   endpoint = `/civit`
 }
 
-type CollectionType = "Image" | "Model" | "Post" | "Article";
+export type CollectionType = "Image" | "Model" | "Post" | "Article";
 
 export default class API {
   static endpoint = endpoint
@@ -56,12 +56,12 @@ export default class API {
     return `${this.endpoint}/collection_with_media/${media_id}?&token=${token}&collection_type=${collection_type}`
   }
   
-  static favorite_media(token: string, media_id: number) {
-    return `${this.endpoint}/favorite_media/${media_id}?token=${token}`
+  static favorite_media(token: string, media_id: number, collection_type: CollectionType) {
+    return `${this.endpoint}/favorite_media/${media_id}?token=${token}&collection_type=${collection_type}`
   }
   
-  static unfavorite_media(token: string, media_id: number) {
-    return `${this.endpoint}/unfavorite_media/${media_id}?token=${token}`
+  static unfavorite_media(token: string, media_id: number, collection_type: CollectionType) {
+    return `${this.endpoint}/unfavorite_media/${media_id}?token=${token}&collection_type=${collection_type}`
   }
   
   static get_base_models(token: string) {

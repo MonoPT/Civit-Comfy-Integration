@@ -29,9 +29,7 @@ impl Civit {
         }).collect::<Vec<CollectionItem>>();
         
         let remove_collection = remove_collection.iter().map(|collection| collection.id).collect::<Vec<usize>>();
-        
-        dbg!(&media_type);
-        
+                
         let json_payload = match media_type {
             CollectionType::Image => {
                 json!({
@@ -57,7 +55,7 @@ impl Civit {
             },
             _ => todo!()
         };
-                   
+                      
         let response = self.client.post(format!("https://civitai.com/api/trpc/collection.saveItem"))
             .headers(headers)
             .json(&json_payload)
