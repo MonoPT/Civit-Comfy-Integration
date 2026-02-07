@@ -24,6 +24,6 @@ pub async fn get_model(data: Query<DataReq>, Path(model_id): Path<usize>) -> Res
     let civit = Civit::new()
         .update_api_key("api key")
         .set_auth_token(token);
-    
+        
     Json(civit.model_by_id(model_id).await).into_response()
 }

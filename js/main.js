@@ -1,5 +1,5 @@
 import { app as i } from "../../../scripts/app.js";
-const l = `<div id="Civit-POPUP">
+const l = /*html*/`<div id="Civit-POPUP">
     <div class="container p-dialog">
         <button
             onclick="window.dispatchEvent(new CustomEvent('CloseCivitExplorer'))"
@@ -66,6 +66,8 @@ const l = `<div id="Civit-POPUP">
     }
 </style>
 `;
+
+// Create extension button
 i.extensionManager.registerSidebarTab({
   id: "CivitExplorer",
   icon: "pi pi-compass",
@@ -76,10 +78,16 @@ i.extensionManager.registerSidebarTab({
     e.innerHTML = '<div id="CIVIT-EXPLORER-MARKER"></div>';
   }
 });
+
+// Populate template
 let s = document.createElement("div");
 s.innerHTML = l.replace("{{Server_address}}", "/civit/?v=1.0");
-let d = "nav.side-tool-bar-container";
-function v() {
+
+
+/// Wait until it can mount the app
+const d = "nav.side-tool-bar-container";
+
+(function () {
   let n = 0, r = 100;
   const t = setInterval(() => {
     var a;
@@ -97,12 +105,15 @@ function v() {
       life: 5e3
     }));
   }, 500);
-}
-v();
+})()
+
+
 const p = (e, n) => {
   document.contains(document.querySelector("#CIVIT-EXPLORER-MARKER")) && (document.querySelector(`${d} .CivitExplorer-tab-button`).click(), document.querySelector("#Civit-POPUP").classList.add("active"));
 };
+
+// Close button
 window.addEventListener("CloseCivitExplorer", () => {
   document.querySelector("#Civit-POPUP").classList.remove("active");
 });
-console.log(i.extensionManager.setting);
+//console.log(i.extensionManager.setting);
