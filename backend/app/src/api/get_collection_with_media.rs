@@ -16,15 +16,17 @@ pub fn route() -> Router {
 #[derive(Deserialize)]
 pub struct UserDataReq {
     token: String,
+    collection_type: CollectionType
 }
 
 /// Gets a list of collections with media item id
 pub async fn collection_with_media(data: Query<UserDataReq>, Path(media_id): Path<usize>) -> Response {
     let token = &data.token;
         
+    let coll_type = &data.collection_type;
+    
     let civit = Civit::new()
-        .update_api_key("api key")
         .set_auth_token(token);
     
-    Json(civit.get_collection_with_item(media_id, CollectionType::Image).await).into_response()
+    Json(civit.get_collection_with_item(media_id, coll_type).await).into_response()
 }

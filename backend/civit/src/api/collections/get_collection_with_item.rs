@@ -20,7 +20,7 @@ pub struct ResponseCollection {
 }
 
 impl Civit {
-    pub async fn get_collection_with_item(&self, media_id: usize, media_type: CollectionType) -> Vec<ResponseInCollection> {       
+    pub async fn get_collection_with_item(&self, media_id: usize, media_type: &CollectionType) -> Vec<ResponseInCollection> {       
         let mut cookies = std::collections::HashMap::new();
         cookies.insert("__Secure-civitai-token", &self.auth_token);
                 
@@ -29,8 +29,12 @@ impl Civit {
         let mut headers = HeaderMap::new();
         headers.append(reqwest::header::COOKIE, reqwest::header::HeaderValue::from_str(&cookie_header).unwrap());
         
-        let payload = json!({"json":{"imageId":media_id,"type":media_type,"authed":true}});
-
+        let payload = match media_type {
+            CollectionType::Image => json!({"json":{"imageId":media_id,"type": "Image", "authed":true}}),
+            CollectionType::Model => json!({"json":{"modelId":media_id,"type": "Model", "authed":true}}),
+            _ => todo!()
+        };
+                
         let response = self.client.get(format!("https://civitai.com/api/trpc/collection.getUserCollectionItemsByItem?input={payload}"))
             .headers(headers)
         .send().await.unwrap().json::<Value>().await.unwrap_or_default();

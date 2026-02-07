@@ -13,7 +13,7 @@ struct CollectionItem {
 }
 
 impl Civit {
-    pub async fn collection_save_item_by_id(&self, add_collection: &Vec<Collection>, remove_collection: &Vec<Collection>, media_id: usize, media_type: CollectionType) -> String {       
+    pub async fn collection_save_item_by_id(&self, add_collection: &Vec<Collection>, remove_collection: &Vec<Collection>, media_id: usize, media_type: CollectionType) -> Result<String, String> {       
         let mut cookies = std::collections::HashMap::new();
         cookies.insert("__Secure-civitai-token", &self.auth_token);
                 
@@ -30,24 +30,44 @@ impl Civit {
         
         let remove_collection = remove_collection.iter().map(|collection| collection.id).collect::<Vec<usize>>();
         
+        dbg!(&media_type);
+        
+        let json_payload = match media_type {
+            CollectionType::Image => {
+                json!({
+                  "json": {
+                    "imageId": media_id,
+                    "type": "Image",
+                    "collections": add_collection,
+                    "removeFromCollectionIds": remove_collection,
+                    "authed": true
+                  }
+                })
+            },
+            CollectionType::Model => {
+                json!({
+                  "json": {
+                    "modelId": media_id,
+                    "type": "Model",
+                    "collections": add_collection,
+                    "removeFromCollectionIds": remove_collection,
+                    "authed": true
+                  }
+                })
+            },
+            _ => todo!()
+        };
+                   
         let response = self.client.post(format!("https://civitai.com/api/trpc/collection.saveItem"))
             .headers(headers)
-            .json(&json!({
-              "json": {
-                "imageId": media_id,
-                "type": media_type,
-                "collections": add_collection,
-                "removeFromCollectionIds": remove_collection,
-                "authed": true
-              }
-            }))
+            .json(&json_payload)
         .send().await.unwrap().json::<Value>().await.unwrap_or_default();
                 
-        let res = response.get("result").unwrap_or_default().get("data").unwrap_or_default().get("json").unwrap_or_default().get("status");
+        let res = &response.get("result").unwrap_or_default().get("data").unwrap_or_default().get("json").unwrap_or_default().get("status");
         
         match res {
-            Some(v) => v.to_string(),
-            None => "Failed".to_string()
+            Some(v) => Ok(v.to_string()),
+            None => Err(response.to_string())
         }
     }
 }

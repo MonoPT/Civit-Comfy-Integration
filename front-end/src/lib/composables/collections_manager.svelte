@@ -50,9 +50,9 @@
       isLoading = false
     }))
     
-    async function update_collections(item_id: number, collection_type: string) {
+    async function update_collections(item_id: number, collection_type: string) {      
       const [res1, res2] = await Promise.all([
-          fetch(API.collections_with_media(user_token.token, item_id)),
+          fetch(API.collections_with_media(user_token.token, item_id, collection_type as any)),
           fetch(API.get_collections_by_media_type(user_token.token, collection_type)),
       ]);
       
@@ -78,7 +78,8 @@
       
       await fetch(API.update_media_collections(user_token.token, item_id_g, 
         collectionItems.filter((item) => item.checked).map((item) => item.collection_id),
-        collectionItems.filter((item) => !item.checked).map((item) => item.collection_id)
+        collectionItems.filter((item) => !item.checked).map((item) => item.collection_id),
+        collection_type_g as any
       ))  
       
       await update_collections(item_id_g, collection_type_g)

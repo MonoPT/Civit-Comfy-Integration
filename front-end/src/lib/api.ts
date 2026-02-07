@@ -15,6 +15,7 @@ if (dev) {
   endpoint = `/civit`
 }
 
+type CollectionType = "Image" | "Model" | "Post" | "Article";
 
 export default class API {
   static endpoint = endpoint
@@ -25,6 +26,10 @@ export default class API {
   
   static infinite_images(token: string, params: string) {
     return `${this.endpoint}/infinite_images?${params}&token=${token}`
+  }
+  
+  static infinite_models(token: string, params: string) {
+    return `${this.endpoint}/models?${params}&token=${token}`
   }
   
   static popular_tags(token: string) {
@@ -43,12 +48,12 @@ export default class API {
     return `${this.endpoint}/get_collections_by_media?&token=${token}&media_type=${media_type}`
   }
   
-  static update_media_collections(token: string, media_id: number,positive: number[], negative: number[]) {
-    return `${this.endpoint}/update_collections/${media_id}?&token=${token}&add=${positive.join(",")}&remove=${negative.join(",")}`
+  static update_media_collections(token: string, media_id: number,positive: number[], negative: number[], collection_type: CollectionType) {
+    return `${this.endpoint}/update_collections/${media_id}?&token=${token}&add=${positive.join(",")}&remove=${negative.join(",")}&collection_type=${collection_type}`
   }
   
-  static collections_with_media(token: string, media_id: number) {
-    return `${this.endpoint}/collection_with_media/${media_id}?&token=${token}`
+  static collections_with_media(token: string, media_id: number, collection_type: CollectionType) {
+    return `${this.endpoint}/collection_with_media/${media_id}?&token=${token}&collection_type=${collection_type}`
   }
   
   static favorite_media(token: string, media_id: number) {

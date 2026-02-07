@@ -17,7 +17,8 @@ pub fn route() -> Router {
 pub struct UserDataReq {
     token: String,
     add: String,
-    remove: String
+    remove: String,
+    collection_type: CollectionType
 }
 
 pub async fn update_collections(data: Query<UserDataReq>, Path(media_id): Path<usize>) -> Response {
@@ -49,6 +50,15 @@ pub async fn update_collections(data: Query<UserDataReq>, Path(media_id): Path<u
         collections.iter().find(|c2| &c2.id == c).unwrap().clone()
     }).collect::<Vec<Collection>>();
     
-    let res = civit.collection_save_item_by_id(&positive_collections, &negative_collections, media_id, CollectionType::Image).await;
-    (res).into_response()
+    let coll_type = data.collection_type.clone();
+    
+    let res = civit.collection_save_item_by_id(&positive_collections, &negative_collections, media_id, coll_type).await;
+    
+    match res {
+        Ok(_) => "ok".into_response(),
+        Err(e) => {
+            dbg!(e);
+            "err".into_response()
+        }
+    }
 }

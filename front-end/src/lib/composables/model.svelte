@@ -5,7 +5,6 @@
     import { Button } from "$lib/components/ui/button/index.js";
     import * as DropdownMenu from "$lib/components/ui/dropdown-menu/index.js";
     import { Spinner } from "$lib/components/ui/spinner/index.js";
-    import * as Select from "$lib/components/ui/select/index.js";
     
     let elRef: HTMLElement;
     
@@ -21,7 +20,7 @@
     async function favorite_media_l() {
       favoriteIsLoading = true
       
-      const resp = await favorite_media(asset.id, isFavorite, "Image")
+      const resp = await favorite_media(asset.id, isFavorite, "Model")
       
       favoriteIsLoading = false
       isFavorite = resp.isFavorite
@@ -29,7 +28,7 @@
     }
     
     onMount(() => elRef.addEventListener("pointerover", async (e) => {
-      const data = await update_collections(asset.id, "Image")
+      const data = await update_collections(asset.id, "Model")
       
       favoriteIsLoading = false
                   
@@ -44,11 +43,14 @@
     onclick={(e) => {
       if ((e.target! as HTMLElement).closest("[data-stats]")) return
       
-      window.dispatchEvent(new CustomEvent("ViewMedia", {
+      window.dispatchEvent(new CustomEvent("ViewModel", {
         detail: asset
       }))
     }}
-    class="asset-container" data-cover={asset.optimized_poster_img_url} data-media={asset.optimized_asset_url}
+    class="asset-container" data-cover={asset.optimized_poster_img_url} 
+    data-media={asset.optimized_asset_url}
+    data-media-w={asset.ratio.w}
+    data-media-h={asset.ratio.h}
 >
     <Skeleton class="skeleteonLoader h-full w-full absolute top-0 left-0" />
     <!--<video loop autoplay={false} muted preload="auto" poster={asset.optimized_poster_img_url} disablepictureinpicture>
@@ -58,9 +60,11 @@
     <div class="overlay">
         
         <div data-stats class="stats absolute bottom-1.5 left-1.5 flex items-center gap-2 w-full px-2">
+            <!-- 
             <Button variant="outline" size="sm">
               <ThumbsUp  /> {asset.stats.likeCountAllTime}
             </Button>
+            
             {@render reactionsDropdown(
               asset.stats.likeCountAllTime, 
               asset.stats.laughCountAllTime,
@@ -68,7 +72,7 @@
               asset.stats.cryCountAllTime,
               asset.stats.commentCountAllTime,
               asset.stats.collectedCountAllTime
-            )}
+              )}-->
             
             <div class="ml-auto">
                 <Button type="button" disabled={favoriteIsLoading} onclick={favorite_media_l} variant="ghost" size="icon" aria-label="Favorite">
@@ -82,7 +86,7 @@
                     onclick={() => window.dispatchEvent(new CustomEvent("openCollectionManager", {
                       detail: {
                         item_id: asset.id,
-                        collection_type: "Image"
+                        collection_type: "Model"
                       }
                     }))}
                 >

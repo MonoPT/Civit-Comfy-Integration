@@ -7,12 +7,12 @@ type UpdateCollectionResp = {
   isFavorite: boolean
 }
 
-export async function update_collections(media_id: number): Promise<UpdateCollectionResp> { 
+export async function update_collections(media_id: number, collection_type: String): Promise<UpdateCollectionResp> { 
   let media_in_collections: any[] = []
   let isFavorite = false
   
   const [res1, res2] = await Promise.all([
-      fetch(API.collections_with_media(user_token.token ,media_id)),
+      fetch(API.collections_with_media(user_token.token ,media_id, collection_type as any)),
       fetch(API.get_collections_by_media_type(user_token.token, "Image")),
   ]);
         
@@ -44,7 +44,7 @@ export async function update_collections(media_id: number): Promise<UpdateCollec
   }
 }
 
-export async function favorite_media(media_id: number, isFavorite: boolean) : Promise<UpdateCollectionResp> {
+export async function favorite_media(media_id: number, isFavorite: boolean, collection_type: String) : Promise<UpdateCollectionResp> {
   
   let result;
   
@@ -60,5 +60,5 @@ export async function favorite_media(media_id: number, isFavorite: boolean) : Pr
     isFavorite: isFavorite
   };
   
-  return await update_collections(media_id)
+  return await update_collections(media_id, collection_type)
 }
